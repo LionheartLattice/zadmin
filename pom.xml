@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.lionheart</groupId>
     <artifactId>zadmin</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>${revision}</version>
     <packaging>pom</packaging>
     <name>zadmin</name>
     <description>zadmin</description>
@@ -29,6 +29,8 @@
     </scm>
     <properties>
         <java.version>25</java.version>
+        <easy-query.version>3.1.57</easy-query.version>
+        <revision>0.0.1-SNAPSHOT</revision>
     </properties>
     <modules>
         <module>core</module>
@@ -36,7 +38,63 @@
         <module>user_center</module>
         <module>a_start</module>
     </modules>
+    <dependencyManagement>
+        <dependencies>
+            <!-- 内部模块 -->
+            <dependency>
+                <groupId>com.lionheart</groupId>
+                <artifactId>core</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.lionheart</groupId>
+                <artifactId>generator</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.lionheart</groupId>
+                <artifactId>user_center</artifactId>
+                <version>${revision}</version>
+            </dependency>
 
+            <!-- Easy Query -->
+            <dependency>
+                <groupId>com.easy-query</groupId>
+                <artifactId>sql-api-proxy</artifactId>
+                <version>${easy-query.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.easy-query</groupId>
+                <artifactId>sql-mysql</artifactId>
+                <version>${easy-query.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.easy-query</groupId>
+                <artifactId>sql-processor</artifactId>
+                <version>${easy-query.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-aop</artifactId>
+                <version>4.0.0-M2</version>
+            </dependency>
+
+            <!-- Knife4j -->
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+                <version>4.5.0</version>
+            </dependency>
+
+            <!-- Hutool -->
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>5.8.41</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <build>
         <plugins>
             <plugin>
@@ -47,6 +105,11 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
+                        </path>
+                        <path>
+                            <groupId>com.easy-query</groupId>
+                            <artifactId>sql-processor</artifactId>
+                            <version>${easy-query.version}</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>

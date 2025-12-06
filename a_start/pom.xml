@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.lionheart</groupId>
         <artifactId>zadmin</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
 
     <artifactId>a_start</artifactId>
@@ -17,17 +17,15 @@
         <dependency>
             <groupId>com.lionheart</groupId>
             <artifactId>core</artifactId>
-            <version>${project.parent.version}</version>
+
         </dependency>
         <dependency>
             <groupId>com.lionheart</groupId>
             <artifactId>generator</artifactId>
-            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>com.lionheart</groupId>
             <artifactId>user_center</artifactId>
-            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

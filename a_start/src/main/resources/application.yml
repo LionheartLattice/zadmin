@@ -1,11 +1,25 @@
 spring:
   application:
     name: zadmin
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://192.168.9.105:43306/z-admin?serverTimezone=GMT%2B8&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true&rewriteBatchedStatements=true
+#    username: z-admin
+#    password: Zs2806478963
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.9.105:43306/z-admin?serverTimezone=GMT%2B8&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true&rewriteBatchedStatements=true
-    username: z-admin
-    password: Zs2806478963
+    dynamic:
+      primary:
+        type: com.zaxxer.hikari.HikariDataSource
+        url: jdbc:mysql://192.168.9.105:43306/z-admin?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=GMT%2B8&characterEncoding=utf-8&allowMultiQueries=true&rewriteBatchedStatements=true
+        username: z-admin
+        password: Zs2806478963
+        driver-class-name: com.mysql.cj.jdbc.Driver
+      ds2:
+        type: com.zaxxer.hikari.HikariDataSource
+        url: jdbc:mysql://192.168.9.105:43306/z-ds2?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=GMT%2B8&characterEncoding=utf-8&allowMultiQueries=true&rewriteBatchedStatements=true
+        username: z-ds2
+        password: Zs2806478963
+        driver-class-name: com.mysql.cj.jdbc.Driver
   data:
     redis:
       host: 192.168.9.105
@@ -15,5 +29,14 @@ spring:
       timeout: 5s
 
 logging:
+  # 指定日志文件路径和名称（会自动创建 logs 文件夹在运行目录下）
+  file:
+    name: zlogs/zadmin.log
+  # 配置日志滚动策略（可选）
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB    # 单个文件最大大小
+      max-history: 30        # 保留历史日志的天数
+      file-name-pattern: ${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz # 归档文件名格式
   level:
     com.easy.query: debug

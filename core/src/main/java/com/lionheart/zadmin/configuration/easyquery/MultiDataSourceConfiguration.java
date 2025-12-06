@@ -1,0 +1,98 @@
+package com.lionheart.zadmin.configuration.easyquery;
+
+import com.easy.query.api.proxy.client.DefaultEasyEntityQuery;
+import com.easy.query.api.proxy.client.EasyEntityQuery;
+import com.easy.query.core.api.client.EasyQueryClient;
+import com.easy.query.core.basic.jdbc.conn.ConnectionManager;
+import com.easy.query.core.bootstrapper.EasyQueryBootstrapper;
+import com.easy.query.core.configuration.nameconversion.NameConversion;
+import com.easy.query.core.configuration.nameconversion.impl.UnderlinedNameConversion;
+import com.easy.query.core.datasource.DataSourceUnitFactory;
+import com.easy.query.core.logging.LogFactory;
+import com.easy.query.mysql.config.MySQLDatabaseConfiguration;
+import com.lionheart.zadmin.configuration.spring.DynamicBeanFactory;
+import com.lionheart.zadmin.configuration.spring.DynamicDataSourceProperties;
+import com.lionheart.zadmin.configuration.spring.SpringConnectionManager;
+import com.lionheart.zadmin.configuration.spring.SpringDataSourceUnitFactory;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.jdbc.autoconfigure.DataSourceProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+
+import javax.sql.DataSource;
+import java.util.HashMap;
+
+@Configuration
+public class MultiDataSourceConfiguration {
+
+    private final DynamicDataSourceProperties props;
+
+    static {
+        LogFactory.useCustomLogging(Slf4jImpl.class);
+    }
+
+    public MultiDataSourceConfiguration(DynamicDataSourceProperties props) {
+        this.props = props;
+        props.getDynamic().keySet().forEach(key -> {
+            DataSourceProperties kp = props.getDynamic().get(key);
+            DataSource source = DataSourceBuilder.create()
+                    .type(kp.getType())
+                    .driverClassName(kp.getDriverClassName())
+                    .url(kp.getUrl())
+                    .username(kp.getUsername())
+                    .password(kp.getPassword()).build();
+            DynamicBeanFactory.registerBean(key + "DataSource", source);
+
+            JdbcTemplate jdbcTemplate = new JdbcTemplate(source);
+            if ("primary".equals(key)) {
+                DynamicBeanFactory.registerBean("jdbcTemplate", jdbcTemplate);
+            }
+            DynamicBeanFactory.registerBean(key + "JdbcTemplate", jdbcTemplate);
+
+            EasyQueryClient easyQueryClient = EasyQueryBootstrapper.defaultBuilderConfiguration()
+                    .setDefaultDataSource(source)
+                    .replaceService(DataSourceUnitFactory.class, SpringDataSourceUnitFactory.class)
+                    .replaceService(NameConversion.class, UnderlinedNameConversion.class)
+                    .replaceService(ConnectionManager.class, SpringConnectionManager.class)
+                    .optionConfigure(builder -> {
+                        builder.setPrintSql(true);
+                        builder.setPrintNavSql(true);
+                    })
+                    .useDatabaseConfigure(new MySQLDatabaseConfiguration())
+                    .build();
+
+            DefaultEasyEntityQuery defaultEasyEntityQuery = new DefaultEasyEntityQuery(easyQueryClient);
+            DynamicBeanFactory.registerBean(key, defaultEasyEntityQuery);
+            DataSourceTransactionManager dataSourceTransactionManager = new DataSourceTransactionManager(source);
+            DynamicBeanFactory.registerBean(key + "TransactionManager", dataSourceTransactionManager);
+        });
+    }
+
+    /**
+     * 创建多数据源 EasyEntityQuery Bean
+     * <p>
+     * 标记为 @Primary，可直接通过 EasyEntityQuery 类型注入，默认使用主数据源
+     *
+     * @return EasyMultiEntityQuery 实例
+     */
+    @Bean
+    @Primary
+    public EasyMultiEntityQuery easyMultiEntityQuery() {
+        HashMap<String, EasyEntityQuery> extra = new HashMap<>();
+
+        // 直接从 DynamicBeanFactory 获取 Bean
+        ConfigurableListableBeanFactory beanFactory = DynamicBeanFactory.getConfigurableBeanFactory();
+        EasyEntityQuery easyEntityQuery = beanFactory.getBean("primary", EasyEntityQuery.class);
+
+        props.getDynamic().keySet().forEach(key -> {
+            EasyEntityQuery eq = beanFactory.getBean(key, EasyEntityQuery.class);
+            extra.put(key, eq);
+        });
+
+        return new DefaultEasyMultiEntityQuery("primary", easyEntityQuery, extra);
+    }
+}
