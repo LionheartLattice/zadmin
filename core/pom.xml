@@ -16,7 +16,6 @@
 
     <properties>
         <java.version>25</java.version>
-        <easy-query.version>3.1.57</easy-query.version>
     </properties>
 
     <dependencies>
@@ -56,19 +55,16 @@
         <dependency>
             <groupId>com.easy-query</groupId>
             <artifactId>sql-api-proxy</artifactId>
-            <version>${easy-query.version}</version>
         </dependency>
         <!-- 按需引入eq的数据库方言支持依赖 -->
         <dependency>
             <groupId>com.easy-query</groupId>
             <artifactId>sql-mysql</artifactId>
-            <version>${easy-query.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.easy-query</groupId>
             <artifactId>sql-processor</artifactId>
-            <version>${easy-query.version}</version>
         </dependency>
 
         <dependency>
@@ -78,13 +74,11 @@
         <dependency>
             <groupId>com.github.xiaoymin</groupId>
             <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
-            <version>4.5.0</version>
         </dependency>
 
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
-            <version>5.8.41</version>
         </dependency>
     </dependencies>
 

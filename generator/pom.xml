@@ -17,7 +17,6 @@
         <dependency>
             <groupId>com.lionheart</groupId>
             <artifactId>core</artifactId>
-            <version>${project.parent.version}</version>
         </dependency>
     </dependencies>
 
