@@ -10,8 +10,8 @@ spring:
     dynamic:
       primary:
         type: com.zaxxer.hikari.HikariDataSource
-        url: jdbc:mysql://192.168.9.105:43306/z-admin?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=GMT%2B8&characterEncoding=utf-8&allowMultiQueries=true&rewriteBatchedStatements=true
-        username: z-admin
+        url: jdbc:mysql://192.168.9.105:43306/z-ds1?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=GMT%2B8&characterEncoding=utf-8&allowMultiQueries=true&rewriteBatchedStatements=true
+        username: z-ds1
         password: Zs2806478963
         driver-class-name: com.mysql.cj.jdbc.Driver
       ds2:

@@ -1,4 +1,4 @@
-package com.lionheart.zadmin.test.controller;
+package com.lionheart.zadmin.controller;
 
 import com.lionheart.zadmin.util.parent.ParentController;
 import io.swagger.v3.oas.annotations.Operation;
