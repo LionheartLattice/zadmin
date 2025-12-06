@@ -13,6 +13,10 @@
     <name>generator</name>
     <packaging>jar</packaging>
 
+    <properties>
+        <java.version>${java.sdk.version}</java.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.lionheart</groupId>
