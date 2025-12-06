@@ -20,6 +20,10 @@
     <dependencies>
         <dependency>
             <groupId>com.lionheart</groupId>
+            <artifactId>entity</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.lionheart</groupId>
             <artifactId>core</artifactId>
         </dependency>
     </dependencies>

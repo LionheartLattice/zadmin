@@ -9,8 +9,8 @@
         <version>${revision}</version>
     </parent>
 
-    <artifactId>generator</artifactId>
-    <name>generator</name>
+    <artifactId>entity</artifactId>
+    <name>entity</name>
     <packaging>jar</packaging>
 
     <properties>
@@ -18,13 +18,26 @@
     </properties>
 
     <dependencies>
+        <!-- Lombok for entity classes -->
         <dependency>
-            <groupId>com.lionheart</groupId>
-            <artifactId>entity</artifactId>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- Easy-Query base and dialect -->
+        <dependency>
+            <groupId>com.easy-query</groupId>
+            <artifactId>sql-api-proxy</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.lionheart</groupId>
-            <artifactId>core</artifactId>
+            <groupId>com.easy-query</groupId>
+            <artifactId>sql-mysql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.easy-query</groupId>
+            <artifactId>sql-processor</artifactId>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 

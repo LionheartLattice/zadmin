@@ -37,6 +37,7 @@
         <module>core</module>
         <module>generator</module>
         <module>user_center</module>
+        <module>entity</module>
         <module>a_start</module>
     </modules>
     <dependencyManagement>
@@ -55,6 +56,11 @@
             <dependency>
                 <groupId>com.lionheart</groupId>
                 <artifactId>user_center</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.lionheart</groupId>
+                <artifactId>entity</artifactId>
                 <version>${revision}</version>
             </dependency>
 
