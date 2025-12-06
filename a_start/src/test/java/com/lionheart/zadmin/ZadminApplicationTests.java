@@ -9,5 +9,4 @@ class ZadminApplicationTests {
     @Test
     void contextLoads() {
     }
-
 }
