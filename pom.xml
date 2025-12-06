@@ -29,6 +29,7 @@
     </scm>
     <properties>
         <java.version>25</java.version>
+        <easy-query.version>3.1.57</easy-query.version>
     </properties>
     <modules>
         <module>core</module>
@@ -47,6 +48,11 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
+                        </path>
+                        <path>
+                            <groupId>com.easy-query</groupId>
+                            <artifactId>sql-processor</artifactId>
+                            <version>${easy-query.version}</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
