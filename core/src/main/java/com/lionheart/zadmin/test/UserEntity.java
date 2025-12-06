@@ -1,4 +1,4 @@
-package com.lionheart.zadmin.linshi;
+package com.lionheart.zadmin.test;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
