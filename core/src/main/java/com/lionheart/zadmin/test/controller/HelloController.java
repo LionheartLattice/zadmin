@@ -26,7 +26,7 @@ public class HelloController extends ParentController {
     @Operation(summary = "获取所有用户(主库-JDBC)", description = "使用JdbcTemplate查询主库z_user表")
     @GetMapping("/user")
     public List<Map<String, Object>> getUser() {
-        return jdbcTemplate.queryForList("select * from z_user");
+        return jdbcTemplate.queryForList("select * from t_user");
     }
 
     // 使用主数据源 EasyQuery 查询
@@ -41,7 +41,7 @@ public class HelloController extends ParentController {
     @Operation(summary = "获取所有用户(DS2-JDBC)", description = "使用JdbcTemplate查询DS2库")
     @GetMapping("/ds2/user")
     public List<Map<String, Object>> getDs2User() {
-        return ds2JdbcTemplate.queryForList("select * from z_user");
+        return ds2JdbcTemplate.queryForList("select * from t_user");
     }
 
     // 使用 ds2 数据源 EasyQuery 查询
