@@ -82,7 +82,7 @@ import $classImport;
 @EntityFileProxy
 #end
 #if($config.easyAssertMessage)
-@EasyAssertMessage("未找到对应的xxxxx信息")
+@EasyAssertMessage("未找到对应的$table.comment信息")
 #end
 public class ${modelName} #if(${config.modelSuperClass}) extends ${table.superClass}  #end {
 

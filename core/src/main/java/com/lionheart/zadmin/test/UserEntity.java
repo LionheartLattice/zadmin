@@ -1,6 +1,8 @@
 package com.lionheart.zadmin.test;
 
 import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import io.swagger.v3.oas.annotations.media.Schema;
 import com.easy.query.core.annotation.Column;
@@ -19,16 +21,14 @@ import java.time.LocalDateTime;
  */
 @Data
 @Accessors(chain = true)
+@NoArgsConstructor
+@AllArgsConstructor
 @Schema(name = "系统用户表")
 @Table(value = "z_user")
 @EntityProxy
-@EasyAssertMessage("未找到对应的xxxxx信息")
+@EasyAssertMessage("未找到对应的系统用户表信息")
 public class UserEntity {
 
-    //定义枚举常量字符串
-    public static final String USER_SEX_未知 = "未知";
-    public static final String USER_SEX_男 = "男";
-    public static final String USER_SEX_女 = "女";
 
     /**
      * 用户ID
@@ -62,9 +62,9 @@ public class UserEntity {
     private String nickname;
 
     /**
-     * 性别
+     * 性别 未知-男-女
      */
-    @Schema(description = "性别")
+    @Schema(description = "性别 未知-男-女")
     private String sex;
 
     /**
