@@ -23,21 +23,25 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
 
         <!-- Easy-Query base and dialect -->
         <dependency>
             <groupId>com.easy-query</groupId>
             <artifactId>sql-api-proxy</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.easy-query</groupId>
             <artifactId>sql-mysql</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.easy-query</groupId>
             <artifactId>sql-processor</artifactId>
             <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 
