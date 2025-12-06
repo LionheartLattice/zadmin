@@ -24,3 +24,6 @@ create index username_index
     on z_user (username);
 create index del_flag_index
     on z_user (del_flag);
+
+
+
