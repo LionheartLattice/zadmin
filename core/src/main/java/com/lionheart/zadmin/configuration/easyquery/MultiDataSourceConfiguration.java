@@ -6,12 +6,16 @@ import com.easy.query.core.api.client.EasyQueryClient;
 import com.easy.query.core.basic.jdbc.conn.ConnectionManager;
 import com.easy.query.core.bootstrapper.DatabaseConfiguration;
 import com.easy.query.core.bootstrapper.EasyQueryBootstrapper;
+import com.easy.query.core.configuration.QueryConfiguration;
 import com.easy.query.core.configuration.nameconversion.NameConversion;
 import com.easy.query.core.configuration.nameconversion.impl.UnderlinedNameConversion;
 import com.easy.query.core.datasource.DataSourceUnitFactory;
 import com.easy.query.core.logging.LogFactory;
 import com.easy.query.mysql.config.MySQLDatabaseConfiguration;
 import com.easy.query.pgsql.config.PgSQLDatabaseConfiguration;
+import com.lionheart.zadmin.configuration.easyquery.DefaultEasyMultiEntityQuery;
+import com.lionheart.zadmin.configuration.easyquery.EasyMultiEntityQuery;
+import com.lionheart.zadmin.configuration.easyquery.Slf4jImpl;
 import com.lionheart.zadmin.configuration.spring.DynamicBeanFactory;
 import com.lionheart.zadmin.configuration.spring.DynamicDataSourceProperties;
 import com.lionheart.zadmin.configuration.spring.SpringConnectionManager;
@@ -75,6 +79,10 @@ public class MultiDataSourceConfiguration {
                     .useDatabaseConfigure(databaseConfiguration)
                     .build();
 
+            //注册雪花算法主键生成器
+            QueryConfiguration queryConfiguration = easyQueryClient.getRuntimeContext().getQueryConfiguration();
+            queryConfiguration.applyPrimaryKeyGenerator(new SnowflakePrimaryKeyGenerator());
+
             DefaultEasyEntityQuery defaultEasyEntityQuery = new DefaultEasyEntityQuery(easyQueryClient);
             DynamicBeanFactory.registerBean(key, defaultEasyEntityQuery);
             DataSourceTransactionManager dataSourceTransactionManager = new DataSourceTransactionManager(source);
@@ -94,12 +102,12 @@ public class MultiDataSourceConfiguration {
     public EasyMultiEntityQuery easyMultiEntityQuery() {
         HashMap<String, EasyEntityQuery> extra = new HashMap<>();
 
-        // 直接从 DynamicBeanFactory 获取 Bean
+        //直接从 DynamicBeanFactory 获取 Bean
         ConfigurableListableBeanFactory beanFactory = DynamicBeanFactory.getConfigurableBeanFactory();
         EasyEntityQuery easyEntityQuery = beanFactory.getBean("primary", EasyEntityQuery.class);
 
         props.getDynamic().keySet().forEach(key -> {
-            EasyEntityQuery eq = beanFactory.getBean(key, EasyEntityQuery.class);
+            EasyEntityQuery eq =beanFactory.getBean(key, EasyEntityQuery.class);
             extra.put(key, eq);
         });
 
