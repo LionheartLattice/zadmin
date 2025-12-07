@@ -1,6 +1,7 @@
 package io.github.lionheartlattice.configuration.spring;
 
 
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 public class DynamicBeanFactory implements BeanFactoryPostProcessor, ApplicationContextAware {
     private static final Logger logger = LoggerFactory.getLogger(DynamicBeanFactory.class);
     private static ConfigurableListableBeanFactory beanFactory;
+    @Getter
     private static ApplicationContext applicationContext;
 
     public static void registerBean(Object bean) {
