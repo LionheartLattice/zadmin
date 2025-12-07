@@ -8,7 +8,7 @@
         <version>4.0.0</version>
         <relativePath/>
     </parent>
-    <groupId>com.lionheart</groupId>
+    <groupId>io.github.lionheartlattice</groupId>
     <artifactId>zadmin</artifactId>
     <version>${revision}</version>
     <packaging>pom</packaging>
@@ -44,22 +44,22 @@
         <dependencies>
             <!-- 内部模块 -->
             <dependency>
-                <groupId>com.lionheart</groupId>
+                <groupId>io.github.lionheartlattice</groupId>
                 <artifactId>core</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>
-                <groupId>com.lionheart</groupId>
+                <groupId>io.github.lionheartlattice</groupId>
                 <artifactId>generator</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>
-                <groupId>com.lionheart</groupId>
+                <groupId>io.github.lionheartlattice</groupId>
                 <artifactId>user_center</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>
-                <groupId>com.lionheart</groupId>
+                <groupId>io.github.lionheartlattice</groupId>
                 <artifactId>entity</artifactId>
                 <version>${revision}</version>
             </dependency>

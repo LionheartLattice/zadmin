@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.lionheart</groupId>
+        <groupId>io.github.lionheartlattice</groupId>
         <artifactId>zadmin</artifactId>
         <version>${revision}</version>
     </parent>
@@ -19,11 +19,11 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.lionheart</groupId>
+            <groupId>io.github.lionheartlattice</groupId>
             <artifactId>generator</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.lionheart</groupId>
+            <groupId>io.github.lionheartlattice</groupId>
             <artifactId>user_center</artifactId>
         </dependency>
         <dependency>

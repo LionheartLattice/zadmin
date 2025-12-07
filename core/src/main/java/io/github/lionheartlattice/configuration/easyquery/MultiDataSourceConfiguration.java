@@ -78,7 +78,7 @@ public class MultiDataSourceConfiguration {
                     .getQueryConfiguration();
             try {
                 // 利用反射创建实例，避免 core 模块直接依赖 entity 模块
-                Object generator = ReflectUtil.newInstance("com.lionheart.zadmin.user_center.po.SnowflakePrimaryKeyGenerator");
+                Object generator = ReflectUtil.newInstance("io.github.lionheartlattice.user_center.po.SnowflakePrimaryKeyGenerator");
                 if (generator instanceof PrimaryKeyGenerator) {
                     queryConfiguration.applyPrimaryKeyGenerator((PrimaryKeyGenerator) generator);
                 }
