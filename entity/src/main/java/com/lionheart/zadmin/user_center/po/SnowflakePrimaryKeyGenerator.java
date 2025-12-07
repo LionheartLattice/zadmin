@@ -1,5 +1,4 @@
-package com.lionheart.zadmin.configuration.easyquery;
-
+package com.lionheart.zadmin.user_center.po;
 
 import com.easy.query.core.basic.extension.generated.PrimaryKeyGenerator;
 import com.easy.query.core.metadata.ColumnMetadata;
