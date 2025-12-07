@@ -32,7 +32,7 @@ import java.util.Date;
 @Table(value = "z_user")
 @EntityProxy
 @EasyAssertMessage("未找到对应的系统用户表信息")
-public class UserEntity extends BaseEntity<UserEntity> implements ProxyEntityAvailable<UserEntity, UserEntityProxy> {
+public class UserEntity extends BaseEntity<UserEntity, UserEntityProxy> implements ProxyEntityAvailable<UserEntity, UserEntityProxy> {
 
     /**
      * 用户ID
