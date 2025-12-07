@@ -97,10 +97,6 @@
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.lionheart</groupId>
-            <artifactId>entity</artifactId>
-        </dependency>
     </dependencies>
 
 </project>
