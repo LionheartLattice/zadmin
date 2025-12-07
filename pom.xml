@@ -34,6 +34,7 @@
         <revision>0.0.1-SNAPSHOT</revision>
     </properties>
     <modules>
+        <module>base</module>
         <module>core</module>
         <module>generator</module>
         <module>user_center</module>
@@ -43,6 +44,11 @@
     <dependencyManagement>
         <dependencies>
             <!-- 内部模块 -->
+            <dependency>
+                <groupId>io.github.lionheartlattice</groupId>
+                <artifactId>base</artifactId>
+                <version>${revision}</version>
+            </dependency>
             <dependency>
                 <groupId>io.github.lionheartlattice</groupId>
                 <artifactId>core</artifactId>
