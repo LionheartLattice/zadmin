@@ -34,11 +34,6 @@
         </dependency>
         <dependency>
             <groupId>com.easy-query</groupId>
-            <artifactId>sql-mysql</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>com.easy-query</groupId>
             <artifactId>sql-processor</artifactId>
             <scope>compile</scope>
             <optional>true</optional>
