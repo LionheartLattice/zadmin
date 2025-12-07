@@ -5,10 +5,12 @@ import com.easy.query.core.annotation.EasyAssertMessage;
 import com.easy.query.core.annotation.EntityProxy;
 import com.easy.query.core.annotation.Table;
 import com.easy.query.core.proxy.ProxyEntityAvailable;
+import io.github.lionheartlattice.parent.BaseEntity;
 import io.github.lionheartlattice.user_center.po.proxy.UserEntityProxy;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
@@ -21,6 +23,7 @@ import java.util.Date;
  * @author lionheart
  * @since 1.0
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Accessors(chain = true)
 @NoArgsConstructor
@@ -29,7 +32,7 @@ import java.util.Date;
 @Table(value = "z_user")
 @EntityProxy
 @EasyAssertMessage("未找到对应的系统用户表信息")
-public class UserEntity implements ProxyEntityAvailable<UserEntity, UserEntityProxy> {
+public class UserEntity extends BaseEntity<UserEntity> implements ProxyEntityAvailable<UserEntity, UserEntityProxy> {
 
     /**
      * 用户ID
