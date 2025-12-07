@@ -35,7 +35,7 @@ public class HelloController extends ParentController {
     @GetMapping("/say")
     public List<UserEntity> say() {
         return entityQuery.queryable(UserEntity.class).where(c -> c.nickname()
-                .like("张")).toList();
+                .like("管理")).toList();
     }
 
     // 使用 ds2 数据源 JdbcTemplate 查询
