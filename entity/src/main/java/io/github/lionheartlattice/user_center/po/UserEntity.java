@@ -26,8 +26,6 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Accessors(chain = true)
-@NoArgsConstructor
-@AllArgsConstructor
 @Schema(name = "系统用户表")
 @Table(value = "z_user")
 @EntityProxy

@@ -91,8 +91,6 @@ public class BaseEntity<T extends BaseEntity<T, TProxy> & ProxyEntityAvailable<T
         return getEntityQuery().sqlEasyQuery(sql, clazz, parameters);
     }
 
-    // ==================== Active Record CRUD 方法（返回构建器） ====================
-
     /**
      * 执行原生SQL查询，返回Map列表
      *
@@ -102,6 +100,8 @@ public class BaseEntity<T extends BaseEntity<T, TProxy> & ProxyEntityAvailable<T
     public static List<Map<String, Object>> sqlQueryMap(String sql) {
         return getEntityQuery().sqlQueryMap(sql);
     }
+
+    // ==================== Active Record CRUD 方法（返回构建器） ====================
 
     /**
      * 执行带参数的原生SQL查询，返回Map列表
@@ -229,8 +229,6 @@ public class BaseEntity<T extends BaseEntity<T, TProxy> & ProxyEntityAvailable<T
         return getEntityQuery().getTrackEntityStateNotNull(entity);
     }
 
-    // ==================== 查询便捷方法 ====================
-
     /**
      * 获取指定实体的追踪状态（可能返回null）
      *
@@ -240,6 +238,8 @@ public class BaseEntity<T extends BaseEntity<T, TProxy> & ProxyEntityAvailable<T
     public static @Nullable EntityState getTrackEntityState(@NotNull Object entity) {
         return getEntityQuery().getTrackEntityState(entity);
     }
+
+    // ==================== 查询便捷方法 ====================
 
     /**
      * 开启一个新的追踪环境
@@ -282,8 +282,6 @@ public class BaseEntity<T extends BaseEntity<T, TProxy> & ProxyEntityAvailable<T
         getEntityQuery().getEasyQueryClient().setMigrationParser(migrationParser);
     }
 
-    // ==================== 原生 SQL 方法 ====================
-
     /**
      * 添加触发器监听器
      *
@@ -292,6 +290,8 @@ public class BaseEntity<T extends BaseEntity<T, TProxy> & ProxyEntityAvailable<T
     public static void addTriggerListener(Consumer<TriggerEvent> eventConsumer) {
         getEntityQuery().getEasyQueryClient().addTriggerListener(eventConsumer);
     }
+
+    // ==================== 原生 SQL 方法 ====================
 
     /**
      * 按包加载数据库实体对象
@@ -330,6 +330,12 @@ public class BaseEntity<T extends BaseEntity<T, TProxy> & ProxyEntityAvailable<T
         return getEntityQuery().getRuntimeContext();
     }
 
+
+    @SuppressWarnings("unchecked")
+    protected Class<T> entityClass() {
+        return (Class<T>) getClass();
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public T clone() {
@@ -359,10 +365,6 @@ public class BaseEntity<T extends BaseEntity<T, TProxy> & ProxyEntityAvailable<T
 
     // ==================== Map 操作方法 ====================
 
-    @SuppressWarnings("unchecked")
-    protected Class<T> entityClass() {
-        return (Class<T>) getClass();
-    }
 
     /**
      * 获取当前实体类的查询器
