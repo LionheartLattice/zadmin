@@ -13,7 +13,7 @@ import java.util.Map;
  * @author lionheart
  */
 @Component
-public class SpringUtil {
+public class SpringUtils {
 
     /**
      * 获取ApplicationContext
