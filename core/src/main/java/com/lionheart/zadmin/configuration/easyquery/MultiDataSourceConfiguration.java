@@ -20,6 +20,7 @@ import com.lionheart.zadmin.configuration.spring.DynamicBeanFactory;
 import com.lionheart.zadmin.configuration.spring.DynamicDataSourceProperties;
 import com.lionheart.zadmin.configuration.spring.SpringConnectionManager;
 import com.lionheart.zadmin.configuration.spring.SpringDataSourceUnitFactory;
+import com.lionheart.zadmin.user_center.po.SnowflakePrimaryKeyGenerator;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceProperties;
@@ -79,8 +80,9 @@ public class MultiDataSourceConfiguration {
                     .useDatabaseConfigure(databaseConfiguration)
                     .build();
 
-            // 注册雪花算法主键生成器的逻辑移动到其他地方或移除
-            // 因为我们现在在entity模块中直接引用生成器类
+            //注册雪花算法主键生成器
+            QueryConfiguration queryConfiguration = easyQueryClient.getRuntimeContext().getQueryConfiguration();
+            queryConfiguration.applyPrimaryKeyGenerator(new SnowflakePrimaryKeyGenerator());
 
             DefaultEasyEntityQuery defaultEasyEntityQuery = new DefaultEasyEntityQuery(easyQueryClient);
             DynamicBeanFactory.registerBean(key, defaultEasyEntityQuery);
