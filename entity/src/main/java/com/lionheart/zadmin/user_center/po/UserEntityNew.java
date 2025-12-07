@@ -1,16 +1,16 @@
 package com.lionheart.zadmin.user_center.po;
 
-import lombok.Data;
+import com.easy.query.core.annotation.Column;
+import com.easy.query.core.annotation.EasyAssertMessage;
+import com.easy.query.core.annotation.EntityProxy;
+import com.easy.query.core.annotation.Table;
+import com.easy.query.core.proxy.ProxyEntityAvailable;
+import com.lionheart.zadmin.user_center.po.proxy.UserEntityNewProxy;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import io.swagger.v3.oas.annotations.media.Schema;
-import com.easy.query.core.annotation.Column;
-import com.easy.query.core.annotation.Table;
-import com.easy.query.core.annotation.EntityProxy;
-import com.easy.query.core.proxy.ProxyEntityAvailable;
-import com.lionheart.zadmin.user_center.po.proxy.UserEntityProxy;
-import com.easy.query.core.annotation.EasyAssertMessage;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,7 +29,7 @@ import java.time.LocalDateTime;
 @Table(value = "z_user")
 @EntityProxy
 @EasyAssertMessage("未找到对应的系统用户表信息")
-public class UserEntity implements ProxyEntityAvailable<UserEntity, UserEntityProxy> {
+public class UserEntityNew implements ProxyEntityAvailable<UserEntityNew, UserEntityNewProxy> {
 
     /**
      * 用户ID
