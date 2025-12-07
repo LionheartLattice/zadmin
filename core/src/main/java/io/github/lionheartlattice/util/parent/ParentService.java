@@ -12,15 +12,12 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-
 import static io.github.lionheartlattice.configuration.spring.DynamicBeanFactory.getBeanFactory;
 
 @Component
 public abstract class ParentService<TProxy extends ProxyEntity<TProxy, T>, T extends ProxyEntityAvailable<T, TProxy>> {
 
-    protected final Logger log = LoggerFactory.getLogger(getClass());
+    protected final Logger log = LoggerFactory.getLogger(entityClass());
     @Autowired
     protected JdbcTemplate jdbcTemplate;
 
@@ -32,20 +29,10 @@ public abstract class ParentService<TProxy extends ProxyEntity<TProxy, T>, T ext
 
     protected JdbcTemplate ds2JdbcTemplate;
     protected EasyEntityQuery ds2EntityQuery;
-    private Class<T> entityClass;
 
     @SuppressWarnings("unchecked")
-    public ParentService() {
-        Type genericSuperclass = getClass().getGenericSuperclass();
-        if (genericSuperclass instanceof ParameterizedType parameterizedType) {
-            Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-            if (actualTypeArguments.length > 1) {
-                this.entityClass = (Class<T>) actualTypeArguments[1];
-            }
-        }
-        if (this.entityClass == null) {
-            throw new IllegalStateException("无法获取实体类类型，请检查泛型定义");
-        }
+    protected Class<T> entityClass() {
+        return (Class<T>) getClass();
     }
 
     @PostConstruct
@@ -57,10 +44,10 @@ public abstract class ParentService<TProxy extends ProxyEntity<TProxy, T>, T ext
 
 
     protected EntityQueryable<TProxy, T> query() {
-        return entityQuery.queryable(entityClass);
+        return entityQuery.queryable(entityClass());
     }
 
     protected EntityQueryable<TProxy, T> ds2Query() {
-        return ds2EntityQuery.queryable(entityClass);
+        return ds2EntityQuery.queryable(entityClass());
     }
 }

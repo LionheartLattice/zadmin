@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @Tag(name = "用户模块", description = "用户管理")
 @RestController
 @RequestMapping("z_user")
@@ -18,5 +20,11 @@ public class UserController extends ParentController {
     @PostMapping("add")
     public long add(@RequestBody UserEntity userEntity) {
         return entityQuery.insertable(userEntity).executeRows();
+    }
+
+    //列表查询
+    @PostMapping("list")
+    public List<UserEntity> list() {
+        return entityQuery.queryable(UserEntity.class).toList();
     }
 }
