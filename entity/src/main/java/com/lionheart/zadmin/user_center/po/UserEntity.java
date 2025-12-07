@@ -1,19 +1,19 @@
 package com.lionheart.zadmin.user_center.po;
 
-import lombok.Data;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
-import io.swagger.v3.oas.annotations.media.Schema;
 import com.easy.query.core.annotation.Column;
-import com.easy.query.core.annotation.Table;
+import com.easy.query.core.annotation.EasyAssertMessage;
 import com.easy.query.core.annotation.EntityProxy;
+import com.easy.query.core.annotation.Table;
 import com.easy.query.core.proxy.ProxyEntityAvailable;
 import com.lionheart.zadmin.user_center.po.proxy.UserEntityProxy;
-import com.easy.query.core.annotation.EasyAssertMessage;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
-import java.util.Date;
 import java.time.LocalDate;
+import java.util.Date;
 
 /**
  * 系统用户表 实体类。
@@ -72,7 +72,7 @@ public class UserEntity implements ProxyEntityAvailable<UserEntity, UserEntityPr
      * 生日
      */
     @Schema(description = "生日")
-    private LocalDate birthday;
+    private LocalDate birthday = LocalDate.now();
 
     /**
      * 头像base64
@@ -96,7 +96,7 @@ public class UserEntity implements ProxyEntityAvailable<UserEntity, UserEntityPr
      * 更新时间
      */
     @Schema(description = "更新时间")
-    private Date updateTime;
+    private Date updateTime = new Date(System.currentTimeMillis());
 
     /**
      * 是否删除

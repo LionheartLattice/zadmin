@@ -79,9 +79,8 @@ public class MultiDataSourceConfiguration {
                     .useDatabaseConfigure(databaseConfiguration)
                     .build();
 
-            //注册雪花算法主键生成器
-            QueryConfiguration queryConfiguration = easyQueryClient.getRuntimeContext().getQueryConfiguration();
-            queryConfiguration.applyPrimaryKeyGenerator(new SnowflakePrimaryKeyGenerator());
+            // 注册雪花算法主键生成器的逻辑移动到其他地方或移除
+            // 因为我们现在在entity模块中直接引用生成器类
 
             DefaultEasyEntityQuery defaultEasyEntityQuery = new DefaultEasyEntityQuery(easyQueryClient);
             DynamicBeanFactory.registerBean(key, defaultEasyEntityQuery);
