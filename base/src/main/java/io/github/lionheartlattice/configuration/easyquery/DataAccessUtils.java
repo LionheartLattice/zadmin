@@ -1,4 +1,4 @@
-package io.github.lionheartlattice.parent;
+package io.github.lionheartlattice.configuration.easyquery;
 
 import com.easy.query.api.proxy.client.EasyEntityQuery;
 import io.github.lionheartlattice.configuration.spring.SpringUtils;

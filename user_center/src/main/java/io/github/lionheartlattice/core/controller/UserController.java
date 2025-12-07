@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-import static io.github.lionheartlattice.parent.DataAccessUtils.getEntityQuery;
+import static io.github.lionheartlattice.configuration.easyquery.DataAccessUtils.getEntityQuery;
 
 @Tag(name = "用户模块", description = "用户管理")
 @RestController

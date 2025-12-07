@@ -49,4 +49,12 @@ public class BaseEntity<T extends BaseEntity<T, TProxy> & ProxyEntityAvailable<T
             throw new CloneRuntimeException(e);
         }
     }
+
+    @SuppressWarnings("unchecked")
+    protected Class<T> entityClass() {
+        return (Class<T>) getClass();
+    }
+
+
+
 }

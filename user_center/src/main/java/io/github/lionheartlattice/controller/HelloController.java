@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Map;
 
-import static io.github.lionheartlattice.parent.DataAccessUtils.*;
+import static io.github.lionheartlattice.configuration.easyquery.DataAccessUtils.*;
 
 @Tag(name = "Hello测试模块", description = "用于测试多数据源和EasyQuery集成的接口")
 @RestController
