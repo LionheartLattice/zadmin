@@ -76,7 +76,7 @@ mvn clean install -DskipTests
 
 ```java
 // Core 模块动态加载主键生成器示例
-Object generator = ReflectUtil.newInstance("com.lionheart.zadmin.user_center.po.SnowflakePrimaryKeyGenerator");
+Object generator = ReflectUtil.newInstance("po.user_center.io.github.lionheartlattice.SnowflakePrimaryKeyGenerator");
 if (generator instanceof PrimaryKeyGenerator) {
     queryConfiguration.applyPrimaryKeyGenerator((PrimaryKeyGenerator) generator);
 }
