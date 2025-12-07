@@ -3,9 +3,16 @@ package io.github.lionheartlattice.parent;
 import cn.hutool.core.clone.CloneRuntimeException;
 import cn.hutool.core.clone.Cloneable;
 import com.easy.query.api.proxy.entity.EntityQueryProxyManager;
+import com.easy.query.api.proxy.entity.delete.EntityDeletable;
 import com.easy.query.api.proxy.entity.delete.ExpressionDeletable;
+import com.easy.query.api.proxy.entity.insert.EntityInsertable;
+import com.easy.query.api.proxy.entity.save.EntitySavable;
 import com.easy.query.api.proxy.entity.select.EntityQueryable;
+import com.easy.query.api.proxy.entity.update.EntityUpdatable;
 import com.easy.query.api.proxy.entity.update.ExpressionUpdatable;
+import com.easy.query.core.basic.api.database.DatabaseCodeFirst;
+import com.easy.query.core.basic.api.insert.map.MapClientInsertable;
+import com.easy.query.core.basic.api.update.map.MapClientUpdatable;
 import com.easy.query.core.basic.extension.track.EntityState;
 import com.easy.query.core.basic.jdbc.parameter.SQLParameter;
 import com.easy.query.core.basic.jdbc.tx.Transaction;
@@ -15,8 +22,10 @@ import com.easy.query.core.expression.lambda.SQLActionExpression1;
 import com.easy.query.core.expression.lambda.SQLFuncExpression;
 import com.easy.query.core.expression.lambda.SQLFuncExpression1;
 import com.easy.query.core.expression.parser.core.PropColumn;
+import com.easy.query.core.migration.MigrationEntityParser;
 import com.easy.query.core.proxy.ProxyEntity;
 import com.easy.query.core.proxy.ProxyEntityAvailable;
+import com.easy.query.core.trigger.TriggerEvent;
 import com.easy.query.core.util.EasyCollectionUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,12 +35,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import static io.github.lionheartlattice.configuration.easyquery.DataAccessUtils.getEntityQuery;
 
 /**
  * 实体基类，提供通用功能
- * 支持 Active Record 模式，子类可直接调用 query()、insert()、update()、delete() 等方法
+ * 支持 Active Record 模式，子类可直接调用 queryable()、insertable()、updatable()、deletable() 等方法
  *
  * @param <T>      实体类型
  * @param <TProxy> 对应的代理实体类型
@@ -40,6 +50,8 @@ public class BaseEntity<T extends BaseEntity<T, TProxy> & ProxyEntityAvailable<T
 
     @Serial
     private static final long serialVersionUID = 1L;
+
+    // ==================== 克隆方法 ====================
 
     /**
      * 执行原生SQL查询，返回指定类型
@@ -79,7 +91,7 @@ public class BaseEntity<T extends BaseEntity<T, TProxy> & ProxyEntityAvailable<T
         return getEntityQuery().sqlEasyQuery(sql, clazz, parameters);
     }
 
-    // ==================== Active Record 基础 CRUD 方法 ====================
+    // ==================== Active Record CRUD 方法（返回构建器） ====================
 
     /**
      * 执行原生SQL查询，返回Map列表
@@ -121,6 +133,46 @@ public class BaseEntity<T extends BaseEntity<T, TProxy> & ProxyEntityAvailable<T
      */
     public static long sqlExecute(String sql, List<Object> parameters) {
         return getEntityQuery().sqlExecute(sql, parameters);
+    }
+
+    /**
+     * 创建 Map 插入器
+     *
+     * @param map 数据Map
+     * @return MapClientInsertable
+     */
+    public static MapClientInsertable<Map<String, Object>> mapInsertable(Map<String, Object> map) {
+        return getEntityQuery().getEasyQueryClient().mapInsertable(map);
+    }
+
+    /**
+     * 创建批量 Map 插入器
+     *
+     * @param maps 数据Map集合
+     * @return MapClientInsertable
+     */
+    public static MapClientInsertable<Map<String, Object>> mapInsertable(Collection<Map<String, Object>> maps) {
+        return getEntityQuery().getEasyQueryClient().mapInsertable(maps);
+    }
+
+    /**
+     * 创建 Map 更新器
+     *
+     * @param map 数据Map
+     * @return MapClientUpdatable
+     */
+    public static MapClientUpdatable<Map<String, Object>> mapUpdatable(Map<String, Object> map) {
+        return getEntityQuery().getEasyQueryClient().mapUpdatable(map);
+    }
+
+    /**
+     * 创建批量 Map 更新器
+     *
+     * @param maps 数据Map集合
+     * @return MapClientUpdatable
+     */
+    public static MapClientUpdatable<Map<String, Object>> mapUpdatable(Collection<Map<String, Object>> maps) {
+        return getEntityQuery().getEasyQueryClient().mapUpdatable(maps);
     }
 
     /**
@@ -177,6 +229,8 @@ public class BaseEntity<T extends BaseEntity<T, TProxy> & ProxyEntityAvailable<T
         return getEntityQuery().getTrackEntityStateNotNull(entity);
     }
 
+    // ==================== 查询便捷方法 ====================
+
     /**
      * 获取指定实体的追踪状态（可能返回null）
      *
@@ -210,6 +264,64 @@ public class BaseEntity<T extends BaseEntity<T, TProxy> & ProxyEntityAvailable<T
     }
 
     /**
+     * 获取数据库 CodeFirst 对象
+     * 用于数据库迁移和表结构管理
+     *
+     * @return DatabaseCodeFirst
+     */
+    public static DatabaseCodeFirst getDatabaseCodeFirst() {
+        return getEntityQuery().getEasyQueryClient().getDatabaseCodeFirst();
+    }
+
+    /**
+     * 设置迁移解析器
+     *
+     * @param migrationParser 迁移解析器
+     */
+    public static void setMigrationParser(MigrationEntityParser migrationParser) {
+        getEntityQuery().getEasyQueryClient().setMigrationParser(migrationParser);
+    }
+
+    // ==================== 原生 SQL 方法 ====================
+
+    /**
+     * 添加触发器监听器
+     *
+     * @param eventConsumer 事件消费者
+     */
+    public static void addTriggerListener(Consumer<TriggerEvent> eventConsumer) {
+        getEntityQuery().getEasyQueryClient().addTriggerListener(eventConsumer);
+    }
+
+    /**
+     * 按包加载数据库实体对象
+     *
+     * @param packageNames 包名列表
+     */
+    public static void loadTableEntityByPackage(String... packageNames) {
+        getEntityQuery().getEasyQueryClient().loadTableEntityByPackage(packageNames);
+    }
+
+    /**
+     * 按包加载数据库实体对象并且自动执行DDL操作
+     *
+     * @param packageNames 包名列表
+     */
+    public static void syncTableByPackage(String... packageNames) {
+        getEntityQuery().getEasyQueryClient().syncTableByPackage(packageNames);
+    }
+
+    /**
+     * 按包加载数据库实体对象并且自动执行DDL操作（指定分组大小）
+     *
+     * @param groupSize    分组大小
+     * @param packageNames 包名列表
+     */
+    public static void syncTableByPackage(int groupSize, String... packageNames) {
+        getEntityQuery().getEasyQueryClient().syncTableByPackage(groupSize, packageNames);
+    }
+
+    /**
      * 获取查询运行时上下文
      *
      * @return QueryRuntimeContext
@@ -217,8 +329,6 @@ public class BaseEntity<T extends BaseEntity<T, TProxy> & ProxyEntityAvailable<T
     public static QueryRuntimeContext getRuntimeContext() {
         return getEntityQuery().getRuntimeContext();
     }
-
-    // ==================== 查询便捷方法 ====================
 
     @SuppressWarnings("unchecked")
     @Override
@@ -238,19 +348,16 @@ public class BaseEntity<T extends BaseEntity<T, TProxy> & ProxyEntityAvailable<T
     @SuppressWarnings("unchecked")
     public T deepClone() {
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream(); ObjectOutputStream oos = new ObjectOutputStream(bos)) {
-
-            // 序列化
             oos.writeObject(this);
-
             try (ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray()); ObjectInputStream ois = new ObjectInputStream(bis)) {
-
-                // 反序列化
                 return (T) ois.readObject();
             }
         } catch (IOException | ClassNotFoundException e) {
             throw new CloneRuntimeException(e);
         }
     }
+
+    // ==================== Map 操作方法 ====================
 
     @SuppressWarnings("unchecked")
     protected Class<T> entityClass() {
@@ -259,11 +366,11 @@ public class BaseEntity<T extends BaseEntity<T, TProxy> & ProxyEntityAvailable<T
 
     /**
      * 获取当前实体类的查询器
-     * 用法: new UserEntity().query().where(u -> u.nickname().like("管理")).toList()
+     * 用法: new UserEntity().queryable().where(u -> u.nickname().like("管理")).toList()
      *
      * @return EntityQueryable 查询器
      */
-    public EntityQueryable<TProxy, T> query() {
+    public EntityQueryable<TProxy, T> queryable() {
         return getEntityQuery().queryable(entityClass());
     }
 
@@ -273,11 +380,9 @@ public class BaseEntity<T extends BaseEntity<T, TProxy> & ProxyEntityAvailable<T
      * @param sql 原生SQL
      * @return EntityQueryable 查询器
      */
-    public EntityQueryable<TProxy, T> query(String sql) {
+    public EntityQueryable<TProxy, T> queryable(String sql) {
         return getEntityQuery().queryable(sql, entityClass());
     }
-
-    // ==================== 原生 SQL 方法 ====================
 
     /**
      * 使用带参数的原生SQL查询当前实体类型
@@ -286,107 +391,116 @@ public class BaseEntity<T extends BaseEntity<T, TProxy> & ProxyEntityAvailable<T
      * @param params 参数
      * @return EntityQueryable 查询器
      */
-    public EntityQueryable<TProxy, T> query(String sql, Collection<Object> params) {
+    public EntityQueryable<TProxy, T> queryable(String sql, Collection<Object> params) {
         return getEntityQuery().queryable(sql, entityClass(), params);
-    }
-
-    /**
-     * 插入当前实体到数据库
-     *
-     * @return 影响的行数
-     */
-    @SuppressWarnings("unchecked")
-    public long insert() {
-        return getEntityQuery().insertable((T) this).executeRows();
-    }
-
-    /**
-     * 批量插入实体
-     *
-     * @param entities 实体集合
-     * @return 影响的行数
-     */
-    public long insertBatch(Collection<T> entities) {
-        return getEntityQuery().insertable(entities).executeRows();
-    }
-
-    /**
-     * 更新当前实体（根据主键）
-     *
-     * @return 影响的行数
-     */
-    @SuppressWarnings("unchecked")
-    public long update() {
-        return getEntityQuery().updatable((T) this).executeRows();
-    }
-
-    /**
-     * 批量更新实体
-     *
-     * @param entities 实体集合
-     * @return 影响的行数
-     */
-    public long updateBatch(Collection<T> entities) {
-        return getEntityQuery().updatable(entities).executeRows();
-    }
-
-    /**
-     * 获取表达式更新器，可自定义更新条件和set值
-     *
-     * @return ExpressionUpdatable 表达式更新器
-     */
-    public ExpressionUpdatable<TProxy, T> updatable() {
-        return getEntityQuery().updatable(entityClass());
-    }
-
-    /**
-     * 删除当前实体（根据主键）
-     *
-     * @return 影响的行数
-     */
-    @SuppressWarnings("unchecked")
-    public long delete() {
-        return getEntityQuery().deletable((T) this).executeRows();
     }
 
     // ==================== 事务方法 ====================
 
     /**
-     * 批量删除实体
+     * 获取当前实体的插入器
+     * 用法: userEntity.insertable().executeRows()
      *
-     * @param entities 实体集合
-     * @return 影响的行数
+     * @return EntityInsertable 插入器
      */
-    public long deleteBatch(Collection<T> entities) {
-        return getEntityQuery().deletable(entities).executeRows();
+    @SuppressWarnings("unchecked")
+    public EntityInsertable<TProxy, T> insertable() {
+        return getEntityQuery().insertable((T) this);
     }
 
     /**
-     * 获取表达式删除器，可自定义删除条件
+     * 获取批量插入器
      *
-     * @return ExpressionDeletable 表达式删除器
+     * @param entities 实体集合
+     * @return EntityInsertable 插入器
      */
-    public ExpressionDeletable<TProxy, T> deletable() {
-        return getEntityQuery().deletable(entityClass());
+    public EntityInsertable<TProxy, T> insertable(Collection<T> entities) {
+        return getEntityQuery().insertable(entities);
     }
 
     // ==================== 追踪相关方法 ====================
 
     /**
-     * 保存实体（存在则更新，不存在则插入）
+     * 获取当前实体的更新器（根据主键）
+     * 用法: userEntity.updatable().executeRows()
+     *
+     * @return EntityUpdatable 更新器
      */
     @SuppressWarnings("unchecked")
-    public void save() {
-        getEntityQuery().savable((T) this).executeCommand();
+    public EntityUpdatable<TProxy, T> updatable() {
+        return getEntityQuery().updatable((T) this);
     }
 
     /**
-     * 批量保存实体
+     * 获取批量更新器
      *
      * @param entities 实体集合
+     * @return EntityUpdatable 更新器
      */
-    public void saveBatch(Collection<T> entities) {
-        getEntityQuery().savable(entities).executeCommand();
+    public EntityUpdatable<TProxy, T> updatable(Collection<T> entities) {
+        return getEntityQuery().updatable(entities);
+    }
+
+    /**
+     * 获取表达式更新器，可自定义更新条件和set值
+     * 用法: new UserEntity().expressionUpdatable().set(u -> u.nickname(), "新昵称").where(u -> u.id().eq(1L)).executeRows()
+     *
+     * @return ExpressionUpdatable 表达式更新器
+     */
+    public ExpressionUpdatable<TProxy, T> expressionUpdatable() {
+        return getEntityQuery().updatable(entityClass());
+    }
+
+    /**
+     * 获取当前实体的删除器（根据主键）
+     * 用法: userEntity.deletable().executeRows()
+     *
+     * @return EntityDeletable 删除器
+     */
+    @SuppressWarnings("unchecked")
+    public EntityDeletable<TProxy, T> deletable() {
+        return getEntityQuery().deletable((T) this);
+    }
+
+    /**
+     * 获取批量删除器
+     *
+     * @param entities 实体集合
+     * @return EntityDeletable 删除器
+     */
+    public EntityDeletable<TProxy, T> deletable(Collection<T> entities) {
+        return getEntityQuery().deletable(entities);
+    }
+
+    /**
+     * 获取表达式删除器，可自定义删除条件
+     * 用法: new UserEntity().expressionDeletable().where(u -> u.delFlag().eq(true)).executeRows()
+     *
+     * @return ExpressionDeletable 表达式删除器
+     */
+    public ExpressionDeletable<TProxy, T> expressionDeletable() {
+        return getEntityQuery().deletable(entityClass());
+    }
+
+    /**
+     * 获取当前实体的保存器（存在则更新，不存在则插入）
+     * 用法: userEntity.savable().executeCommand()
+     *
+     * @return EntitySavable 保存器
+     */
+    @SuppressWarnings("unchecked")
+    public EntitySavable<TProxy, T> savable() {
+        return getEntityQuery().savable((T) this);
+    }
+
+    /**
+     * 获取批量保存器
+     *
+     * @param entities 实体集合
+     * @return EntitySavable 保存器
+     */
+    public EntitySavable<TProxy, T> savable(Collection<T> entities) {
+        return getEntityQuery().savable(entities);
     }
 
     /**
@@ -417,6 +531,8 @@ public class BaseEntity<T extends BaseEntity<T, TProxy> & ProxyEntityAvailable<T
     public List<T> findAll() {
         return getEntityQuery().queryable(entityClass()).toList();
     }
+
+    // ==================== 关联加载方法 ====================
 
     /**
      * 统计总数
@@ -455,12 +571,14 @@ public class BaseEntity<T extends BaseEntity<T, TProxy> & ProxyEntityAvailable<T
         return getEntityQuery().removeTracking(this);
     }
 
+    // ==================== 数据库管理方法 ====================
+
     /**
      * 获取当前实体的追踪状态（不存在则抛出异常）
      *
      * @return EntityState 实体状态
      */
-    public EntityState getTrackEntityStateNotNull() {
+    public EntityState trackEntityStateNotNull() {
         return getEntityQuery().getTrackEntityStateNotNull(this);
     }
 
@@ -469,11 +587,9 @@ public class BaseEntity<T extends BaseEntity<T, TProxy> & ProxyEntityAvailable<T
      *
      * @return EntityState 实体状态，可能为null
      */
-    public @Nullable EntityState getTrackEntityState() {
+    public @Nullable EntityState trackEntityState() {
         return getEntityQuery().getTrackEntityState(this);
     }
-
-    // ==================== 关联加载方法 ====================
 
     /**
      * 对保存的对象进行主键设置
