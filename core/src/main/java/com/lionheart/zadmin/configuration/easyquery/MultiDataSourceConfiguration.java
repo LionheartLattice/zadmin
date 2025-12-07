@@ -4,12 +4,14 @@ import com.easy.query.api.proxy.client.DefaultEasyEntityQuery;
 import com.easy.query.api.proxy.client.EasyEntityQuery;
 import com.easy.query.core.api.client.EasyQueryClient;
 import com.easy.query.core.basic.jdbc.conn.ConnectionManager;
+import com.easy.query.core.bootstrapper.DatabaseConfiguration;
 import com.easy.query.core.bootstrapper.EasyQueryBootstrapper;
 import com.easy.query.core.configuration.nameconversion.NameConversion;
 import com.easy.query.core.configuration.nameconversion.impl.UnderlinedNameConversion;
 import com.easy.query.core.datasource.DataSourceUnitFactory;
 import com.easy.query.core.logging.LogFactory;
 import com.easy.query.mysql.config.MySQLDatabaseConfiguration;
+import com.easy.query.pgsql.config.PgSQLDatabaseConfiguration;
 import com.lionheart.zadmin.configuration.spring.DynamicBeanFactory;
 import com.lionheart.zadmin.configuration.spring.DynamicDataSourceProperties;
 import com.lionheart.zadmin.configuration.spring.SpringConnectionManager;
@@ -53,6 +55,14 @@ public class MultiDataSourceConfiguration {
             }
             DynamicBeanFactory.registerBean(key + "JdbcTemplate", jdbcTemplate);
 
+            // 根据驱动类名判断数据库类型
+            DatabaseConfiguration databaseConfiguration;
+            if (kp.getDriverClassName().contains("postgresql")) {
+                databaseConfiguration = new PgSQLDatabaseConfiguration();
+            } else {
+                databaseConfiguration = new MySQLDatabaseConfiguration();
+            }
+
             EasyQueryClient easyQueryClient = EasyQueryBootstrapper.defaultBuilderConfiguration()
                     .setDefaultDataSource(source)
                     .replaceService(DataSourceUnitFactory.class, SpringDataSourceUnitFactory.class)
@@ -62,7 +72,7 @@ public class MultiDataSourceConfiguration {
                         builder.setPrintSql(true);
                         builder.setPrintNavSql(true);
                     })
-                    .useDatabaseConfigure(new MySQLDatabaseConfiguration())
+                    .useDatabaseConfigure(databaseConfiguration)
                     .build();
 
             DefaultEasyEntityQuery defaultEasyEntityQuery = new DefaultEasyEntityQuery(easyQueryClient);

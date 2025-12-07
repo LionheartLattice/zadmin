@@ -77,8 +77,19 @@
             </dependency>
             <dependency>
                 <groupId>com.easy-query</groupId>
+                <artifactId>sql-pgsql</artifactId>
+                <version>${easy-query.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.easy-query</groupId>
                 <artifactId>sql-processor</artifactId>
                 <version>${easy-query.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>42.7.8</version>
             </dependency>
 
             <dependency>
