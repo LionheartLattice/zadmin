@@ -1,7 +1,5 @@
 package io.github.lionheartlattice.parent;
 
-import cn.hutool.core.clone.CloneRuntimeException;
-import cn.hutool.core.clone.Cloneable;
 import com.easy.query.api.proxy.entity.EntityQueryProxyManager;
 import com.easy.query.api.proxy.entity.delete.EntityDeletable;
 import com.easy.query.api.proxy.entity.delete.ExpressionDeletable;
@@ -30,7 +28,7 @@ import com.easy.query.core.util.EasyCollectionUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
+import java.io.Serial;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -46,7 +44,7 @@ import static io.github.lionheartlattice.configuration.easyquery.DataAccessUtils
  * @param <T>      实体类型
  * @param <TProxy> 对应的代理实体类型
  */
-public class BaseEntity<T extends BaseEntity<T, TProxy> & ProxyEntityAvailable<T, TProxy>, TProxy extends ProxyEntity<TProxy, T>> implements Cloneable<T>, Serializable, ProxyEntityAvailable<T, TProxy> {
+public class BaseEntity<T extends BaseEntity<T, TProxy> & ProxyEntityAvailable<T, TProxy>, TProxy extends ProxyEntity<TProxy, T>> extends BaseCloneable<T> implements ProxyEntityAvailable<T, TProxy> {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -330,38 +328,6 @@ public class BaseEntity<T extends BaseEntity<T, TProxy> & ProxyEntityAvailable<T
         return getEntityQuery().getRuntimeContext();
     }
 
-
-    @SuppressWarnings("unchecked")
-    protected Class<T> entityClass() {
-        return (Class<T>) getClass();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public T clone() {
-        try {
-            return (T) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new CloneRuntimeException(e);
-        }
-    }
-
-    /**
-     * 通过序列化实现深克隆
-     *
-     * @return 深克隆后的对象
-     */
-    @SuppressWarnings("unchecked")
-    public T deepClone() {
-        try (ByteArrayOutputStream bos = new ByteArrayOutputStream(); ObjectOutputStream oos = new ObjectOutputStream(bos)) {
-            oos.writeObject(this);
-            try (ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray()); ObjectInputStream ois = new ObjectInputStream(bis)) {
-                return (T) ois.readObject();
-            }
-        } catch (IOException | ClassNotFoundException e) {
-            throw new CloneRuntimeException(e);
-        }
-    }
 
     // ==================== Map 操作方法 ====================
 
