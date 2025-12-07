@@ -1,8 +1,10 @@
 package com.lionheart.zadmin.configuration.easyquery;
 
+import cn.hutool.core.util.ReflectUtil;
 import com.easy.query.api.proxy.client.DefaultEasyEntityQuery;
 import com.easy.query.api.proxy.client.EasyEntityQuery;
 import com.easy.query.core.api.client.EasyQueryClient;
+import com.easy.query.core.basic.extension.generated.PrimaryKeyGenerator;
 import com.easy.query.core.basic.jdbc.conn.ConnectionManager;
 import com.easy.query.core.bootstrapper.DatabaseConfiguration;
 import com.easy.query.core.bootstrapper.EasyQueryBootstrapper;
@@ -13,14 +15,10 @@ import com.easy.query.core.datasource.DataSourceUnitFactory;
 import com.easy.query.core.logging.LogFactory;
 import com.easy.query.mysql.config.MySQLDatabaseConfiguration;
 import com.easy.query.pgsql.config.PgSQLDatabaseConfiguration;
-import com.lionheart.zadmin.configuration.easyquery.DefaultEasyMultiEntityQuery;
-import com.lionheart.zadmin.configuration.easyquery.EasyMultiEntityQuery;
-import com.lionheart.zadmin.configuration.easyquery.Slf4jImpl;
 import com.lionheart.zadmin.configuration.spring.DynamicBeanFactory;
 import com.lionheart.zadmin.configuration.spring.DynamicDataSourceProperties;
 import com.lionheart.zadmin.configuration.spring.SpringConnectionManager;
 import com.lionheart.zadmin.configuration.spring.SpringDataSourceUnitFactory;
-import com.lionheart.zadmin.user_center.po.SnowflakePrimaryKeyGenerator;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceProperties;
@@ -36,22 +34,19 @@ import java.util.HashMap;
 @Configuration
 public class MultiDataSourceConfiguration {
 
-    private final DynamicDataSourceProperties props;
-
     static {
         LogFactory.useCustomLogging(Slf4jImpl.class);
     }
+
+    private final DynamicDataSourceProperties props;
 
     public MultiDataSourceConfiguration(DynamicDataSourceProperties props) {
         this.props = props;
         props.getDynamic().keySet().forEach(key -> {
             DataSourceProperties kp = props.getDynamic().get(key);
-            DataSource source = DataSourceBuilder.create()
-                    .type(kp.getType())
-                    .driverClassName(kp.getDriverClassName())
-                    .url(kp.getUrl())
-                    .username(kp.getUsername())
-                    .password(kp.getPassword()).build();
+            DataSource source = DataSourceBuilder.create().type(kp.getType())
+                    .driverClassName(kp.getDriverClassName()).url(kp.getUrl())
+                    .username(kp.getUsername()).password(kp.getPassword()).build();
             DynamicBeanFactory.registerBean(key + "DataSource", source);
 
             JdbcTemplate jdbcTemplate = new JdbcTemplate(source);
@@ -68,21 +63,29 @@ public class MultiDataSourceConfiguration {
                 databaseConfiguration = new MySQLDatabaseConfiguration();
             }
 
-            EasyQueryClient easyQueryClient = EasyQueryBootstrapper.defaultBuilderConfiguration()
-                    .setDefaultDataSource(source)
+            EasyQueryClient easyQueryClient = EasyQueryBootstrapper
+                    .defaultBuilderConfiguration().setDefaultDataSource(source)
                     .replaceService(DataSourceUnitFactory.class, SpringDataSourceUnitFactory.class)
                     .replaceService(NameConversion.class, UnderlinedNameConversion.class)
                     .replaceService(ConnectionManager.class, SpringConnectionManager.class)
                     .optionConfigure(builder -> {
                         builder.setPrintSql(true);
                         builder.setPrintNavSql(true);
-                    })
-                    .useDatabaseConfigure(databaseConfiguration)
-                    .build();
+                    }).useDatabaseConfigure(databaseConfiguration).build();
 
             //注册雪花算法主键生成器
-            QueryConfiguration queryConfiguration = easyQueryClient.getRuntimeContext().getQueryConfiguration();
-            queryConfiguration.applyPrimaryKeyGenerator(new SnowflakePrimaryKeyGenerator());
+            QueryConfiguration queryConfiguration = easyQueryClient.getRuntimeContext()
+                    .getQueryConfiguration();
+            try {
+                // 利用反射创建实例，避免 core 模块直接依赖 entity 模块
+                Object generator = ReflectUtil.newInstance("com.lionheart.zadmin.user_center.po.SnowflakePrimaryKeyGenerator");
+                if (generator instanceof PrimaryKeyGenerator) {
+                    queryConfiguration.applyPrimaryKeyGenerator((PrimaryKeyGenerator) generator);
+                }
+            } catch (Exception e) {
+                // 仅在运行时存在该类时注册，若不存在（如单独构建 core 时）则忽略或打印日志
+                // System.err.println("SnowflakePrimaryKeyGenerator load failed: " + e.getMessage());
+            }
 
             DefaultEasyEntityQuery defaultEasyEntityQuery = new DefaultEasyEntityQuery(easyQueryClient);
             DynamicBeanFactory.registerBean(key, defaultEasyEntityQuery);
@@ -108,7 +111,7 @@ public class MultiDataSourceConfiguration {
         EasyEntityQuery easyEntityQuery = beanFactory.getBean("primary", EasyEntityQuery.class);
 
         props.getDynamic().keySet().forEach(key -> {
-            EasyEntityQuery eq =beanFactory.getBean(key, EasyEntityQuery.class);
+            EasyEntityQuery eq = beanFactory.getBean(key, EasyEntityQuery.class);
             extra.put(key, eq);
         });
 
