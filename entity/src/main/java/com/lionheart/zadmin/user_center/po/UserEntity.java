@@ -35,7 +35,7 @@ public class UserEntity implements ProxyEntityAvailable<UserEntity, UserEntityPr
      * 用户ID
      */
     @Schema(description = "用户ID", requiredMode = Schema.RequiredMode.REQUIRED)
-    @Column(primaryKey = true, value = "id")
+    @Column(primaryKey = true, value = "id", primaryKeyGenerator = SnowflakePrimaryKeyGenerator.class)
     private Long id;
 
     /**
