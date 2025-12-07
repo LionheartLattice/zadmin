@@ -1,15 +1,14 @@
 package io.github.lionheartlattice.util.parent;
 
 import com.easy.query.api.proxy.client.EasyEntityQuery;
-import io.github.lionheartlattice.configuration.spring.SpringUtil;
+import io.github.lionheartlattice.configuration.spring.SpringUtils;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
 
-@Component
+
 public class ParentController {
 
     protected final Logger log = LoggerFactory.getLogger(getClass());
@@ -21,12 +20,12 @@ public class ParentController {
 
     @PostConstruct
     public void init() {
-        // 使用我们自定义的 SpringUtil 静态方法，并明确指定Bean名称
-        this.jdbcTemplate = SpringUtil.getBean("primaryJdbcTemplate", JdbcTemplate.class);
-        this.entityQuery = SpringUtil.getBean(EasyEntityQuery.class);
-        this.stringRedisTemplate = SpringUtil.getBean(StringRedisTemplate.class);
+        // 使用我们自定义的 SpringUtils 静态方法，并明确指定Bean名称
+        this.jdbcTemplate = SpringUtils.getBean("primaryJdbcTemplate", JdbcTemplate.class);
+        this.entityQuery = SpringUtils.getBean(EasyEntityQuery.class);
+        this.stringRedisTemplate = SpringUtils.getBean(StringRedisTemplate.class);
 
-        this.ds2JdbcTemplate = SpringUtil.getBean("ds2JdbcTemplate", JdbcTemplate.class);
-        this.ds2EntityQuery = SpringUtil.getBean("ds2", EasyEntityQuery.class);
+        this.ds2JdbcTemplate = SpringUtils.getBean("ds2JdbcTemplate", JdbcTemplate.class);
+        this.ds2EntityQuery = SpringUtils.getBean("ds2", EasyEntityQuery.class);
     }
 }
