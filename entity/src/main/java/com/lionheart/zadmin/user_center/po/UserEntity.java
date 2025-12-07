@@ -12,8 +12,8 @@ import com.easy.query.core.proxy.ProxyEntityAvailable;
 import com.lionheart.zadmin.user_center.po.proxy.UserEntityProxy;
 import com.easy.query.core.annotation.EasyAssertMessage;
 
+import java.util.Date;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 /**
  * 系统用户表 实体类。
@@ -95,8 +95,8 @@ public class UserEntity implements ProxyEntityAvailable<UserEntity, UserEntityPr
     /**
      * 更新时间
      */
-    @Schema(description = "更新时间", example = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime updateTime;
+    @Schema(description = "更新时间")
+    private Date updateTime;
 
     /**
      * 是否删除
