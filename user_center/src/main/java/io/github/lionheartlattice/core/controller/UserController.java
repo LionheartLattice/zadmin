@@ -20,12 +20,12 @@ public class UserController {
     //    新增用户
     @PostMapping("add")
     public long add(@RequestBody UserEntity userEntity) {
-        return getEntityQuery().insertable(userEntity).executeRows();
+        return userEntity.insertable().executeRows();
     }
 
     //列表查询
     @PostMapping("list")
     public List<UserEntity> list() {
-        return getEntityQuery().queryable(UserEntity.class).toList();
+        return new UserEntity().queryable().toList();
     }
 }
