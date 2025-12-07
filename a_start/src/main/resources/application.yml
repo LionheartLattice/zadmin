@@ -10,16 +10,17 @@ spring:
     dynamic:
       primary:
         type: com.zaxxer.hikari.HikariDataSource
+        url: jdbc:postgresql://192.168.9.105:35432/my_admin?currentSchema=public&reWriteBatchedInserts=true&stringtype=unspecified
+        username: postgres
+        password: Zs2806478963
+        driver-class-name: org.postgresql.Driver
+      ds2:
+        type: com.zaxxer.hikari.HikariDataSource
         url: jdbc:mysql://192.168.9.105:43306/z-ds1?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=GMT%2B8&characterEncoding=utf-8&allowMultiQueries=true&rewriteBatchedStatements=true
         username: z-ds1
         password: Zs2806478963
         driver-class-name: com.mysql.cj.jdbc.Driver
-      ds2:
-        type: com.zaxxer.hikari.HikariDataSource
-        url: jdbc:mysql://192.168.9.105:43306/z-ds2?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=GMT%2B8&characterEncoding=utf-8&allowMultiQueries=true&rewriteBatchedStatements=true
-        username: z-ds2
-        password: Zs2806478963
-        driver-class-name: com.mysql.cj.jdbc.Driver
+
   data:
     redis:
       host: 192.168.9.105
