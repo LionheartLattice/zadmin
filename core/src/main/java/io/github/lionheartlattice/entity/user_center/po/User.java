@@ -6,8 +6,8 @@ import com.easy.query.core.annotation.EntityProxy;
 import com.easy.query.core.annotation.Table;
 import com.easy.query.core.proxy.ProxyEntityAvailable;
 import io.github.lionheartlattice.configuration.easyquery.SnowflakePrimaryKeyGenerator;
+import io.github.lionheartlattice.entity.user_center.po.proxy.UserProxy;
 import io.github.lionheartlattice.util.parent.ParentClientEntity;
-import io.github.lionheartlattice.user_center.po.proxy.UserProxy;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
