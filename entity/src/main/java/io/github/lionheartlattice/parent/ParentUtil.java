@@ -1,5 +1,6 @@
 package io.github.lionheartlattice.parent;
 
+import io.github.lionheartlattice.util.NullUtil;
 import org.springframework.core.ResolvableType;
 
 /**
@@ -9,7 +10,7 @@ import org.springframework.core.ResolvableType;
  * @author lionheart
  * @since 1.0
  */
-public abstract class ParentUtil<T> {
+public abstract class ParentUtil<T> extends NullUtil {
 
     /**
      * 获取实体类的泛型类型
@@ -34,5 +35,4 @@ public abstract class ParentUtil<T> {
             throw new RuntimeException("创建实体类实例失败: " + entityClass().getName(), e);
         }
     }
-
 }
