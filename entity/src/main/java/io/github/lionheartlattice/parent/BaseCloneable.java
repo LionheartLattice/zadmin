@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.BeanUtils;
 
 import java.io.*;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
 public abstract class BaseCloneable<T> implements Cloneable<T>, Serializable {
 
@@ -109,6 +111,14 @@ public abstract class BaseCloneable<T> implements Cloneable<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     public Class<T> entityClass() {
-        return (Class<T>) getClass();
+        Type superclass = getClass().getGenericSuperclass();
+        while (!(superclass instanceof ParameterizedType)) {
+            superclass = ((Class<?>) superclass).getGenericSuperclass();
+        }
+        Type actualType = ((ParameterizedType) superclass).getActualTypeArguments()[0];
+        if (actualType instanceof Class) {
+            return (Class<T>) actualType;
+        }
+        return (Class<T>) ((ParameterizedType) actualType).getRawType();
     }
 }
