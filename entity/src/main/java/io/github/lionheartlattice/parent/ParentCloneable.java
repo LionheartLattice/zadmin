@@ -18,10 +18,6 @@ public abstract class ParentCloneable<T> implements Cloneable<T>, Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    /**
-     * 缓存泛型类型
-     */
-    private transient volatile Class<T> entityClass;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -61,10 +57,6 @@ public abstract class ParentCloneable<T> implements Cloneable<T>, Serializable {
      */
     @SuppressWarnings("unchecked")
     public Class<T> entityClass() {
-        if (entityClass == null) {
-            entityClass = (Class<T>) ResolvableType.forClass(getClass())
-                    .as(ParentUtil.class).getGeneric(0).resolve();
-        }
-        return entityClass;
+        return (Class<T>) getClass();
     }
 }

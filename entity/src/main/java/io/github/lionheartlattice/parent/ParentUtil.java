@@ -12,22 +12,13 @@ import org.springframework.core.ResolvableType;
 public abstract class ParentUtil<T> {
 
     /**
-     * 实体类Class缓存
-     */
-    private Class<T> entityClass;
-
-    /**
-     * 获取实体类Class
+     * 获取实体类的泛型类型
      *
-     * @return 实体类Class
+     * @return 泛型类型 Class
      */
     @SuppressWarnings("unchecked")
-    protected Class<T> entityClass() {
-        if (entityClass == null) {
-            entityClass = (Class<T>) ResolvableType.forClass(getClass())
-                    .as(ParentUtil.class).getGeneric(0).resolve();
-        }
-        return entityClass;
+    public Class<T> entityClass() {
+        return (Class<T>) getClass();
     }
 
     /**
