@@ -25,23 +25,23 @@ public abstract class BaseCloneable<T> implements Cloneable<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     public T copyFrom(Object source) {
-        return CopyUtil.copy(CopyUtil.deepCopy(source), (T) this);
+        return CopyUtil.copy(source, (T) this);
     }
 
     public <R> R copyTo(R target) {
-        return CopyUtil.copy(CopyUtil.deepCopy(this), target);
+        return CopyUtil.copy(this, target);
     }
 
     public <R> R copyTo(Class<R> targetClass) {
-        return CopyUtil.deepCopy(this, targetClass);
+        return CopyUtil.copy(this, targetClass);
     }
 
     public <R> R cloneTo(R target) {
-        return CopyUtil.copy(this.clone(), target);
+        return CopyUtil.shallowCopy(this.clone(), target);
     }
 
     public <R> R cloneTo(Class<R> targetClass) {
-        return CopyUtil.copy(this.clone(), targetClass);
+        return CopyUtil.shallowCopy(this.clone(), targetClass);
     }
 
     @SuppressWarnings("unchecked")
