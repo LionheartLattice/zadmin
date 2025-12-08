@@ -1,4 +1,4 @@
-package io.github.lionheartlattice.user_center.po;
+package io.github.lionheartlattice.po;
 
 import com.easy.query.core.basic.extension.generated.PrimaryKeyGenerator;
 import com.easy.query.core.metadata.ColumnMetadata;
