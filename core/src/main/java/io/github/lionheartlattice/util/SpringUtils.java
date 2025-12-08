@@ -1,5 +1,6 @@
-package io.github.lionheartlattice.configuration.spring;
+package io.github.lionheartlattice.util;
 
+import io.github.lionheartlattice.configuration.spring.DynamicBeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;

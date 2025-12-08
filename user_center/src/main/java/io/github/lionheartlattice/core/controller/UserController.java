@@ -1,8 +1,8 @@
 package io.github.lionheartlattice.core.controller;
 
-import io.github.lionheartlattice.parent.ParentUtil;
-import io.github.lionheartlattice.user_center.dto.UserDTO;
-import io.github.lionheartlattice.user_center.po.User;
+import io.github.lionheartlattice.util.parent.ParentUtil;
+import io.github.lionheartlattice.entity.user_center.dto.UserDTO;
+import io.github.lionheartlattice.entity.user_center.po.User;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;

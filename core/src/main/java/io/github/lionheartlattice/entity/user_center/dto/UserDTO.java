@@ -1,7 +1,7 @@
-package io.github.lionheartlattice.user_center.dto;
+package io.github.lionheartlattice.entity.user_center.dto;
 
 
-import io.github.lionheartlattice.user_center.po.User;
+import io.github.lionheartlattice.entity.user_center.po.User;
 import lombok.Data;
 import io.swagger.v3.oas.annotations.media.Schema;
 

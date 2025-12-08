@@ -1,6 +1,6 @@
 package io.github.lionheartlattice.controller;
 
-import io.github.lionheartlattice.user_center.po.User;
+import io.github.lionheartlattice.entity.user_center.po.User;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Map;
 
-import static io.github.lionheartlattice.configuration.easyquery.DataAccessUtils.*;
+import static io.github.lionheartlattice.util.DataAccessUtils.*;
 
 @Tag(name = "Hello测试模块", description = "用于测试多数据源和EasyQuery集成的接口")
 @RestController

@@ -1,7 +1,6 @@
-package io.github.lionheartlattice.configuration.easyquery;
+package io.github.lionheartlattice.util;
 
 import com.easy.query.api.proxy.client.EasyEntityQuery;
-import io.github.lionheartlattice.configuration.spring.SpringUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.support.TransactionTemplate;

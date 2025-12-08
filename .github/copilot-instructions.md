@@ -32,10 +32,7 @@
 - C:\soft\apache-maven-3.9.9\repo 下可以看到第三方jar包和文档
 
 ## 模块依赖
-
-- base: 基础配置和第三方依赖
-- core: 核心业务逻辑
-- entity: 实体类定义
+- core: 基础配置和第三方依赖
 - user_center: 用户中心模块
 - generator: 代码生成器
 - a_start: 启动模块

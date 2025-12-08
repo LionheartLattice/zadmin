@@ -1,7 +1,7 @@
-package io.github.lionheartlattice.parent;
+package io.github.lionheartlattice.util.parent;
 
 import com.easy.query.api.proxy.client.EasyEntityQuery;
-import io.github.lionheartlattice.configuration.easyquery.DataAccessUtils;
+import io.github.lionheartlattice.util.DataAccessUtils;
 import io.github.lionheartlattice.util.NullUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

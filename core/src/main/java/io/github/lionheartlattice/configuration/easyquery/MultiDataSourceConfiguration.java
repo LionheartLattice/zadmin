@@ -13,7 +13,6 @@ import com.easy.query.core.datasource.DataSourceUnitFactory;
 import com.easy.query.core.logging.LogFactory;
 import com.easy.query.mysql.config.MySQLDatabaseConfiguration;
 import com.easy.query.pgsql.config.PgSQLDatabaseConfiguration;
-import io.github.lionheartlattice.configuration.SnowflakeProperties.SnowflakePrimaryKeyGenerator;
 import io.github.lionheartlattice.configuration.spring.DynamicBeanFactory;
 import io.github.lionheartlattice.configuration.spring.DynamicDataSourceProperties;
 import io.github.lionheartlattice.configuration.spring.SpringConnectionManager;

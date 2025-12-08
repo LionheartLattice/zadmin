@@ -1,4 +1,4 @@
-package io.github.lionheartlattice.parent;
+package io.github.lionheartlattice.util.parent;
 
 import com.easy.query.api.proxy.entity.EntityQueryProxyManager;
 import com.easy.query.api.proxy.entity.delete.EntityDeletable;
@@ -28,7 +28,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static io.github.lionheartlattice.configuration.easyquery.DataAccessUtils.getEntityQuery;
+import static io.github.lionheartlattice.util.DataAccessUtils.getEntityQuery;
 
 /**
  * 基础客户端实体类，提供 BaseEntityClient 相关功能

@@ -1,4 +1,4 @@
-package io.github.lionheartlattice.configuration.SnowflakeProperties;
+package io.github.lionheartlattice.configuration.easyquery;
 
 import com.easy.query.core.basic.extension.generated.PrimaryKeyGenerator;
 import com.easy.query.core.metadata.ColumnMetadata;

@@ -1,4 +1,4 @@
-package io.github.lionheartlattice.parent;
+package io.github.lionheartlattice.util.parent;
 
 import com.easy.query.core.basic.api.insert.map.MapClientInsertable;
 import com.easy.query.core.basic.api.update.map.MapClientUpdatable;
@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import static io.github.lionheartlattice.configuration.easyquery.DataAccessUtils.getEntityQuery;
+import static io.github.lionheartlattice.util.DataAccessUtils.getEntityQuery;
 
 /**
  * 基础查询实体类，提供 EasyBaseQuery 相关功能
