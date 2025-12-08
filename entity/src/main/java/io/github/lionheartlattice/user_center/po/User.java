@@ -69,7 +69,7 @@ public class User extends BaseEntity<User, UserProxy> implements ProxyEntityAvai
      * 生日
      */
     @Schema(description = "生日")
-    private LocalDate birthday = LocalDate.now();
+    private LocalDate birthday;
 
     /**
      * 头像base64

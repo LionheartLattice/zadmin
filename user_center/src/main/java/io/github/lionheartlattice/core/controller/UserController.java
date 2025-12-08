@@ -1,5 +1,6 @@
 package io.github.lionheartlattice.core.controller;
 
+import io.github.lionheartlattice.user_center.dto.UserDTO;
 import io.github.lionheartlattice.user_center.po.User;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +18,8 @@ import java.util.List;
 public class UserController {
     //    新增用户
     @PostMapping("add")
-    public long add(@RequestBody User user) {
-        return user.insertable().executeRows();
+    public long add(@RequestBody UserDTO dto) {
+        return new User().copyFrom(dto).setUpdateId(0L).insertable().executeRows();
     }
 
     //列表查询
