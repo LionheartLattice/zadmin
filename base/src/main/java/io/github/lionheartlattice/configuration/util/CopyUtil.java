@@ -37,7 +37,6 @@ public abstract class CopyUtil {
     /**
      * 深拷贝到已有实例
      */
-    @SuppressWarnings("unchecked")
     public static <T> T copy(Object source, T target) {
         Assert.notNull(source, "Source must not be null");
         Assert.notNull(target, "Target must not be null");
