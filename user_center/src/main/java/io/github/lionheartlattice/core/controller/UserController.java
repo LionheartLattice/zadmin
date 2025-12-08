@@ -1,5 +1,6 @@
 package io.github.lionheartlattice.core.controller;
 
+import io.github.lionheartlattice.parent.ParentUtil;
 import io.github.lionheartlattice.user_center.dto.UserDTO;
 import io.github.lionheartlattice.user_center.po.User;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,17 +16,17 @@ import java.util.List;
 @RestController
 @RequestMapping("z_user")
 @RequiredArgsConstructor
-public class UserController {
+public class UserController extends ParentUtil<User> {
     //    新增用户
     @PostMapping("add")
     public long add(@RequestBody UserDTO dto) {
-        return new User().copyFrom(dto).setUpdateId(0L).insertable().executeRows();
+        return createPo().copyFrom(dto).setUpdateId(0L).insertable().executeRows();
     }
 
     //列表查询
     @PostMapping("list")
     public List<User> list() {
-        return new User().queryable().toList();
+        return createPo().queryable().toList();
     }
 }
 
