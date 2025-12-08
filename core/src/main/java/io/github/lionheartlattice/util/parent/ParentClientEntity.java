@@ -28,7 +28,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static io.github.lionheartlattice.util.DataAccessUtils.getEntityQuery;
+import static io.github.lionheartlattice.util.DataAccessUtils.*;
 
 /**
  * 基础客户端实体类，提供 BaseEntityClient 相关功能

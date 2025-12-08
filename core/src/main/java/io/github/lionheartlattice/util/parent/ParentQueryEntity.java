@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import static io.github.lionheartlattice.util.DataAccessUtils.getEntityQuery;
+import static io.github.lionheartlattice.util.DataAccessUtils.*;
 
 /**
  * 基础查询实体类，提供 EasyBaseQuery 相关功能

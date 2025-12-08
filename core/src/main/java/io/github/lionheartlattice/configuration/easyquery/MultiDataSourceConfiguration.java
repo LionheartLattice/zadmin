@@ -37,27 +37,25 @@ import java.util.HashMap;
 @Configuration
 public class MultiDataSourceConfiguration {
 
+    public static final String PRIMARY = "primary";
+    public static final String DS2 = "ds2";
+    public static final String DATA_SOURCE = "DataSource";
+    public static final String JDBC_TEMPLATE = "JdbcTemplate";
+    public static final String EASY_ENTITY_QUERY = "EasyEntityQuery";
+    public static final String TRANSACTION_MANAGER = "TransactionManager";
+    public static final String TRANSACTION_TEMPLATE = "TransactionTemplate";
+    private static final String POSTGRESQL_DRIVER = "postgresql";
+    private static final String JDBC_TEMPLATE_BEAN_NAME = "jdbcTemplate";
+
     static {
         LogFactory.useCustomLogging(Slf4jImpl.class);
     }
 
-    /**
-     * 动态数据源配置
-     */
     private final DynamicDataSourceProperties props;
 
-    /**
-     * 雪花算法主键生成器
-     */
     @Getter
     private final SnowflakePrimaryKeyGenerator snowflakePrimaryKeyGenerator;
 
-    /**
-     * 构造函数注入
-     *
-     * @param props                        动态数据源配置
-     * @param snowflakePrimaryKeyGenerator 雪花算法主键生成器
-     */
     public MultiDataSourceConfiguration(DynamicDataSourceProperties props, SnowflakePrimaryKeyGenerator snowflakePrimaryKeyGenerator) {
         this.props = props;
         this.snowflakePrimaryKeyGenerator = snowflakePrimaryKeyGenerator;
@@ -67,20 +65,16 @@ public class MultiDataSourceConfiguration {
             DataSource source = DataSourceBuilder.create().type(kp.getType())
                     .driverClassName(kp.getDriverClassName()).url(kp.getUrl())
                     .username(kp.getUsername()).password(kp.getPassword()).build();
-            DynamicBeanFactory.registerBean(key + "DataSource", source);
+            DynamicBeanFactory.registerBean(key + DATA_SOURCE, source);
 
             JdbcTemplate jdbcTemplate = new JdbcTemplate(source);
-            if ("primary".equals(key)) {
-                DynamicBeanFactory.registerBean("jdbcTemplate", jdbcTemplate);
+            if (PRIMARY.equals(key)) {
+                DynamicBeanFactory.registerBean(JDBC_TEMPLATE_BEAN_NAME, jdbcTemplate);
             }
-            DynamicBeanFactory.registerBean(key + "JdbcTemplate", jdbcTemplate);
+            DynamicBeanFactory.registerBean(key + JDBC_TEMPLATE, jdbcTemplate);
 
-            DatabaseConfiguration databaseConfiguration;
-            if (kp.getDriverClassName().contains("postgresql")) {
-                databaseConfiguration = new PgSQLDatabaseConfiguration();
-            } else {
-                databaseConfiguration = new MySQLDatabaseConfiguration();
-            }
+            DatabaseConfiguration databaseConfiguration = kp.getDriverClassName()
+                    .contains(POSTGRESQL_DRIVER) ? new PgSQLDatabaseConfiguration() : new MySQLDatabaseConfiguration();
 
             EasyQueryClient easyQueryClient = EasyQueryBootstrapper
                     .defaultBuilderConfiguration().setDefaultDataSource(source)
@@ -97,35 +91,28 @@ public class MultiDataSourceConfiguration {
             queryConfiguration.applyPrimaryKeyGenerator(snowflakePrimaryKeyGenerator);
 
             DefaultEasyEntityQuery defaultEasyEntityQuery = new DefaultEasyEntityQuery(easyQueryClient);
-            DynamicBeanFactory.registerBean(key + "EasyEntityQuery", defaultEasyEntityQuery);
+            DynamicBeanFactory.registerBean(key + EASY_ENTITY_QUERY, defaultEasyEntityQuery);
 
-            // 注册事务管理器
             DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(source);
-            DynamicBeanFactory.registerBean(key + "TransactionManager", transactionManager);
+            DynamicBeanFactory.registerBean(key + TRANSACTION_MANAGER, transactionManager);
 
-            // 注册 TransactionTemplate
             TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
-            DynamicBeanFactory.registerBean(key + "TransactionTemplate", transactionTemplate);
+            DynamicBeanFactory.registerBean(key + TRANSACTION_TEMPLATE, transactionTemplate);
         });
     }
 
-    /**
-     * 创建多数据源查询对象
-     *
-     * @return EasyMultiEntityQuery
-     */
     @Bean
     @Primary
     public EasyMultiEntityQuery easyMultiEntityQuery() {
         HashMap<String, EasyEntityQuery> extra = new HashMap<>();
         ConfigurableListableBeanFactory beanFactory = DynamicBeanFactory.getConfigurableBeanFactory();
-        EasyEntityQuery easyEntityQuery = beanFactory.getBean("primaryEasyEntityQuery", EasyEntityQuery.class);
+        EasyEntityQuery easyEntityQuery = beanFactory.getBean(PRIMARY + EASY_ENTITY_QUERY, EasyEntityQuery.class);
 
         props.getDynamic().keySet().forEach(key -> {
-            EasyEntityQuery eq = beanFactory.getBean(key + "EasyEntityQuery", EasyEntityQuery.class);
+            EasyEntityQuery eq = beanFactory.getBean(key + EASY_ENTITY_QUERY, EasyEntityQuery.class);
             extra.put(key, eq);
         });
 
-        return new DefaultEasyMultiEntityQuery("primary", easyEntityQuery, extra);
+        return new DefaultEasyMultiEntityQuery(PRIMARY, easyEntityQuery, extra);
     }
 }
