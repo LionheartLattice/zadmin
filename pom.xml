@@ -34,21 +34,14 @@
         <revision>0.0.1-SNAPSHOT</revision>
     </properties>
     <modules>
-        <module>base</module>
         <module>core</module>
         <module>generator</module>
         <module>user_center</module>
-        <module>entity</module>
         <module>a_start</module>
     </modules>
     <dependencyManagement>
         <dependencies>
             <!-- 内部模块 -->
-            <dependency>
-                <groupId>io.github.lionheartlattice</groupId>
-                <artifactId>base</artifactId>
-                <version>${revision}</version>
-            </dependency>
             <dependency>
                 <groupId>io.github.lionheartlattice</groupId>
                 <artifactId>core</artifactId>
@@ -62,11 +55,6 @@
             <dependency>
                 <groupId>io.github.lionheartlattice</groupId>
                 <artifactId>user_center</artifactId>
-                <version>${revision}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.lionheartlattice</groupId>
-                <artifactId>entity</artifactId>
                 <version>${revision}</version>
             </dependency>
 
