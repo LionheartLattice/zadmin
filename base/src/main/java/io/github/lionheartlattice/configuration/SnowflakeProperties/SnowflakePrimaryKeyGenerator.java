@@ -2,6 +2,7 @@ package io.github.lionheartlattice.configuration.SnowflakeProperties;
 
 import com.easy.query.core.basic.extension.generated.PrimaryKeyGenerator;
 import com.easy.query.core.metadata.ColumnMetadata;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
@@ -67,13 +68,15 @@ public class SnowflakePrimaryKeyGenerator implements PrimaryKeyGenerator {
     private long lastTimestamp = -1L;
 
     /**
-     * 通过配置类构造
+     * 从配置文件读取参数构造
      *
-     * @param properties 雪花算法配置
+     * @param epoch    起始时间戳
+     * @param workerId 机器ID
      */
-    public SnowflakePrimaryKeyGenerator(SnowflakeProperties properties) {
-        this.epoch = properties.getEpoch();
-        long workerId = properties.getWorkerId();
+    public SnowflakePrimaryKeyGenerator(
+            @Value("${snowflake.epoch:1704067200000}") long epoch,
+            @Value("${snowflake.worker-id:1}") long workerId) {
+        this.epoch = epoch;
         if (workerId < 0 || workerId > MAX_WORKER_ID) {
             throw new IllegalArgumentException("机器ID必须在0-" + MAX_WORKER_ID + "之间");
         }
@@ -88,25 +91,20 @@ public class SnowflakePrimaryKeyGenerator implements PrimaryKeyGenerator {
     private synchronized long nextId() {
         long timestamp = System.currentTimeMillis();
 
-        // 时钟回拨检查
         if (timestamp < lastTimestamp) {
             throw new RuntimeException("时钟回拨，拒绝生成ID");
         }
 
         if (timestamp == lastTimestamp) {
-            // 同一毫秒内，序列号自增
             sequence = (sequence + 1) & MAX_SEQUENCE;
             if (sequence == 0) {
-                // 序列号溢出，等待下一毫秒
                 timestamp = waitNextMillis(lastTimestamp);
             }
         } else {
-            // 不同毫秒，序列号重置
             sequence = 0L;
         }
 
         lastTimestamp = timestamp;
-
         return ((timestamp - epoch) << TIMESTAMP_SHIFT) | (workerId << WORKER_ID_SHIFT) | sequence;
     }
 
