@@ -43,10 +43,11 @@ package io.github.lionheartlattice.configuration.util;
          /**
           * 深拷贝到已有实例
           */
+         @SuppressWarnings("unchecked")
          public static <T> T copy(Object source, T target) {
              Assert.notNull(source, "Source must not be null");
              Assert.notNull(target, "Target must not be null");
-             T deepSource = copy(source);
+             T deepSource = (T) copy(source);
              BeanUtils.copyProperties(deepSource, target);
              return target;
          }
@@ -71,7 +72,7 @@ package io.github.lionheartlattice.configuration.util;
          /**
           * 通过 Jackson 深拷贝
           */
-         public static <T> T copyByJackson(Object source, Class<T> targetClass) {
+         protected static <T> T copyByJackson(Object source, Class<T> targetClass) {
              try {
                  String json = OBJECT_MAPPER.writeValueAsString(source);
                  return OBJECT_MAPPER.readValue(json, targetClass);
