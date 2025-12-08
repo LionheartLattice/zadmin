@@ -1,4 +1,4 @@
-package io.github.lionheartlattice.configuration.util;
+package io.github.lionheartlattice.util;
 
 import cn.hutool.core.clone.CloneRuntimeException;
 import com.fasterxml.jackson.databind.ObjectMapper;

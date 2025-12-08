@@ -2,7 +2,7 @@ package io.github.lionheartlattice.parent;
 
 import cn.hutool.core.clone.CloneRuntimeException;
 import cn.hutool.core.clone.Cloneable;
-import io.github.lionheartlattice.configuration.util.CopyUtil;
+import io.github.lionheartlattice.util.CopyUtil;
 import org.springframework.core.ResolvableType;
 
 import java.io.Serial;
