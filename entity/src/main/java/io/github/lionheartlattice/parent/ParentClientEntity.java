@@ -37,7 +37,7 @@ import static io.github.lionheartlattice.configuration.easyquery.DataAccessUtils
  * @param <T>      实体类型
  * @param <TProxy> 对应的代理实体类型
  */
-public abstract class BaseClientEntity<T extends BaseClientEntity<T, TProxy> & ProxyEntityAvailable<T, TProxy>, TProxy extends ProxyEntity<TProxy, T>> extends BaseQueryEntity<T> implements ProxyEntityAvailable<T, TProxy> {
+public abstract class ParentClientEntity<T extends ParentClientEntity<T, TProxy> & ProxyEntityAvailable<T, TProxy>, TProxy extends ProxyEntity<TProxy, T>> extends ParentQueryEntity<T> implements ProxyEntityAvailable<T, TProxy> {
 
     @Serial
     private static final long serialVersionUID = 1L;

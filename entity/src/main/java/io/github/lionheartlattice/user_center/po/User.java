@@ -6,7 +6,7 @@ import com.easy.query.core.annotation.EntityProxy;
 import com.easy.query.core.annotation.Table;
 import com.easy.query.core.proxy.ProxyEntityAvailable;
 import io.github.lionheartlattice.configuration.SnowflakeProperties.SnowflakePrimaryKeyGenerator;
-import io.github.lionheartlattice.parent.BaseEntity;
+import io.github.lionheartlattice.parent.ParentClientEntity;
 import io.github.lionheartlattice.user_center.po.proxy.UserProxy;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -26,7 +26,7 @@ import java.util.Date;
 @Table(value = "z_user")
 @EntityProxy
 @EasyAssertMessage("未找到对应的系统用户表信息")
-public class User extends BaseEntity<User, UserProxy> implements ProxyEntityAvailable<User, UserProxy> {
+public class User extends ParentClientEntity<User, UserProxy> implements ProxyEntityAvailable<User, UserProxy> {
 
     /**
      * 用户ID

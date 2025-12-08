@@ -22,7 +22,7 @@ import static io.github.lionheartlattice.configuration.easyquery.DataAccessUtils
  *
  * @param <T> 实体类型
  */
-public abstract class BaseQueryEntity<T> extends BaseCloneable<T> {
+public abstract class ParentQueryEntity<T> extends ParentCloneable<T> {
 
     @Serial
     private static final long serialVersionUID = 1L;

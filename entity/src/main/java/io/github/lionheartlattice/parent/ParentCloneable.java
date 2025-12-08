@@ -8,7 +8,7 @@ import org.springframework.core.ResolvableType;
 import java.io.Serial;
 import java.io.Serializable;
 
-public abstract class BaseCloneable<T> implements Cloneable<T>, Serializable {
+public abstract class ParentCloneable<T> implements Cloneable<T>, Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -46,7 +46,7 @@ public abstract class BaseCloneable<T> implements Cloneable<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     public Class<T> entityClass() {
-        return (Class<T>) ResolvableType.forClass(getClass()).as(BaseCloneable.class)
+        return (Class<T>) ResolvableType.forClass(getClass()).as(ParentCloneable.class)
                 .getGeneric(0).resolve();
     }
 }
