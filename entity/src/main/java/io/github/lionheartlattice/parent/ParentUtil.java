@@ -18,7 +18,8 @@ public abstract class ParentUtil<T> {
      */
     @SuppressWarnings("unchecked")
     public Class<T> entityClass() {
-        return (Class<T>) getClass();
+        return (Class<T>) ResolvableType.forClass(getClass()).as(ParentUtil.class)
+                .getGeneric(0).resolve();
     }
 
     /**

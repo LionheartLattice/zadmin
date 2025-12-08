@@ -50,13 +50,9 @@ public abstract class ParentCloneable<T> implements Cloneable<T>, Serializable {
         return CopyUtil.copyShallow(this.clone(), targetClass);
     }
 
-    /**
-     * 获取实体类的泛型类型
-     *
-     * @return 泛型类型 Class
-     */
     @SuppressWarnings("unchecked")
     public Class<T> entityClass() {
-        return (Class<T>) getClass();
+        return (Class<T>) ResolvableType.forClass(getClass()).as(ParentCloneable.class)
+                .getGeneric(0).resolve();
     }
 }
