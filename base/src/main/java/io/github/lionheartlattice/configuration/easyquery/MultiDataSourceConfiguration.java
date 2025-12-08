@@ -27,6 +27,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -94,12 +95,18 @@ public class MultiDataSourceConfiguration {
 
             QueryConfiguration queryConfiguration = easyQueryClient.getRuntimeContext()
                     .getQueryConfiguration();
-            // 直接使用注入的雪花算法生成器
             queryConfiguration.applyPrimaryKeyGenerator(snowflakePrimaryKeyGenerator);
 
             DefaultEasyEntityQuery defaultEasyEntityQuery = new DefaultEasyEntityQuery(easyQueryClient);
             DynamicBeanFactory.registerBean(key + "EasyEntityQuery", defaultEasyEntityQuery);
-            DynamicBeanFactory.registerBean(key + "TransactionManager", new DataSourceTransactionManager(source));
+
+            // 注册事务管理器
+            DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(source);
+            DynamicBeanFactory.registerBean(key + "TransactionManager", transactionManager);
+
+            // 注册 TransactionTemplate
+            TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+            DynamicBeanFactory.registerBean(key + "TransactionTemplate", transactionTemplate);
         });
     }
 
@@ -122,5 +129,4 @@ public class MultiDataSourceConfiguration {
 
         return new DefaultEasyMultiEntityQuery("primary", easyEntityQuery, extra);
     }
-
 }

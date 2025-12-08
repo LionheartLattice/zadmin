@@ -4,7 +4,11 @@ import com.easy.query.api.proxy.client.EasyEntityQuery;
 import io.github.lionheartlattice.configuration.spring.SpringUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.support.TransactionTemplate;
 
+/**
+ * 数据访问工具类
+ */
 public class DataAccessUtils {
 
     public static JdbcTemplate getJdbcTemplate() {
@@ -25,5 +29,19 @@ public class DataAccessUtils {
 
     public static StringRedisTemplate getStringRedisTemplate() {
         return SpringUtils.getBean(StringRedisTemplate.class);
+    }
+
+    /**
+     * 获取主数据源 TransactionTemplate
+     */
+    public static TransactionTemplate getTransactionTemplate() {
+        return SpringUtils.getBean("primaryTransactionTemplate", TransactionTemplate.class);
+    }
+
+    /**
+     * 获取第二数据源 TransactionTemplate
+     */
+    public static TransactionTemplate getDs2TransactionTemplate() {
+        return SpringUtils.getBean("ds2TransactionTemplate", TransactionTemplate.class);
     }
 }

@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.ResolvableType;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * 父级工具类，提供实体类操作的通用方法
@@ -48,6 +49,17 @@ public abstract class ParentUtil<T> extends NullUtil {
      * StringRedisTemplate
      */
     protected final StringRedisTemplate redisTemplate = DataAccessUtils.getStringRedisTemplate();
+
+    /**
+     * 主数据源 TransactionTemplate
+     */
+    protected final TransactionTemplate transactionTemplate = DataAccessUtils.getTransactionTemplate();
+
+    /**
+     * 第二数据源 TransactionTemplate
+     */
+    protected final TransactionTemplate ds2TransactionTemplate = DataAccessUtils.getDs2TransactionTemplate();
+
 
     /**
      * 获取实体类的泛型类型
