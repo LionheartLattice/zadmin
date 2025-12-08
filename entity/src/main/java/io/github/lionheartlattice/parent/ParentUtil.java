@@ -37,7 +37,7 @@ public abstract class ParentUtil<T> extends NullUtil {
     /**
      * 主数据源 EasyEntityQuery
      */
-    protected final EasyEntityQuery entityQuery = DataAccessUtils.getEntityQuery();
+    protected final EasyEntityQuery easyEntityQuery = DataAccessUtils.getEntityQuery();
 
     /**
      * 第二数据源 EasyEntityQuery

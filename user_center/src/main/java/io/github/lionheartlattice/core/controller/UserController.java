@@ -5,7 +5,6 @@ import io.github.lionheartlattice.user_center.dto.UserDTO;
 import io.github.lionheartlattice.user_center.po.User;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,9 +29,11 @@ public class UserController extends ParentUtil<User> {
     //列表查询
     @PostMapping("list")
     public List<User> list() {
+        List<User> list1 = easyEntityQuery.queryable(User.class).toList();
+        log.warn("列表查询结果：{}", isNotNull(list1) ? list1 : "null");
+
         List<User> list = createPo().queryable().toList();
-        boolean notNull = isNotNull(list);
-        log.warn("列表查询结果：{}", notNull ? list : "null");
+        log.warn("列表查询结果：{}", isNotNull(list) ? list : "null");
         return list;
     }
 }
