@@ -1,6 +1,8 @@
 package io.github.lionheartlattice.parent;
 
 import io.github.lionheartlattice.util.NullUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.ResolvableType;
 
 /**
@@ -11,6 +13,11 @@ import org.springframework.core.ResolvableType;
  * @since 1.0
  */
 public abstract class ParentUtil<T> extends NullUtil {
+
+    /**
+     * 日志实例，使用实际子类的 Class
+     */
+    protected final Logger log = LoggerFactory.getLogger(getClass());
 
     /**
      * 获取实体类的泛型类型
