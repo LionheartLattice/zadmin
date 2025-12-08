@@ -37,11 +37,11 @@ public abstract class BaseCloneable<T> implements Cloneable<T>, Serializable {
     }
 
     public <R> R cloneTo(R target) {
-        return CopyUtil.shallowCopy(this.clone(), target);
+        return CopyUtil.copyShallow(this.clone(), target);
     }
 
     public <R> R cloneTo(Class<R> targetClass) {
-        return CopyUtil.shallowCopy(this.clone(), targetClass);
+        return CopyUtil.copyShallow(this.clone(), targetClass);
     }
 
     @SuppressWarnings("unchecked")
