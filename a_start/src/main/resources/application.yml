@@ -28,6 +28,17 @@ spring:
       password: Zs2806478963
       database: 0
       timeout: 5s
+      jedis:
+        pool:
+          # 连接池最大连接数（使用负值表示没有限制）
+          max-active: 100
+          # 连接池最大阻塞等待时间（使用负值表示没有限制）
+          max-wait: -1
+          # 连接池中的最大空闲连接
+          max-idle: 30
+          # 连接池中的最小空闲连接
+          min-idle: 10
+
 
 logging:
   # 指定日志文件路径和名称（会自动创建 logs 文件夹在运行目录下）
