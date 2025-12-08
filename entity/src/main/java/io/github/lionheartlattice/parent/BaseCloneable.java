@@ -60,18 +60,14 @@ public abstract class BaseCloneable<T> implements Cloneable<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     public T copyFrom(Object source) {
-        if (source != null) {
-            Object clonedSource = deepClone(source, source.getClass());
-            BeanUtils.copyProperties(clonedSource, this);
-        }
+        Object clonedSource = deepClone(source, source.getClass());
+        BeanUtils.copyProperties(clonedSource, this);
         return (T) this;
     }
 
     public <R> R copyTo(R target) {
-        if (target != null) {
-            Object clonedThis = deepClone(this, this.getClass());
-            BeanUtils.copyProperties(clonedThis, target);
-        }
+        Object clonedThis = deepClone(this, this.getClass());
+        BeanUtils.copyProperties(clonedThis, target);
         return target;
     }
 
@@ -80,6 +76,31 @@ public abstract class BaseCloneable<T> implements Cloneable<T>, Serializable {
             R target = targetClass.getDeclaredConstructor().newInstance();
             Object clonedThis = deepClone(this, this.getClass());
             BeanUtils.copyProperties(clonedThis, target);
+            return target;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create instance", e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public T cloneFrom(Object source) {
+        if (source instanceof BaseCloneable<?> cloneable) {
+            BeanUtils.copyProperties(cloneable.clone(), this);
+        } else {
+            BeanUtils.copyProperties(source, this);
+        }
+        return (T) this;
+    }
+
+    public <R> R cloneTo(R target) {
+        BeanUtils.copyProperties(this.clone(), target);
+        return target;
+    }
+
+    public <R> R cloneTo(Class<R> targetClass) {
+        try {
+            R target = targetClass.getDeclaredConstructor().newInstance();
+            BeanUtils.copyProperties(this.clone(), target);
             return target;
         } catch (Exception e) {
             throw new RuntimeException("Failed to create instance", e);
