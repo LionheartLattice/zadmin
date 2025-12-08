@@ -2,48 +2,16 @@ package io.github.lionheartlattice.parent;
 
 import cn.hutool.core.clone.CloneRuntimeException;
 import cn.hutool.core.clone.Cloneable;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.BeanUtils;
+import io.github.lionheartlattice.configuration.util.CopyUtil;
+import org.springframework.core.ResolvableType;
 
-import java.io.*;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.io.Serial;
+import java.io.Serializable;
 
 public abstract class BaseCloneable<T> implements Cloneable<T>, Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
-
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
-    protected static Object deepCloneBySerializable(Object obj) {
-        try (ByteArrayOutputStream bos = new ByteArrayOutputStream(); ObjectOutputStream oos = new ObjectOutputStream(bos)) {
-            oos.writeObject(obj);
-            try (ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray()); ObjectInputStream ois = new ObjectInputStream(bis)) {
-                return ois.readObject();
-            }
-        } catch (IOException | ClassNotFoundException e) {
-            throw new CloneRuntimeException(e);
-        }
-    }
-
-    protected static <R> R deepCloneByJackson(Object obj, Class<R> targetClass) {
-        try {
-            String json = OBJECT_MAPPER.writeValueAsString(obj);
-            return OBJECT_MAPPER.readValue(json, targetClass);
-        } catch (Exception e) {
-            throw new CloneRuntimeException(e);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    protected static <R> R deepClone(Object obj, Class<R> targetClass) {
-        if (obj instanceof Serializable) {
-            return (R) deepCloneBySerializable(obj);
-        } else {
-            return deepCloneByJackson(obj, targetClass);
-        }
-    }
 
     @SuppressWarnings("unchecked")
     @Override
@@ -55,57 +23,30 @@ public abstract class BaseCloneable<T> implements Cloneable<T>, Serializable {
         }
     }
 
-
     @SuppressWarnings("unchecked")
     public T copyFrom(Object source) {
-        Object clonedSource = deepClone(source, source.getClass());
-        BeanUtils.copyProperties(clonedSource, this);
-        return (T) this;
+        return CopyUtil.copy(CopyUtil.deepCopy(source), (T) this);
     }
 
     public <R> R copyTo(R target) {
-        Object clonedThis = deepClone(this, this.getClass());
-        BeanUtils.copyProperties(clonedThis, target);
-        return target;
+        return CopyUtil.copy(CopyUtil.deepCopy(this), target);
     }
 
     public <R> R copyTo(Class<R> targetClass) {
-        try {
-            R target = targetClass.getDeclaredConstructor().newInstance();
-            Object clonedThis = deepClone(this, this.getClass());
-            BeanUtils.copyProperties(clonedThis, target);
-            return target;
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to create instance", e);
-        }
+        return CopyUtil.deepCopy(this, targetClass);
     }
 
-
     public <R> R cloneTo(R target) {
-        BeanUtils.copyProperties(this.clone(), target);
-        return target;
+        return CopyUtil.copy(this.clone(), target);
     }
 
     public <R> R cloneTo(Class<R> targetClass) {
-        try {
-            R target = targetClass.getDeclaredConstructor().newInstance();
-            BeanUtils.copyProperties(this.clone(), target);
-            return target;
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to create instance", e);
-        }
+        return CopyUtil.copy(this.clone(), targetClass);
     }
 
     @SuppressWarnings("unchecked")
     public Class<T> entityClass() {
-        Type superclass = getClass().getGenericSuperclass();
-        while (!(superclass instanceof ParameterizedType)) {
-            superclass = ((Class<?>) superclass).getGenericSuperclass();
-        }
-        Type actualType = ((ParameterizedType) superclass).getActualTypeArguments()[0];
-        if (actualType instanceof Class) {
-            return (Class<T>) actualType;
-        }
-        return (Class<T>) ((ParameterizedType) actualType).getRawType();
+        return (Class<T>) ResolvableType.forClass(getClass()).as(BaseCloneable.class)
+                .getGeneric(0).resolve();
     }
 }
