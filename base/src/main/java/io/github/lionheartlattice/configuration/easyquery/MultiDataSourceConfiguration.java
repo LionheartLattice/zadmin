@@ -14,11 +14,11 @@ import com.easy.query.core.logging.LogFactory;
 import com.easy.query.mysql.config.MySQLDatabaseConfiguration;
 import com.easy.query.pgsql.config.PgSQLDatabaseConfiguration;
 import io.github.lionheartlattice.configuration.SnowflakeProperties.SnowflakePrimaryKeyGenerator;
-import io.github.lionheartlattice.configuration.SnowflakeProperties.SnowflakeProperties;
 import io.github.lionheartlattice.configuration.spring.DynamicBeanFactory;
 import io.github.lionheartlattice.configuration.spring.DynamicDataSourceProperties;
 import io.github.lionheartlattice.configuration.spring.SpringConnectionManager;
 import io.github.lionheartlattice.configuration.spring.SpringDataSourceUnitFactory;
+import lombok.Getter;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceProperties;
@@ -31,6 +31,9 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import javax.sql.DataSource;
 import java.util.HashMap;
 
+/**
+ * 多数据源配置类
+ */
 @Configuration
 public class MultiDataSourceConfiguration {
 
@@ -38,12 +41,27 @@ public class MultiDataSourceConfiguration {
         LogFactory.useCustomLogging(Slf4jImpl.class);
     }
 
+    /**
+     * 动态数据源配置
+     */
     private final DynamicDataSourceProperties props;
-    private final SnowflakeProperties snowflakeProperties;
 
-    public MultiDataSourceConfiguration(DynamicDataSourceProperties props, SnowflakeProperties snowflakeProperties) {
+    /**
+     * 雪花算法主键生成器
+     */
+    @Getter
+    private final SnowflakePrimaryKeyGenerator snowflakePrimaryKeyGenerator;
+
+    /**
+     * 构造函数注入
+     *
+     * @param props                        动态数据源配置
+     * @param snowflakePrimaryKeyGenerator 雪花算法主键生成器
+     */
+    public MultiDataSourceConfiguration(DynamicDataSourceProperties props, SnowflakePrimaryKeyGenerator snowflakePrimaryKeyGenerator) {
         this.props = props;
-        this.snowflakeProperties = snowflakeProperties;
+        this.snowflakePrimaryKeyGenerator = snowflakePrimaryKeyGenerator;
+
         props.getDynamic().keySet().forEach(key -> {
             DataSourceProperties kp = props.getDynamic().get(key);
             DataSource source = DataSourceBuilder.create().type(kp.getType())
@@ -76,7 +94,8 @@ public class MultiDataSourceConfiguration {
 
             QueryConfiguration queryConfiguration = easyQueryClient.getRuntimeContext()
                     .getQueryConfiguration();
-            queryConfiguration.applyPrimaryKeyGenerator(new SnowflakePrimaryKeyGenerator(snowflakeProperties));
+            // 直接使用注入的雪花算法生成器
+            queryConfiguration.applyPrimaryKeyGenerator(snowflakePrimaryKeyGenerator);
 
             DefaultEasyEntityQuery defaultEasyEntityQuery = new DefaultEasyEntityQuery(easyQueryClient);
             DynamicBeanFactory.registerBean(key + "EasyEntityQuery", defaultEasyEntityQuery);
@@ -84,6 +103,11 @@ public class MultiDataSourceConfiguration {
         });
     }
 
+    /**
+     * 创建多数据源查询对象
+     *
+     * @return EasyMultiEntityQuery
+     */
     @Bean
     @Primary
     public EasyMultiEntityQuery easyMultiEntityQuery() {
@@ -99,7 +123,4 @@ public class MultiDataSourceConfiguration {
         return new DefaultEasyMultiEntityQuery("primary", easyEntityQuery, extra);
     }
 
-    public SnowflakeProperties getSnowflakeProperties() {
-        return snowflakeProperties;
-    }
 }
