@@ -13,11 +13,12 @@ import com.easy.query.core.datasource.DataSourceUnitFactory;
 import com.easy.query.core.logging.LogFactory;
 import com.easy.query.mysql.config.MySQLDatabaseConfiguration;
 import com.easy.query.pgsql.config.PgSQLDatabaseConfiguration;
+import io.github.lionheartlattice.configuration.SnowflakeProperties.SnowflakePrimaryKeyGenerator;
+import io.github.lionheartlattice.configuration.SnowflakeProperties.SnowflakeProperties;
 import io.github.lionheartlattice.configuration.spring.DynamicBeanFactory;
 import io.github.lionheartlattice.configuration.spring.DynamicDataSourceProperties;
 import io.github.lionheartlattice.configuration.spring.SpringConnectionManager;
 import io.github.lionheartlattice.configuration.spring.SpringDataSourceUnitFactory;
-import io.github.lionheartlattice.util.SnowflakePrimaryKeyGenerator;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceProperties;
@@ -31,7 +32,6 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 
 @Configuration
-
 public class MultiDataSourceConfiguration {
 
     static {
@@ -39,9 +39,11 @@ public class MultiDataSourceConfiguration {
     }
 
     private final DynamicDataSourceProperties props;
+    private final SnowflakeProperties snowflakeProperties;
 
-    public MultiDataSourceConfiguration(DynamicDataSourceProperties props) {
+    public MultiDataSourceConfiguration(DynamicDataSourceProperties props, SnowflakeProperties snowflakeProperties) {
         this.props = props;
+        this.snowflakeProperties = snowflakeProperties;
         props.getDynamic().keySet().forEach(key -> {
             DataSourceProperties kp = props.getDynamic().get(key);
             DataSource source = DataSourceBuilder.create().type(kp.getType())
@@ -74,10 +76,9 @@ public class MultiDataSourceConfiguration {
 
             QueryConfiguration queryConfiguration = easyQueryClient.getRuntimeContext()
                     .getQueryConfiguration();
-            queryConfiguration.applyPrimaryKeyGenerator(new SnowflakePrimaryKeyGenerator());
+            queryConfiguration.applyPrimaryKeyGenerator(new SnowflakePrimaryKeyGenerator(snowflakeProperties));
 
             DefaultEasyEntityQuery defaultEasyEntityQuery = new DefaultEasyEntityQuery(easyQueryClient);
-            // 修改：统一使用 xxxEasyEntityQuery 命名
             DynamicBeanFactory.registerBean(key + "EasyEntityQuery", defaultEasyEntityQuery);
             DynamicBeanFactory.registerBean(key + "TransactionManager", new DataSourceTransactionManager(source));
         });
@@ -88,7 +89,6 @@ public class MultiDataSourceConfiguration {
     public EasyMultiEntityQuery easyMultiEntityQuery() {
         HashMap<String, EasyEntityQuery> extra = new HashMap<>();
         ConfigurableListableBeanFactory beanFactory = DynamicBeanFactory.getConfigurableBeanFactory();
-        // 修改：使用新的命名
         EasyEntityQuery easyEntityQuery = beanFactory.getBean("primaryEasyEntityQuery", EasyEntityQuery.class);
 
         props.getDynamic().keySet().forEach(key -> {
@@ -97,5 +97,9 @@ public class MultiDataSourceConfiguration {
         });
 
         return new DefaultEasyMultiEntityQuery("primary", easyEntityQuery, extra);
+    }
+
+    public SnowflakeProperties getSnowflakeProperties() {
+        return snowflakeProperties;
     }
 }

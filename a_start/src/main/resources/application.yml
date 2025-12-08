@@ -75,3 +75,7 @@ logging:
       file-name-pattern: ${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz
   level:
     com.easy.query: info
+
+snowflake:
+  epoch: 1704067200000  # 2024-01-01 00:00:00
+  worker-id: 1
