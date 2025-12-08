@@ -23,6 +23,7 @@ public class UserController extends ParentUtil<User> {
         return createPo().copyFrom(dto).setUpdateId(0L).insertable().executeRows();
     }
 
+
     //列表查询
     @PostMapping("list")
     public List<User> list() {
