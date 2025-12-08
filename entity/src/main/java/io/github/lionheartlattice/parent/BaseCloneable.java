@@ -16,7 +16,7 @@ public abstract class BaseCloneable<T> implements Cloneable<T>, Serializable {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    private static Object deepCloneBySerializable(Object obj) {
+    protected static Object deepCloneBySerializable(Object obj) {
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream(); ObjectOutputStream oos = new ObjectOutputStream(bos)) {
             oos.writeObject(obj);
             try (ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray()); ObjectInputStream ois = new ObjectInputStream(bis)) {
@@ -27,7 +27,7 @@ public abstract class BaseCloneable<T> implements Cloneable<T>, Serializable {
         }
     }
 
-    private static <R> R deepCloneByJackson(Object obj, Class<R> targetClass) {
+    protected static <R> R deepCloneByJackson(Object obj, Class<R> targetClass) {
         try {
             String json = OBJECT_MAPPER.writeValueAsString(obj);
             return OBJECT_MAPPER.readValue(json, targetClass);
@@ -37,7 +37,7 @@ public abstract class BaseCloneable<T> implements Cloneable<T>, Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    private static <R> R deepClone(Object obj, Class<R> targetClass) {
+    protected static <R> R deepClone(Object obj, Class<R> targetClass) {
         if (obj instanceof Serializable) {
             return (R) deepCloneBySerializable(obj);
         } else {
@@ -55,10 +55,6 @@ public abstract class BaseCloneable<T> implements Cloneable<T>, Serializable {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public T deepClone() {
-        return deepClone(this, (Class<T>) this.getClass());
-    }
 
     @SuppressWarnings("unchecked")
     public T copyFrom(Object source) {
@@ -84,15 +80,6 @@ public abstract class BaseCloneable<T> implements Cloneable<T>, Serializable {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public T cloneFrom(Object source) {
-        if (source instanceof BaseCloneable<?> cloneable) {
-            BeanUtils.copyProperties(cloneable.clone(), this);
-        } else {
-            BeanUtils.copyProperties(source, this);
-        }
-        return (T) this;
-    }
 
     public <R> R cloneTo(R target) {
         BeanUtils.copyProperties(this.clone(), target);
