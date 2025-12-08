@@ -31,6 +31,7 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 
 @Configuration
+
 public class MultiDataSourceConfiguration {
 
     static {
@@ -54,7 +55,6 @@ public class MultiDataSourceConfiguration {
             }
             DynamicBeanFactory.registerBean(key + "JdbcTemplate", jdbcTemplate);
 
-            // 根据驱动类名判断数据库类型
             DatabaseConfiguration databaseConfiguration;
             if (kp.getDriverClassName().contains("postgresql")) {
                 databaseConfiguration = new PgSQLDatabaseConfiguration();
@@ -72,15 +72,14 @@ public class MultiDataSourceConfiguration {
                         builder.setPrintNavSql(true);
                     }).useDatabaseConfigure(databaseConfiguration).build();
 
-            // 注册雪花算法主键生成器
             QueryConfiguration queryConfiguration = easyQueryClient.getRuntimeContext()
                     .getQueryConfiguration();
             queryConfiguration.applyPrimaryKeyGenerator(new SnowflakePrimaryKeyGenerator());
 
             DefaultEasyEntityQuery defaultEasyEntityQuery = new DefaultEasyEntityQuery(easyQueryClient);
-            DynamicBeanFactory.registerBean(key, defaultEasyEntityQuery);
-            DataSourceTransactionManager dataSourceTransactionManager = new DataSourceTransactionManager(source);
-            DynamicBeanFactory.registerBean(key + "TransactionManager", dataSourceTransactionManager);
+            // 修改：统一使用 xxxEasyEntityQuery 命名
+            DynamicBeanFactory.registerBean(key + "EasyEntityQuery", defaultEasyEntityQuery);
+            DynamicBeanFactory.registerBean(key + "TransactionManager", new DataSourceTransactionManager(source));
         });
     }
 
@@ -88,12 +87,12 @@ public class MultiDataSourceConfiguration {
     @Primary
     public EasyMultiEntityQuery easyMultiEntityQuery() {
         HashMap<String, EasyEntityQuery> extra = new HashMap<>();
-
         ConfigurableListableBeanFactory beanFactory = DynamicBeanFactory.getConfigurableBeanFactory();
-        EasyEntityQuery easyEntityQuery = beanFactory.getBean("primary", EasyEntityQuery.class);
+        // 修改：使用新的命名
+        EasyEntityQuery easyEntityQuery = beanFactory.getBean("primaryEasyEntityQuery", EasyEntityQuery.class);
 
         props.getDynamic().keySet().forEach(key -> {
-            EasyEntityQuery eq = beanFactory.getBean(key, EasyEntityQuery.class);
+            EasyEntityQuery eq = beanFactory.getBean(key + "EasyEntityQuery", EasyEntityQuery.class);
             extra.put(key, eq);
         });
 
