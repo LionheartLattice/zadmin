@@ -7,11 +7,9 @@ import com.easy.query.core.annotation.Table;
 import com.easy.query.core.proxy.ProxyEntityAvailable;
 import io.github.lionheartlattice.configuration.SnowflakeProperties.SnowflakePrimaryKeyGenerator;
 import io.github.lionheartlattice.parent.BaseEntity;
-import io.github.lionheartlattice.user_center.po.proxy.UserEntityProxy;
+import io.github.lionheartlattice.user_center.po.proxy.UserProxy;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -22,14 +20,13 @@ import java.util.Date;
  * @author lionheart
  * @since 1.0
  */
-@EqualsAndHashCode(callSuper = true)
+
 @Data
-@Accessors(chain = true)
 @Schema(name = "系统用户表")
 @Table(value = "z_user")
 @EntityProxy
 @EasyAssertMessage("未找到对应的系统用户表信息")
-public class UserEntity extends BaseEntity<UserEntity, UserEntityProxy> implements ProxyEntityAvailable<UserEntity, UserEntityProxy> {
+public class User extends BaseEntity<User, UserProxy> implements ProxyEntityAvailable<User, UserProxy> {
 
     /**
      * 用户ID

@@ -128,7 +128,7 @@ public abstract class BaseClientEntity<T extends BaseClientEntity<T, TProxy> & P
 
     /**
      * 获取当前实体类的查询器
-     * 用法: new UserEntity().queryable().where(u -> u.nickname().like("管理")).toList()
+     * 用法: new User().queryable().where(u -> u.nickname().like("管理")).toList()
      *
      * @return EntityQueryable 查询器
      */
@@ -205,7 +205,7 @@ public abstract class BaseClientEntity<T extends BaseClientEntity<T, TProxy> & P
 
     /**
      * 获取表达式更新器，可自定义更新条件和set值
-     * 用法: new UserEntity().expressionUpdatable().set(u -> u.nickname(), "新昵称").where(u -> u.id().eq(1L)).executeRows()
+     * 用法: new User().expressionUpdatable().set(u -> u.nickname(), "新昵称").where(u -> u.id().eq(1L)).executeRows()
      *
      * @return ExpressionUpdatable 表达式更新器
      */
@@ -238,7 +238,7 @@ public abstract class BaseClientEntity<T extends BaseClientEntity<T, TProxy> & P
 
     /**
      * 获取表达式删除器，可自定义删除条件
-     * 用法: new UserEntity().expressionDeletable().where(u -> u.delFlag().eq(true)).executeRows()
+     * 用法: new User().expressionDeletable().where(u -> u.delFlag().eq(true)).executeRows()
      *
      * @return ExpressionDeletable 表达式删除器
      */

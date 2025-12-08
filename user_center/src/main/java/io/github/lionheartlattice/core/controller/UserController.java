@@ -1,6 +1,6 @@
 package io.github.lionheartlattice.core.controller;
 
-import io.github.lionheartlattice.user_center.po.UserEntity;
+import io.github.lionheartlattice.user_center.po.User;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-import static io.github.lionheartlattice.configuration.easyquery.DataAccessUtils.getEntityQuery;
-
 @Tag(name = "用户模块", description = "用户管理")
 @RestController
 @RequestMapping("z_user")
@@ -19,13 +17,14 @@ import static io.github.lionheartlattice.configuration.easyquery.DataAccessUtils
 public class UserController {
     //    新增用户
     @PostMapping("add")
-    public long add(@RequestBody UserEntity userEntity) {
-        return userEntity.insertable().executeRows();
+    public long add(@RequestBody User user) {
+        return user.insertable().executeRows();
     }
 
     //列表查询
     @PostMapping("list")
-    public List<UserEntity> list() {
-        return new UserEntity().queryable().toList();
+    public List<User> list() {
+        return new User().queryable().toList();
     }
 }
+

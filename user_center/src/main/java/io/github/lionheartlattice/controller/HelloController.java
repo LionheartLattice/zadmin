@@ -1,6 +1,6 @@
 package io.github.lionheartlattice.controller;
 
-import io.github.lionheartlattice.user_center.po.UserEntity;
+import io.github.lionheartlattice.user_center.po.User;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,8 +35,8 @@ public class HelloController {
     // 使用主数据源 EasyQuery 查询
     @Operation(summary = "查询小米公司(主库-EQ)", description = "使用EasyQuery查询主库")
     @GetMapping("/say")
-    public List<UserEntity> say() {
-        return getEntityQuery().queryable(UserEntity.class).where(c -> c.nickname()
+    public List<User> say() {
+        return getEntityQuery().queryable(User.class).where(c -> c.nickname()
                 .like("管理")).toList();
     }
 
@@ -51,8 +51,8 @@ public class HelloController {
     @Operation(summary = "查询小米公司(DS2-EQ)", description = "使用EasyQuery查询DS2库")
     // 使用 ds2 数据源 EasyQuery 查询
     @GetMapping("/ds2/say")
-    public List<UserEntity> ds2Say() {
-        return getDs2EntityQuery().queryable(UserEntity.class).where(c -> c.nickname()
+    public List<User> ds2Say() {
+        return getDs2EntityQuery().queryable(User.class).where(c -> c.nickname()
                 .like("张")).toList();
     }
 }
