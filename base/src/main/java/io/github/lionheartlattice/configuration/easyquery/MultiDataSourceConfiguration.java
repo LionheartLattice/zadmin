@@ -17,7 +17,7 @@ import io.github.lionheartlattice.configuration.spring.DynamicBeanFactory;
 import io.github.lionheartlattice.configuration.spring.DynamicDataSourceProperties;
 import io.github.lionheartlattice.configuration.spring.SpringConnectionManager;
 import io.github.lionheartlattice.configuration.spring.SpringDataSourceUnitFactory;
-import io.github.lionheartlattice.po.SnowflakePrimaryKeyGenerator;
+import io.github.lionheartlattice.util.SnowflakePrimaryKeyGenerator;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceProperties;

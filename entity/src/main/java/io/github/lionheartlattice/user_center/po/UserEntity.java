@@ -5,7 +5,7 @@ import com.easy.query.core.annotation.EasyAssertMessage;
 import com.easy.query.core.annotation.EntityProxy;
 import com.easy.query.core.annotation.Table;
 import com.easy.query.core.proxy.ProxyEntityAvailable;
-import io.github.lionheartlattice.po.SnowflakePrimaryKeyGenerator;
+import io.github.lionheartlattice.util.SnowflakePrimaryKeyGenerator;
 import io.github.lionheartlattice.parent.BaseEntity;
 import io.github.lionheartlattice.user_center.po.proxy.UserEntityProxy;
 import io.swagger.v3.oas.annotations.media.Schema;
