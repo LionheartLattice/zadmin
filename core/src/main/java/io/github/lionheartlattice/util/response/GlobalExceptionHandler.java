@@ -71,7 +71,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 提取首个项目内栈帧位置，格式: 全类名.方法名(文件:行号) + 根因 + URL + 异常消息
+     * 提取首个项目内栈帧位置，格式: 位置 + URL + 异常消息 + 根因
      */
     private String buildLocation(Throwable e, HttpServletRequest request) {
         StackTraceElement first = findAppFrame(e);
@@ -80,18 +80,18 @@ public class GlobalExceptionHandler {
         }
         String uri = request != null ? request.getRequestURI() : "N/A";
         String method = request != null ? request.getMethod() : "N/A";
-        return String.format("%s.%s(%s:%d)   +   %s   +   [%s %s]   +   %s", first.getClassName(), first.getMethodName(), first.getFileName(), first.getLineNumber(), ExceptionUtil.getRootCauseMessage(e), method, uri, e.getMessage());
+        return String.format("%s.%s(%s:%d)   +   [%s %s]   +   %s   +   %s", first.getClassName(), first.getMethodName(), first.getFileName(), first.getLineNumber(), method, uri, e.getMessage(), ExceptionUtil.getRootCauseMessage(e));
     }
 
     /**
-     * 提取首个项目内栈帧位置，格式: 全类名.方法名(文件:行号) + 根因 + 异常消息
+     * 提取首个项目内栈帧位置，格式: 位置 + 异常消息 + 根因
      */
     private String buildLocation(Throwable e) {
         StackTraceElement first = findAppFrame(e);
         if (first == null) {
             return "N/A";
         }
-        return String.format("%s.%s(%s:%d)      %s      %s", first.getClassName(), first.getMethodName(), first.getFileName(), first.getLineNumber(), ExceptionUtil.getRootCauseMessage(e), e.getMessage());
+        return String.format("%s.%s(%s:%d)      %s      %s", first.getClassName(), first.getMethodName(), first.getFileName(), first.getLineNumber(), e.getMessage(), ExceptionUtil.getRootCauseMessage(e));
     }
 
     /**
