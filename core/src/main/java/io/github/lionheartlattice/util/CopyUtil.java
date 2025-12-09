@@ -1,9 +1,9 @@
 package io.github.lionheartlattice.util;
 
 import org.springframework.beans.BeanUtils;
+import tools.jackson.databind.JavaType;
 import tools.jackson.databind.ObjectMapper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -50,14 +50,14 @@ public class CopyUtil {
     }
 
     /**
-     * 批量深拷贝到指定类型的新实例列表
+     * 批量深拷贝到指定类型的新实例列表（基于 Jackson 3）
      */
     public static <S, T> List<T> copyList(List<S> sourceList, Class<T> targetClass) {
-        List<T> targetList = new ArrayList<>(sourceList.size());
-        for (S source : sourceList) {
-            targetList.add(copyDeep(source, targetClass));
-        }
-        return targetList;
+        ObjectMapper objectMapper = getObjectMapper();
+        JavaType listType = objectMapper.getTypeFactory()
+                .constructCollectionType(List.class, targetClass);
+        String json = objectMapper.writeValueAsString(sourceList);
+        return objectMapper.readValue(json, listType);
     }
 
     /**
