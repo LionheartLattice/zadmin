@@ -5,6 +5,7 @@ import io.github.lionheartlattice.util.DataAccessUtils;
 import io.github.lionheartlattice.util.NullUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.core.ResolvableType;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -78,10 +79,6 @@ public abstract class ParentUtil<T> extends NullUtil {
      * @return 实体类新实例
      */
     public T createPo() {
-        try {
-            return entityClass().getDeclaredConstructor().newInstance();
-        } catch (Exception e) {
-            throw new RuntimeException("创建实体类实例失败: " + entityClass().getName(), e);
-        }
+        return BeanUtils.instantiateClass(entityClass());
     }
 }

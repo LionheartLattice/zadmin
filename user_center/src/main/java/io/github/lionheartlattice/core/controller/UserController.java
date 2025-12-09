@@ -21,7 +21,9 @@ public class UserController extends ParentUtil<User> {
     @PostMapping("add")
     public long add(@RequestBody UserDTO dto) {
         boolean notNull = isNotNull(dto);
+
         log.warn("新增用户参数：{}", notNull ? dto : "null");
+
         return createPo().copyFrom(dto).setUpdateId(0L).insertable().executeRows();
     }
 
@@ -34,6 +36,8 @@ public class UserController extends ParentUtil<User> {
 
         List<User> list = createPo().queryable().toList();
         log.warn("列表查询结果：{}", isNotNull(list) ? list : "null");
+
+
         return list;
     }
 }
