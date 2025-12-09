@@ -6,6 +6,7 @@ apply: 始终
 
 - 使用 Java 25
 - 基于 Spring Boot 4.0.0
+- 使用 easy-query 作为ORM框架 文档地址https://www.easy-query.com/easy-query-doc/feature-map.html
 - 使用 Maven 多模块项目结构
 - 编写代码要注重简洁高效
 
