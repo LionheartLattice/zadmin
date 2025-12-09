@@ -22,18 +22,21 @@ public class GlobalExceptionHandler {
     public ApiResult<String> handleValidationException(MethodArgumentNotValidException e) {
         log.error("参数校验异常: {}", e.getMessage());
         ApiResult<String> result = ApiResult.error(ErrorEnum.VALID_ERROR);
-        result.setData(ExceptionUtil.getRootCauseMessage(e));
+        result.setData(e.getMessage());
+        result.setParam(ExceptionUtil.getRootCauseMessage(e));
         return result;
     }
 
     /**
      * 处理绑定异常
+     *
      */
     @ExceptionHandler(BindException.class)
     public ApiResult<String> handleBindException(BindException e) {
         log.error("绑定异常: {}", e.getMessage());
         ApiResult<String> result = ApiResult.error(ErrorEnum.VALID_ERROR);
-        result.setData(ExceptionUtil.getRootCauseMessage(e));
+        result.setData(e.getMessage());
+        result.setParam(ExceptionUtil.getRootCauseMessage(e));
         return result;
     }
 
@@ -44,7 +47,8 @@ public class GlobalExceptionHandler {
     public ApiResult<String> handleIllegalArgumentException(IllegalArgumentException e) {
         log.error("非法参数异常: {}", e.getMessage());
         ApiResult<String> result = ApiResult.error(ErrorEnum.INVALID_ID);
-        result.setData(ExceptionUtil.getRootCauseMessage(e));
+        result.setData(e.getMessage());
+        result.setParam(ExceptionUtil.getRootCauseMessage(e));
         return result;
     }
 
@@ -55,7 +59,8 @@ public class GlobalExceptionHandler {
     public ApiResult<String> handleExceptionWithEnum(ExceptionWithEnum e) {
         log.error("业务异常: {}", e.getMessage());
         ApiResult<String> result = ApiResult.error(e.getErrorEnum());
-        result.setData(e.getDetailMessage());
+        String data = e.getDetailMessage() != null ? e.getDetailMessage() : e.getMessage();
+        result.setData(data);
         result.setParam(ExceptionUtil.getRootCauseMessage(e));
         return result;
     }
@@ -67,7 +72,8 @@ public class GlobalExceptionHandler {
     public ApiResult<String> handleRuntimeException(RuntimeException e) {
         log.error("运行时异常: {}", e.getMessage());
         ApiResult<String> result = ApiResult.error(ErrorEnum.UNKNOWN);
-        result.setData(ExceptionUtil.getRootCauseMessage(e));
+        result.setData(e.getMessage());
+        result.setParam(ExceptionUtil.getRootCauseMessage(e));
         return result;
     }
 
@@ -78,7 +84,8 @@ public class GlobalExceptionHandler {
     public ApiResult<String> handleException(Exception e) {
         log.error("未知异常: {}", e.getMessage());
         ApiResult<String> result = ApiResult.error(ErrorEnum.UNKNOWN);
-        result.setData(ExceptionUtil.getRootCauseMessage(e));
+        result.setData(e.getMessage());
+        result.setParam(ExceptionUtil.getRootCauseMessage(e));
         return result;
     }
 }

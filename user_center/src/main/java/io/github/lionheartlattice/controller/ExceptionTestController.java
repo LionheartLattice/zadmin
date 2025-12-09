@@ -24,7 +24,7 @@ public class ExceptionTestController {
     @Operation(summary = "抛出运行时异常", description = "测试全局异常处理")
     @GetMapping("runtime")
     public ApiResult<Void> throwRuntimeException() {
-        throw new ExceptionWithEnum(ErrorEnum.VALID_ERROR);
+        throw new ExceptionWithEnum(ErrorEnum.VALID_ERROR,"我的业务逻辑出现了问题");
     }
 
     /**

@@ -29,7 +29,7 @@ public class HelloController {
     @Operation(summary = "获取所有用户(主库-JDBC)", description = "使用JdbcTemplate查询主库z_user表")
     @GetMapping("/user")
     public List<Map<String, Object>> getUser() {
-        return getJdbcTemplate().queryForList("select * from z_user");
+        return getJdbcTemplate().queryForList("select * from x_user");
     }
 
     // 使用主数据源 EasyQuery 查询
