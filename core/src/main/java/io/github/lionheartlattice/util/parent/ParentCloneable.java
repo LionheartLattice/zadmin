@@ -1,6 +1,6 @@
 package io.github.lionheartlattice.util.parent;
 
-import cn.hutool.core.clone.CloneRuntimeException;
+import cn.hutool.core.clone.CloneSupport;
 import cn.hutool.core.clone.Cloneable;
 import io.github.lionheartlattice.util.CopyUtil;
 import org.springframework.core.ResolvableType;
@@ -13,21 +13,11 @@ import java.io.Serializable;
  *
  * @param <T> 实体类型
  */
-public abstract class ParentCloneable<T> implements Cloneable<T>, Serializable {
+public abstract class ParentCloneable<T> extends CloneSupport<T> implements Cloneable<T>, Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public T clone() {
-        try {
-            return (T) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new CloneRuntimeException(e);
-        }
-    }
 
     @SuppressWarnings("unchecked")
     public T copyFrom(Object source) {

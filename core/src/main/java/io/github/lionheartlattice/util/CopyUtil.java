@@ -12,7 +12,7 @@ import java.util.List;
  * <p>默认方法为浅拷贝（基于 Spring BeanUtils）
  * <p>深拷贝方法使用 copyDeep 前缀（基于 Jackson 3）
  */
-public abstract class CopyUtil {
+public class CopyUtil {
 
     private CopyUtil() {
     }

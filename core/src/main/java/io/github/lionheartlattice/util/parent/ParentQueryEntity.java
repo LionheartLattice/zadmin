@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import static io.github.lionheartlattice.util.DataAccessUtils.*;
+import static io.github.lionheartlattice.util.DataAccessUtils.getEntityQuery;
 
 /**
  * 基础查询实体类，提供 EasyBaseQuery 相关功能
@@ -37,7 +37,7 @@ public abstract class ParentQueryEntity<T> extends ParentCloneable<T> {
      * @param <R>   返回类型泛型
      * @return 查询结果列表
      */
-    public static <R> List<R> sqlQuery(String sql, Class<R> clazz) {
+    protected static <R> List<R> sqlQuery(String sql, Class<R> clazz) {
         return getEntityQuery().sqlQuery(sql, clazz);
     }
 
@@ -50,7 +50,7 @@ public abstract class ParentQueryEntity<T> extends ParentCloneable<T> {
      * @param <R>        返回类型泛型
      * @return 查询结果列表
      */
-    public static <R> List<R> sqlQuery(String sql, Class<R> clazz, List<Object> parameters) {
+    protected static <R> List<R> sqlQuery(String sql, Class<R> clazz, List<Object> parameters) {
         return getEntityQuery().sqlQuery(sql, clazz, parameters);
     }
 
@@ -63,7 +63,7 @@ public abstract class ParentQueryEntity<T> extends ParentCloneable<T> {
      * @param <R>        返回类型泛型
      * @return 查询结果列表
      */
-    public static <R> List<R> sqlEasyQuery(String sql, Class<R> clazz, List<SQLParameter> parameters) {
+    protected static <R> List<R> sqlEasyQuery(String sql, Class<R> clazz, List<SQLParameter> parameters) {
         return getEntityQuery().sqlEasyQuery(sql, clazz, parameters);
     }
 
@@ -73,7 +73,7 @@ public abstract class ParentQueryEntity<T> extends ParentCloneable<T> {
      * @param sql SQL语句
      * @return Map列表
      */
-    public static List<Map<String, Object>> sqlQueryMap(String sql) {
+    protected static List<Map<String, Object>> sqlQueryMap(String sql) {
         return getEntityQuery().sqlQueryMap(sql);
     }
 
@@ -84,7 +84,7 @@ public abstract class ParentQueryEntity<T> extends ParentCloneable<T> {
      * @param parameters 参数列表
      * @return Map列表
      */
-    public static List<Map<String, Object>> sqlQueryMap(String sql, List<Object> parameters) {
+    protected static List<Map<String, Object>> sqlQueryMap(String sql, List<Object> parameters) {
         return getEntityQuery().sqlQueryMap(sql, parameters);
     }
 
@@ -96,7 +96,7 @@ public abstract class ParentQueryEntity<T> extends ParentCloneable<T> {
      * @param sql SQL语句
      * @return 影响的行数
      */
-    public static long sqlExecute(String sql) {
+    protected static long sqlExecute(String sql) {
         return getEntityQuery().sqlExecute(sql);
     }
 
@@ -107,7 +107,7 @@ public abstract class ParentQueryEntity<T> extends ParentCloneable<T> {
      * @param parameters 参数列表
      * @return 影响的行数
      */
-    public static long sqlExecute(String sql, List<Object> parameters) {
+    protected static long sqlExecute(String sql, List<Object> parameters) {
         return getEntityQuery().sqlExecute(sql, parameters);
     }
 
@@ -118,7 +118,7 @@ public abstract class ParentQueryEntity<T> extends ParentCloneable<T> {
      *
      * @return Transaction 事务对象
      */
-    public static Transaction beginTransaction() {
+    protected static Transaction beginTransaction() {
         return getEntityQuery().beginTransaction();
     }
 
@@ -133,7 +133,7 @@ public abstract class ParentQueryEntity<T> extends ParentCloneable<T> {
      * @param isolationLevel 隔离级别，null表示使用默认
      * @return Transaction 事务对象
      */
-    public static Transaction beginTransaction(Integer isolationLevel) {
+    protected static Transaction beginTransaction(Integer isolationLevel) {
         return getEntityQuery().beginTransaction(isolationLevel);
     }
 
@@ -145,7 +145,7 @@ public abstract class ParentQueryEntity<T> extends ParentCloneable<T> {
      * @param entity 实体对象
      * @return true:添加成功, false:已经存在相同对象或未开启追踪
      */
-    public static boolean addTracking(Object entity) {
+    protected static boolean addTracking(Object entity) {
         return getEntityQuery().addTracking(entity);
     }
 
@@ -155,7 +155,7 @@ public abstract class ParentQueryEntity<T> extends ParentCloneable<T> {
      * @param entity 实体对象
      * @return 是否移除成功
      */
-    public static boolean removeTracking(Object entity) {
+    protected static boolean removeTracking(Object entity) {
         return getEntityQuery().removeTracking(entity);
     }
 
@@ -165,7 +165,7 @@ public abstract class ParentQueryEntity<T> extends ParentCloneable<T> {
      * @param entity 实体对象
      * @return EntityState 实体状态
      */
-    public static EntityState getTrackEntityStateNotNull(@NotNull Object entity) {
+    protected static EntityState getTrackEntityStateNotNull(@NotNull Object entity) {
         return getEntityQuery().getTrackEntityStateNotNull(entity);
     }
 
@@ -175,7 +175,7 @@ public abstract class ParentQueryEntity<T> extends ParentCloneable<T> {
      * @param entity 实体对象
      * @return EntityState 实体状态，可能为null
      */
-    public static @Nullable EntityState getTrackEntityState(@NotNull Object entity) {
+    protected static @Nullable EntityState getTrackEntityState(@NotNull Object entity) {
         return getEntityQuery().getTrackEntityState(entity);
     }
 
@@ -187,7 +187,7 @@ public abstract class ParentQueryEntity<T> extends ParentCloneable<T> {
      * @param map 数据Map
      * @return MapClientInsertable
      */
-    public static MapClientInsertable<Map<String, Object>> mapInsertable(Map<String, Object> map) {
+    protected static MapClientInsertable<Map<String, Object>> mapInsertable(Map<String, Object> map) {
         return getEntityQuery().getEasyQueryClient().mapInsertable(map);
     }
 
@@ -197,7 +197,7 @@ public abstract class ParentQueryEntity<T> extends ParentCloneable<T> {
      * @param maps 数据Map集合
      * @return MapClientInsertable
      */
-    public static MapClientInsertable<Map<String, Object>> mapInsertable(Collection<Map<String, Object>> maps) {
+    protected static MapClientInsertable<Map<String, Object>> mapInsertable(Collection<Map<String, Object>> maps) {
         return getEntityQuery().getEasyQueryClient().mapInsertable(maps);
     }
 
@@ -207,7 +207,7 @@ public abstract class ParentQueryEntity<T> extends ParentCloneable<T> {
      * @param map 数据Map
      * @return MapClientUpdatable
      */
-    public static MapClientUpdatable<Map<String, Object>> mapUpdatable(Map<String, Object> map) {
+    protected static MapClientUpdatable<Map<String, Object>> mapUpdatable(Map<String, Object> map) {
         return getEntityQuery().getEasyQueryClient().mapUpdatable(map);
     }
 
@@ -217,7 +217,7 @@ public abstract class ParentQueryEntity<T> extends ParentCloneable<T> {
      * @param maps 数据Map集合
      * @return MapClientUpdatable
      */
-    public static MapClientUpdatable<Map<String, Object>> mapUpdatable(Collection<Map<String, Object>> maps) {
+    protected static MapClientUpdatable<Map<String, Object>> mapUpdatable(Collection<Map<String, Object>> maps) {
         return getEntityQuery().getEasyQueryClient().mapUpdatable(maps);
     }
 
@@ -228,7 +228,7 @@ public abstract class ParentQueryEntity<T> extends ParentCloneable<T> {
      *
      * @return QueryRuntimeContext
      */
-    public static QueryRuntimeContext getRuntimeContext() {
+    protected static QueryRuntimeContext getRuntimeContext() {
         return getEntityQuery().getRuntimeContext();
     }
 }

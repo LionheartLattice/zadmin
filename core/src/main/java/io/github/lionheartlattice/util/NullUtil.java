@@ -11,7 +11,7 @@ import java.util.Map;
  * @author lionheart
  * @since 1.0
  */
-public abstract class NullUtil {
+public class NullUtil {
 
     /**
      * 判断字符串非空

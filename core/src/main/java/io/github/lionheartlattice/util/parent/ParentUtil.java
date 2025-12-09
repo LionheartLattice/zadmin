@@ -68,7 +68,7 @@ public abstract class ParentUtil<T> extends NullUtil {
      * @return 泛型类型 Class
      */
     @SuppressWarnings("unchecked")
-    public Class<T> entityClass() {
+    protected Class<T> entityClass() {
         return (Class<T>) ResolvableType.forClass(getClass()).as(ParentUtil.class)
                 .getGeneric(0).resolve();
     }
@@ -78,7 +78,7 @@ public abstract class ParentUtil<T> extends NullUtil {
      *
      * @return 实体类新实例
      */
-    public T createPo() {
+    protected T createPo() {
         return BeanUtils.instantiateClass(entityClass());
     }
 }
