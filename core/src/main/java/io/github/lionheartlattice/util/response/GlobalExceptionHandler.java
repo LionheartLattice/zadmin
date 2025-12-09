@@ -18,69 +18,80 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ApiResult<String> handleValidationException(MethodArgumentNotValidException e, HttpServletRequest request) {
-        log.error(buildLocation(e), e);
+        log.error(buildLocation(e, request), e);
         ApiResult<String> result = ApiResult.error(ErrorEnum.VALID_ERROR);
         result.setData(dedup(e.getMessage(), ErrorEnum.VALID_ERROR.getMessage()));
-        result.setParam(buildLocation(e));
+        result.setParam(buildLocation(e, request));
         return result;
     }
 
     @ExceptionHandler(BindException.class)
     public ApiResult<String> handleBindException(BindException e, HttpServletRequest request) {
-        log.error(buildLocation(e), e);
+        log.error(buildLocation(e, request), e);
         ApiResult<String> result = ApiResult.error(ErrorEnum.VALID_ERROR);
         result.setData(dedup(e.getMessage(), ErrorEnum.VALID_ERROR.getMessage()));
-        result.setParam(buildLocation(e));
+        result.setParam(buildLocation(e, request));
         return result;
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ApiResult<String> handleIllegalArgumentException(IllegalArgumentException e, HttpServletRequest request) {
-        log.error(buildLocation(e), e);
+        log.error(buildLocation(e, request), e);
         ApiResult<String> result = ApiResult.error(ErrorEnum.INVALID_ID);
         result.setData(dedup(e.getMessage(), ErrorEnum.INVALID_ID.getMessage()));
-        result.setParam(buildLocation(e));
+        result.setParam(buildLocation(e, request));
         return result;
     }
 
     @ExceptionHandler(ExceptionWithEnum.class)
     public ApiResult<String> handleExceptionWithEnum(ExceptionWithEnum e, HttpServletRequest request) {
-        log.error(buildLocation(e), e);
+        log.error(buildLocation(e, request), e);
         ApiResult<String> result = ApiResult.error(e.getErrorEnum());
         result.setData(dedup(e.getMessage(), e.getErrorEnum().getMessage()));
-        result.setParam(buildLocation(e));
+        result.setParam(buildLocation(e, request));
         return result;
     }
 
     @ExceptionHandler(RuntimeException.class)
     public ApiResult<String> handleRuntimeException(RuntimeException e, HttpServletRequest request) {
-        log.error(buildLocation(e), e);
+        log.error(buildLocation(e, request), e);
         ApiResult<String> result = ApiResult.error(ErrorEnum.UNKNOWN);
         result.setData(dedup(e.getMessage(), ErrorEnum.UNKNOWN.getMessage()));
-        result.setParam(buildLocation(e));
+        result.setParam(buildLocation(e, request));
         return result;
     }
 
     @ExceptionHandler(Exception.class)
     public ApiResult<String> handleException(Exception e, HttpServletRequest request) {
-        log.error(buildLocation(e), e);
+        log.error(buildLocation(e, request), e);
         ApiResult<String> result = ApiResult.error(ErrorEnum.UNKNOWN);
         result.setData(dedup(e.getMessage(), ErrorEnum.UNKNOWN.getMessage()));
-        result.setParam(buildLocation(e));
+        result.setParam(buildLocation(e, request));
         return result;
     }
 
     /**
-     * 提取首个项目内栈帧位置，格式: 全类名.方法名(文件:行号) + 根因
+     * 提取首个项目内栈帧位置，格式: 全类名.方法名(文件:行号) + 根因 + URL + 异常消息
+     */
+    private String buildLocation(Throwable e, HttpServletRequest request) {
+        StackTraceElement first = findAppFrame(e);
+        if (first == null) {
+            return "N/A";
+        }
+        String uri = request != null ? request.getRequestURI() : "N/A";
+        String method = request != null ? request.getMethod() : "N/A";
+        return String.format("%s.%s(%s:%d)   +   %s   +   [%s %s]   +   %s", first.getClassName(), first.getMethodName(), first.getFileName(), first.getLineNumber(), ExceptionUtil.getRootCauseMessage(e), method, uri, e.getMessage());
+    }
+
+    /**
+     * 提取首个项目内栈帧位置，格式: 全类名.方法名(文件:行号) + 根因 + 异常消息
      */
     private String buildLocation(Throwable e) {
         StackTraceElement first = findAppFrame(e);
         if (first == null) {
             return "N/A";
         }
-        return String.format("%s.%s(%s:%d)      %s",
-                first.getClassName(), first.getMethodName(), first.getFileName(), first.getLineNumber(),
-                ExceptionUtil.getRootCauseMessage(e));
+        return String.format("%s.%s(%s:%d)      %s      %s", first.getClassName(), first.getMethodName(), first.getFileName(), first.getLineNumber(), ExceptionUtil.getRootCauseMessage(e), e.getMessage());
     }
 
     /**
