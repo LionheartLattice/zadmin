@@ -16,10 +16,16 @@ public class ExceptionWithEnum extends RuntimeException {
      */
     private ErrorEnum errorEnum;
 
+
     /**
-     * 详细异常信息
+     * 构造方法
+     *
      */
-    private String detailMessage;
+    public ExceptionWithEnum() {
+        super("未知错误");
+        this.errorEnum = ErrorEnum.UNKNOWN;
+    }
+
 
     /**
      * 构造方法
@@ -34,13 +40,12 @@ public class ExceptionWithEnum extends RuntimeException {
     /**
      * 构造方法（带详细消息）
      *
-     * @param errorEnum     错误枚举
-     * @param detailMessage 详细异常信息
+     * @param errorEnum 错误枚举
+     * @param message   详细异常信息
      */
-    public ExceptionWithEnum(ErrorEnum errorEnum, String detailMessage) {
-        super(errorEnum.getMessage());
+    public ExceptionWithEnum(ErrorEnum errorEnum, String message) {
+        super(message);
         this.errorEnum = errorEnum;
-        this.detailMessage = detailMessage;
     }
 
     /**

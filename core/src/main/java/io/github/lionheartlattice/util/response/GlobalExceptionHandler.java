@@ -59,7 +59,7 @@ public class GlobalExceptionHandler {
     public ApiResult<String> handleExceptionWithEnum(ExceptionWithEnum e) {
         log.error("业务异常: {}", e.getMessage());
         ApiResult<String> result = ApiResult.error(e.getErrorEnum());
-        String data = e.getDetailMessage() != null ? e.getDetailMessage() : e.getMessage();
+        String data =  e.getMessage();
         result.setData(data);
         result.setParam(ExceptionUtil.getRootCauseMessage(e));
         return result;

@@ -38,7 +38,7 @@ public enum ErrorEnum {
     BACKGROUND_NOT_EXISTS(1014, "背景图片不存在"),
     LOGIN_LIMIT(1015,"登录请求已达到最大次数"),
 
-    UNKNOWN(9999, "未知异常,请查看详情"),
+    UNKNOWN(9999, "WARNING!"),
     ;
     // @formatter:on
 
