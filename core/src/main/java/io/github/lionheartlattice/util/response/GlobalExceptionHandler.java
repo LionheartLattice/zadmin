@@ -2,11 +2,13 @@ package io.github.lionheartlattice.util.response;
 
 import cn.hutool.core.exceptions.ExceptionUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.util.ContentCachingRequestWrapper;
 
 /**
  * 全局异常处理器
@@ -71,7 +73,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 提取首个项目内栈帧位置，格式: 位置 + URL + 异常消息 + 根因
+     * 提取首个项目内栈帧位置，格式: 位置 + URL + 异常消息 + 根因 + Body
      */
     private String buildLocation(Throwable e, HttpServletRequest request) {
         StackTraceElement first = findAppFrame(e);
@@ -80,18 +82,29 @@ public class GlobalExceptionHandler {
         }
         String uri = request != null ? request.getRequestURI() : "N/A";
         String method = request != null ? request.getMethod() : "N/A";
-        return String.format("%s.%s(%s:%d)   +   [%s %s]   +   %s   +   %s", first.getClassName(), first.getMethodName(), first.getFileName(), first.getLineNumber(), method, uri, e.getMessage(), ExceptionUtil.getRootCauseMessage(e));
+        String body = readBody(request, 1024);
+        return String.format("%s.%s(%s:%d)   +   [%s %s]   +   %s   +   %s   +   body=%s",
+                             first.getClassName(), first.getMethodName(), first.getFileName(), first.getLineNumber(),
+                             method, uri,
+                             e.getMessage(),
+                             ExceptionUtil.getRootCauseMessage(e),
+                             body);
     }
 
     /**
-     * 提取首个项目内栈帧位置，格式: 位置 + 异常消息 + 根因
+     * 读取缓存的请求体（截断避免过长）
      */
-    private String buildLocation(Throwable e) {
-        StackTraceElement first = findAppFrame(e);
-        if (first == null) {
+    @SneakyThrows
+    private String readBody(HttpServletRequest request, int maxLen) {
+        if (!(request instanceof ContentCachingRequestWrapper wrapper)) {
             return "N/A";
         }
-        return String.format("%s.%s(%s:%d)      %s      %s", first.getClassName(), first.getMethodName(), first.getFileName(), first.getLineNumber(), e.getMessage(), ExceptionUtil.getRootCauseMessage(e));
+        byte[] buf = wrapper.getContentAsByteArray();
+        if (buf.length == 0) {
+            return "N/A";
+        }
+        String body = new String(buf, wrapper.getCharacterEncoding());
+        return body.length() > maxLen ? body.substring(0, maxLen) + "...(truncated)" : body;
     }
 
     /**
