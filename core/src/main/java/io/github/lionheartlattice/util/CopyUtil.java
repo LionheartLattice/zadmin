@@ -1,6 +1,5 @@
 package io.github.lionheartlattice.util;
 
-import cn.hutool.core.clone.CloneRuntimeException;
 import org.springframework.beans.BeanUtils;
 import tools.jackson.databind.ObjectMapper;
 
@@ -51,12 +50,12 @@ public class CopyUtil {
     }
 
     /**
-     * 批量浅拷贝到指定类型的新实例列表
+     * 批量深拷贝到指定类型的新实例列表
      */
     public static <S, T> List<T> copyList(List<S> sourceList, Class<T> targetClass) {
         List<T> targetList = new ArrayList<>(sourceList.size());
         for (S source : sourceList) {
-            targetList.add(copy(source, targetClass));
+            targetList.add(copyDeep(source, targetClass));
         }
         return targetList;
     }
@@ -65,13 +64,9 @@ public class CopyUtil {
      * 深拷贝到指定类型的新实例（基于 Jackson 3）
      */
     public static <T> T copyDeep(Object source, Class<T> targetClass) {
-        try {
-            ObjectMapper objectMapper = getObjectMapper();
-            String json = objectMapper.writeValueAsString(source);
-            return objectMapper.readValue(json, targetClass);
-        } catch (Exception e) {
-            throw new CloneRuntimeException(e);
-        }
+        ObjectMapper objectMapper = getObjectMapper();
+        String json = objectMapper.writeValueAsString(source);
+        return objectMapper.readValue(json, targetClass);
     }
 
     /**
@@ -80,16 +75,5 @@ public class CopyUtil {
     @SuppressWarnings("unchecked")
     public static <T> T copyDeep(T source) {
         return (T) copyDeep(source, source.getClass());
-    }
-
-    /**
-     * 批量深拷贝到指定类型的新实例列表（基于 Jackson 3）
-     */
-    public static <S, T> List<T> copyDeepList(List<S> sourceList, Class<T> targetClass) {
-        List<T> targetList = new ArrayList<>(sourceList.size());
-        for (S source : sourceList) {
-            targetList.add(copyDeep(source, targetClass));
-        }
-        return targetList;
     }
 }

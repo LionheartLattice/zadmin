@@ -24,9 +24,6 @@ import static io.github.lionheartlattice.util.DataAccessUtils.getEntityQuery;
  */
 public abstract class ParentQueryEntity<T> extends ParentCloneable<T> {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
-
     // ==================== 原生 SQL 查询方法 ====================
 
     /**

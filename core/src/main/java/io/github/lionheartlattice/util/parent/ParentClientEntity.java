@@ -39,9 +39,6 @@ import static io.github.lionheartlattice.util.DataAccessUtils.*;
  */
 public abstract class ParentClientEntity<T extends ParentClientEntity<T, TProxy> & ProxyEntityAvailable<T, TProxy>, TProxy extends ProxyEntity<TProxy, T>> extends ParentQueryEntity<T> implements ProxyEntityAvailable<T, TProxy> {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
-
     // ==================== 追踪作用域方法 ====================
 
     /**
