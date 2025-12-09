@@ -43,12 +43,13 @@ spring:
           min-idle: 10
 
   jackson:
-    default-property-inclusion: non_null
+    default-property-inclusion: ALWAYS
+    time-zone: GMT+8
+    deserialization:
+      FAIL_ON_UNKNOWN_PROPERTIES: false
     datatype:
       datetime:
         WRITE_DATES_AS_TIMESTAMPS: false
-    deserialization:
-      FAIL_ON_UNKNOWN_PROPERTIES: false
 
 server:
   tomcat:

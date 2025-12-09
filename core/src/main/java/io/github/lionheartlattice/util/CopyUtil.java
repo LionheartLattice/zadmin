@@ -1,9 +1,9 @@
 package io.github.lionheartlattice.util;
 
 import cn.hutool.core.clone.CloneRuntimeException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.Assert;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.*;
 
@@ -17,11 +17,12 @@ public abstract class CopyUtil {
     }
 
     /**
-     * 延迟获取 Spring 管理的 ObjectMapper
+     * 延迟获取 Spring 管理的 ObjectMapper (Jackson 3)
      */
     private static ObjectMapper getObjectMapper() {
         return SpringUtils.getBean(ObjectMapper.class);
     }
+
 
     /**
      * 深拷贝到指定类型的新实例
