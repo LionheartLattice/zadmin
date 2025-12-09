@@ -42,13 +42,6 @@ public abstract class ParentCloneable<T> implements Cloneable<T>, Serializable {
         return CopyUtil.copy(this, targetClass);
     }
 
-    public <R> R cloneTo(R target) {
-        return CopyUtil.copyShallow(this.clone(), target);
-    }
-
-    public <R> R cloneTo(Class<R> targetClass) {
-        return CopyUtil.copyShallow(this.clone(), targetClass);
-    }
 
     @SuppressWarnings("unchecked")
     public Class<T> entityClass() {

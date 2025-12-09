@@ -13,9 +13,14 @@ import java.io.*;
  */
 public abstract class CopyUtil {
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
     private CopyUtil() {
+    }
+
+    /**
+     * 延迟获取 Spring 管理的 ObjectMapper
+     */
+    private static ObjectMapper getObjectMapper() {
+        return SpringUtils.getBean(ObjectMapper.class);
     }
 
     /**
@@ -71,52 +76,11 @@ public abstract class CopyUtil {
      */
     protected static <T> T copyByJackson(Object source, Class<T> targetClass) {
         try {
-            String json = OBJECT_MAPPER.writeValueAsString(source);
-            return OBJECT_MAPPER.readValue(json, targetClass);
+            ObjectMapper objectMapper = getObjectMapper();
+            String json = objectMapper.writeValueAsString(source);
+            return objectMapper.readValue(json, targetClass);
         } catch (Exception e) {
             throw new CloneRuntimeException(e);
         }
-    }
-
-    /**
-     * 浅拷贝属性到新实例
-     */
-    public static <T> T copyShallow(Object source, Class<T> targetClass) {
-        Assert.notNull(source, "Source must not be null");
-        Assert.notNull(targetClass, "Target class must not be null");
-        T target = BeanUtils.instantiateClass(targetClass);
-        BeanUtils.copyProperties(source, target);
-        return target;
-    }
-
-    /**
-     * 浅拷贝属性到已有实例
-     */
-    public static <T> T copyShallow(Object source, T target) {
-        Assert.notNull(source, "Source must not be null");
-        Assert.notNull(target, "Target must not be null");
-        BeanUtils.copyProperties(source, target);
-        return target;
-    }
-
-    /**
-     * 浅拷贝属性到新实例（指定忽略的属性）
-     */
-    public static <T> T copyShallow(Object source, Class<T> targetClass, String... ignoreProperties) {
-        Assert.notNull(source, "Source must not be null");
-        Assert.notNull(targetClass, "Target class must not be null");
-        T target = BeanUtils.instantiateClass(targetClass);
-        BeanUtils.copyProperties(source, target, ignoreProperties);
-        return target;
-    }
-
-    /**
-     * 浅拷贝属性到已有实例（指定忽略的属性）
-     */
-    public static <T> T copyShallow(Object source, T target, String... ignoreProperties) {
-        Assert.notNull(source, "Source must not be null");
-        Assert.notNull(target, "Target must not be null");
-        BeanUtils.copyProperties(source, target, ignoreProperties);
-        return target;
     }
 }
