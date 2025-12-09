@@ -1,5 +1,6 @@
 package io.github.lionheartlattice.util.response;
 
+import cn.hutool.core.exceptions.ExceptionUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindException;
@@ -77,7 +78,7 @@ public class GlobalExceptionHandler {
         if (first == null) {
             return "N/A";
         }
-        return String.format("%s.%s(%s:%d)", first.getClassName(), first.getMethodName(), first.getFileName(), first.getLineNumber());
+        return String.format("%s.%s(%s:%d)", first.getClassName(), first.getMethodName(), first.getFileName(), first.getLineNumber()) + "      " + ExceptionUtil.getRootCauseMessage(e);
     }
 
     /**
