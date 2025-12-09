@@ -1,6 +1,6 @@
 package io.github.lionheartlattice.util.response;
 
-import cn.hutool.core.exceptions.ExceptionUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -15,77 +15,83 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    /**
-     * 处理参数校验异常
-     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ApiResult<String> handleValidationException(MethodArgumentNotValidException e) {
+    public ApiResult<String> handleValidationException(MethodArgumentNotValidException e, HttpServletRequest request) {
         log.error(e.getMessage(), e);
         ApiResult<String> result = ApiResult.error(ErrorEnum.VALID_ERROR);
         result.setData(e.getMessage());
-        result.setParam(ExceptionUtil.getRootCauseMessage(e));
+        result.setParam(buildLocation(e));
         return result;
     }
 
-    /**
-     * 处理绑定异常
-     *
-     */
     @ExceptionHandler(BindException.class)
-    public ApiResult<String> handleBindException(BindException e) {
+    public ApiResult<String> handleBindException(BindException e, HttpServletRequest request) {
         log.error(e.getMessage(), e);
         ApiResult<String> result = ApiResult.error(ErrorEnum.VALID_ERROR);
         result.setData(e.getMessage());
-        result.setParam(ExceptionUtil.getRootCauseMessage(e));
+        result.setParam(buildLocation(e));
         return result;
     }
 
-    /**
-     * 处理非法参数异常
-     */
     @ExceptionHandler(IllegalArgumentException.class)
-    public ApiResult<String> handleIllegalArgumentException(IllegalArgumentException e) {
+    public ApiResult<String> handleIllegalArgumentException(IllegalArgumentException e, HttpServletRequest request) {
         log.error(e.getMessage(), e);
         ApiResult<String> result = ApiResult.error(ErrorEnum.INVALID_ID);
         result.setData(e.getMessage());
-        result.setParam(ExceptionUtil.getRootCauseMessage(e));
+        result.setParam(buildLocation(e));
         return result;
     }
 
-    /**
-     * 处理带枚举的业务异常
-     */
     @ExceptionHandler(ExceptionWithEnum.class)
-    public ApiResult<String> handleExceptionWithEnum(ExceptionWithEnum e) {
+    public ApiResult<String> handleExceptionWithEnum(ExceptionWithEnum e, HttpServletRequest request) {
         log.error(e.getMessage(), e);
         ApiResult<String> result = ApiResult.error(e.getErrorEnum());
-        String data =  e.getMessage();
-        result.setData(data);
-        result.setParam(ExceptionUtil.getRootCauseMessage(e));
+        result.setData(e.getMessage());
+        result.setParam(buildLocation(e));
         return result;
     }
 
-    /**
-     * 处理运行时异常
-     */
     @ExceptionHandler(RuntimeException.class)
-    public ApiResult<String> handleRuntimeException(RuntimeException e) {
+    public ApiResult<String> handleRuntimeException(RuntimeException e, HttpServletRequest request) {
         log.error(e.getMessage(), e);
         ApiResult<String> result = ApiResult.error(ErrorEnum.UNKNOWN);
         result.setData(e.getMessage());
-        result.setParam(ExceptionUtil.getRootCauseMessage(e));
+        result.setParam(buildLocation(e));
+        return result;
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ApiResult<String> handleException(Exception e, HttpServletRequest request) {
+        log.error(e.getMessage(), e);
+        ApiResult<String> result = ApiResult.error(ErrorEnum.UNKNOWN);
+        result.setData(e.getMessage());
+        result.setParam(buildLocation(e));
         return result;
     }
 
     /**
-     * 处理其他异常
+     * 提取首个项目内栈帧位置，格式: 全类名.方法名(文件:行号)
      */
-    @ExceptionHandler(Exception.class)
-    public ApiResult<String> handleException(Exception e) {
-        log.error(e.getMessage(), e);
-        ApiResult<String> result = ApiResult.error(ErrorEnum.UNKNOWN);
-        result.setData(e.getMessage());
-        result.setParam(ExceptionUtil.getRootCauseMessage(e));
-        return result;
+    private String buildLocation(Throwable e) {
+        StackTraceElement first = findAppFrame(e);
+        if (first == null) {
+            return "N/A";
+        }
+        return String.format("%s.%s(%s:%d)", first.getClassName(), first.getMethodName(), first.getFileName(), first.getLineNumber());
+    }
+
+    /**
+     * 返回首个项目内的栈帧（按包前缀过滤，可根据需要调整）
+     */
+    private StackTraceElement findAppFrame(Throwable e) {
+        if (e == null || e.getStackTrace() == null) {
+            return null;
+        }
+        for (StackTraceElement ste : e.getStackTrace()) {
+            if (ste.getClassName().startsWith("io.github.lionheartlattice")) {
+                return ste;
+            }
+        }
+        return e.getStackTrace().length > 0 ? e.getStackTrace()[0] : null;
     }
 }
