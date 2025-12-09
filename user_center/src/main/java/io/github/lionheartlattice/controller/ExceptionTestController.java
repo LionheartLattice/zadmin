@@ -2,6 +2,7 @@ package io.github.lionheartlattice.controller;
 
 import io.github.lionheartlattice.util.response.ApiResult;
 import io.github.lionheartlattice.util.response.ErrorEnum;
+import io.github.lionheartlattice.util.response.ExceptionWithEnum;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,7 +24,7 @@ public class ExceptionTestController {
     @Operation(summary = "抛出运行时异常", description = "测试全局异常处理")
     @GetMapping("runtime")
     public ApiResult<Void> throwRuntimeException() {
-        throw new RuntimeException("这是一个运行时异常测试");
+        throw new ExceptionWithEnum(ErrorEnum.VALID_ERROR);
     }
 
     /**

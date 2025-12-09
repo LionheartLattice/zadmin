@@ -49,6 +49,17 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * 处理带枚举的业务异常
+     */
+    @ExceptionHandler(ExceptionWithEnum.class)
+    public ApiResult<String> handleExceptionWithEnum(ExceptionWithEnum e) {
+        log.error("业务异常: {}", e.getMessage());
+        ApiResult<String> result = ApiResult.error(e.getErrorEnum());
+        result.setData(ExceptionUtil.getRootCauseMessage(e));
+        return result;
+    }
+
+    /**
      * 处理运行时异常
      */
     @ExceptionHandler(RuntimeException.class)
