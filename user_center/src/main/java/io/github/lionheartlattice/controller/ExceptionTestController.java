@@ -1,7 +1,7 @@
 package io.github.lionheartlattice.controller;
 
 import io.github.lionheartlattice.util.response.ApiResult;
-import io.github.lionheartlattice.util.response.CommonResponseEnum;
+import io.github.lionheartlattice.util.response.ErrorEnum;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +33,6 @@ public class ExceptionTestController {
     @Operation(summary = "抛出业务异常", description = "测试自定义异常返回")
     @GetMapping("business")
     public ApiResult<Void> throwBusinessException() {
-        throw new IllegalArgumentException(CommonResponseEnum.INVALID_ID.getMessage());
+        throw new IllegalArgumentException(ErrorEnum.INVALID_ID.getMessage());
     }
 }

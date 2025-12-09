@@ -1,6 +1,5 @@
 package io.github.lionheartlattice.util.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.github.lionheartlattice.util.NullUtil;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -71,7 +70,7 @@ public class ApiResult<T> implements Serializable {
     /**
      * 错误响应（使用枚举）
      */
-    public static <T> ApiResult<T> error(CommonResponseEnum responseEnum) {
+    public static <T> ApiResult<T> error(ErrorEnum responseEnum) {
         ApiResult<T> result = new ApiResult<>();
         result.setCode(String.valueOf(responseEnum.getCode()));
         result.setMessage(responseEnum.getMessage());

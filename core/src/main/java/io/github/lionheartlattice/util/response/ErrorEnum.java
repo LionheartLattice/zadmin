@@ -6,7 +6,7 @@ import lombok.Getter;
  * 异常枚举类
  */
 @Getter
-public enum CommonResponseEnum {
+public enum ErrorEnum {
 
     // @formatter:off
     VALID_ERROR(100, "参数校验异常"),
@@ -52,7 +52,7 @@ public enum CommonResponseEnum {
      */
     private final String message;
 
-    CommonResponseEnum(int code, String message) {
+    ErrorEnum(int code, String message) {
         this.code = code;
         this.message = message;
     }
