@@ -2,14 +2,15 @@ package io.github.lionheartlattice.util;
 
 import cn.hutool.core.clone.CloneRuntimeException;
 import org.springframework.beans.BeanUtils;
-import org.springframework.util.Assert;
 import tools.jackson.databind.ObjectMapper;
 
-import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 对象复制工具类
- * <p>默认方法为深拷贝，浅拷贝使用 shallow 前缀
+ * <p>默认方法为浅拷贝（基于 Spring BeanUtils）
+ * <p>深拷贝方法使用 copyDeep 前缀（基于 Jackson 3）
  */
 public abstract class CopyUtil {
 
@@ -25,57 +26,45 @@ public abstract class CopyUtil {
 
 
     /**
-     * 深拷贝到指定类型的新实例
+     * 浅拷贝到指定类型的新实例
      */
-    @SuppressWarnings("unchecked")
     public static <T> T copy(Object source, Class<T> targetClass) {
-        Assert.notNull(source, "Source must not be null");
-        Assert.notNull(targetClass, "Target class must not be null");
-        if (source instanceof Serializable serializable && Serializable.class.isAssignableFrom(targetClass)) {
-            Object copied = copyBySerializable(serializable);
-            if (targetClass.isInstance(copied)) {
-                return (T) copied;
-            }
-        }
-        return copyByJackson(source, targetClass);
-    }
-
-    /**
-     * 深拷贝到已有实例
-     */
-    public static <T> T copy(Object source, T target) {
-        Assert.notNull(source, "Source must not be null");
-        Assert.notNull(target, "Target must not be null");
-        Object deepSource;
-        if (source instanceof Serializable serializable) {
-            deepSource = copyBySerializable(serializable);
-        } else {
-            deepSource = copyByJackson(source, source.getClass());
-        }
-        BeanUtils.copyProperties(deepSource, target);
+        T target = BeanUtils.instantiateClass(targetClass);
+        BeanUtils.copyProperties(source, target);
         return target;
     }
 
     /**
-     * 通过序列化深拷贝
+     * 浅拷贝到已有实例
      */
-    @SuppressWarnings("unchecked")
-    protected static <T extends Serializable> T copyBySerializable(T source) {
-        Assert.notNull(source, "Source must not be null");
-        try (ByteArrayOutputStream bos = new ByteArrayOutputStream(); ObjectOutputStream oos = new ObjectOutputStream(bos)) {
-            oos.writeObject(source);
-            try (ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray()); ObjectInputStream ois = new ObjectInputStream(bis)) {
-                return (T) ois.readObject();
-            }
-        } catch (IOException | ClassNotFoundException e) {
-            throw new CloneRuntimeException(e);
-        }
+    public static <T> T copy(Object source, T target) {
+        BeanUtils.copyProperties(source, target);
+        return target;
     }
 
     /**
-     * 通过 Jackson 深拷贝
+     * 浅拷贝到已有实例，忽略指定属性
      */
-    protected static <T> T copyByJackson(Object source, Class<T> targetClass) {
+    public static <T> T copy(Object source, T target, String... ignoreProperties) {
+        BeanUtils.copyProperties(source, target, ignoreProperties);
+        return target;
+    }
+
+    /**
+     * 批量浅拷贝到指定类型的新实例列表
+     */
+    public static <S, T> List<T> copyList(List<S> sourceList, Class<T> targetClass) {
+        List<T> targetList = new ArrayList<>(sourceList.size());
+        for (S source : sourceList) {
+            targetList.add(copy(source, targetClass));
+        }
+        return targetList;
+    }
+
+    /**
+     * 深拷贝到指定类型的新实例（基于 Jackson 3）
+     */
+    public static <T> T copyDeep(Object source, Class<T> targetClass) {
         try {
             ObjectMapper objectMapper = getObjectMapper();
             String json = objectMapper.writeValueAsString(source);
@@ -83,5 +72,24 @@ public abstract class CopyUtil {
         } catch (Exception e) {
             throw new CloneRuntimeException(e);
         }
+    }
+
+    /**
+     * 深拷贝到同类型新实例（基于 Jackson 3）
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T copyDeep(T source) {
+        return (T) copyDeep(source, source.getClass());
+    }
+
+    /**
+     * 批量深拷贝到指定类型的新实例列表（基于 Jackson 3）
+     */
+    public static <S, T> List<T> copyDeepList(List<S> sourceList, Class<T> targetClass) {
+        List<T> targetList = new ArrayList<>(sourceList.size());
+        for (S source : sourceList) {
+            targetList.add(copyDeep(source, targetClass));
+        }
+        return targetList;
     }
 }
