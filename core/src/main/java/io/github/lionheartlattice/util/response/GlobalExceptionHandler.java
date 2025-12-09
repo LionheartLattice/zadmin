@@ -17,7 +17,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ApiResult<String> handleValidationException(MethodArgumentNotValidException e, HttpServletRequest request) {
-        log.error(e.getMessage(), e);
+        log.error(buildLocation(e), e);
         ApiResult<String> result = ApiResult.error(ErrorEnum.VALID_ERROR);
         result.setData(e.getMessage());
         result.setParam(buildLocation(e));
@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BindException.class)
     public ApiResult<String> handleBindException(BindException e, HttpServletRequest request) {
-        log.error(e.getMessage(), e);
+        log.error(buildLocation(e), e);
         ApiResult<String> result = ApiResult.error(ErrorEnum.VALID_ERROR);
         result.setData(e.getMessage());
         result.setParam(buildLocation(e));
@@ -35,7 +35,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ApiResult<String> handleIllegalArgumentException(IllegalArgumentException e, HttpServletRequest request) {
-        log.error(e.getMessage(), e);
+        log.error(buildLocation(e), e);
         ApiResult<String> result = ApiResult.error(ErrorEnum.INVALID_ID);
         result.setData(e.getMessage());
         result.setParam(buildLocation(e));
@@ -44,7 +44,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ExceptionWithEnum.class)
     public ApiResult<String> handleExceptionWithEnum(ExceptionWithEnum e, HttpServletRequest request) {
-        log.error(e.getMessage(), e);
+        log.error(buildLocation(e), e);
         ApiResult<String> result = ApiResult.error(e.getErrorEnum());
         result.setData(e.getMessage());
         result.setParam(buildLocation(e));
@@ -53,7 +53,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public ApiResult<String> handleRuntimeException(RuntimeException e, HttpServletRequest request) {
-        log.error(e.getMessage(), e);
+        log.error(buildLocation(e), e);
         ApiResult<String> result = ApiResult.error(ErrorEnum.UNKNOWN);
         result.setData(e.getMessage());
         result.setParam(buildLocation(e));
@@ -62,7 +62,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ApiResult<String> handleException(Exception e, HttpServletRequest request) {
-        log.error(e.getMessage(), e);
+        log.error(buildLocation(e), e);
         ApiResult<String> result = ApiResult.error(ErrorEnum.UNKNOWN);
         result.setData(e.getMessage());
         result.setParam(buildLocation(e));
