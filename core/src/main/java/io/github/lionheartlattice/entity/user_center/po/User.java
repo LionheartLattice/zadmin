@@ -93,7 +93,7 @@ public class User extends ParentClientEntity<User, UserProxy> implements ProxyEn
      * 更新时间
      */
     @Schema(description = "更新时间")
-    private Date updateTime = new Date(System.currentTimeMillis());
+    private Date updateTime;
 
     /**
      * 是否删除

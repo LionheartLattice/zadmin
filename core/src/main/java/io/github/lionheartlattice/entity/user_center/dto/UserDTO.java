@@ -48,7 +48,7 @@ public class UserDTO {
      * 生日
      */
     @Schema(description = "生日")
-    private LocalDate birthday = LocalDate.now();
+    private LocalDate birthday;
 
     /**
      * 身份证
