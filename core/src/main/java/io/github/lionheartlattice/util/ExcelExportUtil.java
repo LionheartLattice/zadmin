@@ -33,7 +33,7 @@ public class ExcelExportUtil {
     @SneakyThrows
     public static <T> void exportWithSchema(HttpServletResponse response,
                                             String fileName,
-                                            List<T> data) throws IOException {
+                                            List<T> data)  {
         if (data == null || data.isEmpty()) {
             throw new IllegalArgumentException("导出数据为空，无法推断类型，请提供非空列表");
         }
@@ -42,10 +42,11 @@ public class ExcelExportUtil {
         exportInternal(response, fileName, data, clazz);
     }
 
+    @SneakyThrows
     private static <T> void exportInternal(HttpServletResponse response,
                                            String fileName,
                                            List<T> data,
-                                           Class<T> clazz) throws IOException {
+                                           Class<T> clazz) {
         // 构建表头别名：字段名 -> @Schema.description()
         Map<String, String> headerAlias = new LinkedHashMap<>();
         Map<String, Field> fieldMap = new LinkedHashMap<>();
