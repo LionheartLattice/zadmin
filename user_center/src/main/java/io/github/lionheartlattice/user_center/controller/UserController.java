@@ -31,7 +31,8 @@ public class UserController extends ParentController<UserService> {
         return ApiResult.success(service.list());
     }
 
-    @Operation(summary = "导出用户列表Excel", description = "基于列表查询结果导出Excel报表")
+
+    @Operation(summary = "导出Excel", description = "基于列表查询结果导出Excel报表")
     @GetMapping("export")
     public void export(HttpServletResponse response) {
         ExcelExportUtil.exportWithSchema(response, "用户列表.xlsx", service.list());

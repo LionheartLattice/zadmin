@@ -3,6 +3,7 @@ package io.github.lionheartlattice.util.parent;
 import com.easy.query.api.proxy.client.EasyEntityQuery;
 import io.github.lionheartlattice.util.DataAccessUtils;
 import io.github.lionheartlattice.util.NullUtil;
+import io.github.lionheartlattice.util.SpringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -61,6 +62,11 @@ public abstract class ParentService<P> extends NullUtil {
      */
     protected final TransactionTemplate ds2TransactionTemplate = DataAccessUtils.getDs2TransactionTemplate();
 
+    /**
+     * 当前 Spring 管理的本类实例，便于在方法中直接调用
+     */
+    @SuppressWarnings("unchecked")
+    protected final ParentService<P> self = (ParentService<P>) SpringUtils.getBean(getClass());
 
     /**
      * 获取实体类的泛型类型
