@@ -50,7 +50,9 @@ public class UserService extends ParentService<User> {
 
     @Transactional
     public Boolean saveBatch(List<UserCreatDTO> dtos) {
-        return createPo().insertable(CopyUtil.copyList(dtos, User.class)).executeRows() > 0;
+        List<User> entities = CopyUtil.copyList(dtos, User.class);
+        return createPo().insertable(entities).batch(true) // 启用批量执行（配合 Postgres 连接串 reWriteBatchedInserts=true）
+                .executeRows() > 0;
     }
 }
 
