@@ -1,6 +1,7 @@
 package io.github.lionheartlattice.user_center.controller;
 
-import io.github.lionheartlattice.entity.user_center.dto.UserDTO;
+import io.github.lionheartlattice.entity.user_center.dto.UserCreatDTO;
+import io.github.lionheartlattice.entity.user_center.po.User;
 import io.github.lionheartlattice.user_center.service.UserService;
 import io.github.lionheartlattice.util.ExcelExportUtil;
 import io.github.lionheartlattice.util.parent.ParentController;
@@ -20,7 +21,7 @@ public class UserController extends ParentController<UserService> {
 
     //    新增用户
     @PostMapping("add")
-    public ApiResult<?> create(@RequestBody UserDTO dto) {
+    public ApiResult<?> create(@RequestBody UserCreatDTO dto) {
         return ApiResult.success(service.create(dto));
     }
 
@@ -29,6 +30,12 @@ public class UserController extends ParentController<UserService> {
     @PostMapping("list")
     public ApiResult<?> list() {
         return ApiResult.success(service.list());
+    }
+
+    //分页查询
+    @PostMapping("page")
+    public ApiResult<?> page(@RequestBody User dto) {
+        return ApiResult.success(service.page(dto));
     }
 
 

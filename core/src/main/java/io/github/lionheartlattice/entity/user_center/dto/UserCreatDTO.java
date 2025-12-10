@@ -16,8 +16,7 @@ import java.time.LocalDate;
  * @easy-query-dto schema: request
  */
 @Data
-public class UserDTO {
-
+public class UserCreatDTO {
 
     /**
      * 用户名
