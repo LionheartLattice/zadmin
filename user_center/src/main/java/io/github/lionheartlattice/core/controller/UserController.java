@@ -12,15 +12,19 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import org.apache.poi.ss.usermodel.DataFormat;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
 @Tag(name = "用户模块", description = "用户管理")
@@ -41,6 +45,7 @@ public class UserController extends ParentUtil<User> {
         return ApiResult.success(createPo().queryable().toList());
     }
 
+    @SneakyThrows
     @Operation(summary = "导出用户列表Excel", description = "基于列表查询结果导出Excel报表")
     @GetMapping("export")
     public void export(HttpServletResponse response) throws IOException {
@@ -55,17 +60,37 @@ public class UserController extends ParentUtil<User> {
 
         // 构建表头别名：字段名 -> @Schema.description()
         Map<String, String> headerAlias = new LinkedHashMap<>();
+        Map<String, Field> fieldMap = new LinkedHashMap<>();
         for (Field field : User.class.getDeclaredFields()) {
             Schema schema = field.getAnnotation(Schema.class);
             if (schema != null && cn.hutool.core.util.StrUtil.isNotBlank(schema.description())) {
                 headerAlias.put(field.getName(), schema.description());
+                field.setAccessible(true);
+                fieldMap.put(field.getName(), field);
             }
+        }
+
+        // 将所有字段值转换为字符串
+        List<Map<String, String>> stringRows = new ArrayList<>();
+        for (User user : users) {
+            Map<String, String> row = new LinkedHashMap<>();
+            for (Map.Entry<String, Field> entry : fieldMap.entrySet()) {
+                Object val = entry.getValue().get(user);
+                row.put(entry.getKey(), Objects.toString(val, ""));
+            }
+            stringRows.add(row);
         }
 
         ExcelWriter writer = ExcelUtil.getWriter(true);
         try {
+            // 所有单元格按文本格式输出
+            DataFormat dataFormat = writer.getWorkbook().createDataFormat();
+            short textFormat = dataFormat.getFormat("@");
+            writer.getStyleSet().getCellStyle().setDataFormat(textFormat);      // 内容
+            writer.getStyleSet().getHeadCellStyle().setDataFormat(textFormat);  // 表头
+
             writer.setHeaderAlias(headerAlias);
-            writer.write(users, true);
+            writer.write(stringRows, true);
             // 按内容自动调整所有列宽
             writer.autoSizeColumnAll();
             writer.flush(response.getOutputStream(), true);
