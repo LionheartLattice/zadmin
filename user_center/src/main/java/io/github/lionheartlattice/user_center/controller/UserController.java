@@ -7,6 +7,7 @@ import io.github.lionheartlattice.entity.user_center.dto.UserPageDTO;
 import io.github.lionheartlattice.entity.user_center.po.UserUpdateDTO;
 import io.github.lionheartlattice.user_center.service.UserService;
 import io.github.lionheartlattice.util.ExcelExportUtil;
+import io.github.lionheartlattice.util.ExcelImportUtil;
 import io.github.lionheartlattice.util.parent.ParentController;
 import io.github.lionheartlattice.util.response.ApiResult;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -53,11 +54,8 @@ public class UserController extends ParentController<UserService> {
     @PostMapping("upload")
     @Transactional(transactionManager = PRIMARY + TRANSACTION_MANAGER)
     public ApiResult<?> upload(@RequestParam("file") MultipartFile file) {
-        try (ExcelReader reader = ExcelUtil.getReader(file.getInputStream())) {
-            List<UserCreatDTO> dtos = reader.readAll(UserCreatDTO.class);
-            log.warn(dtos.toString());
-            return ApiResult.success(service.saveBatch(dtos));
-        }
+        List<UserCreatDTO> dtos = ExcelImportUtil.importExcel(file, UserCreatDTO.class);
+        return ApiResult.success(service.saveBatch(dtos));
     }
 
     @PostMapping("export")
