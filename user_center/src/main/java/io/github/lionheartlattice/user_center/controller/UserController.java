@@ -10,7 +10,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 
 @Tag(name = "用户模块", description = "用户管理")
@@ -29,9 +32,9 @@ public class UserController extends ParentController<UserService> {
         return ApiResult.success(service.page(dto));
     }
 
-    @Operation(summary = "Excel", description = "基于列表查询结果导出Excel报表")
+    @Operation(summary = "excel")
     @PostMapping("export")
-    public void export(@RequestBody UserPageDTO dto ,HttpServletResponse response ) {
+    public void export(@RequestBody UserPageDTO dto, HttpServletResponse response) {
         ExcelExportUtil.exportWithSchema(response, "用户列表.xlsx", service.page(dto).getData());
     }
 }
