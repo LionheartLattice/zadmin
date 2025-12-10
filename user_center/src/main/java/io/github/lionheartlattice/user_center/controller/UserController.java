@@ -2,6 +2,7 @@ package io.github.lionheartlattice.user_center.controller;
 
 import io.github.lionheartlattice.entity.user_center.dto.UserCreatDTO;
 import io.github.lionheartlattice.entity.user_center.po.User;
+import io.github.lionheartlattice.entity.user_center.vo.UserPageVO;
 import io.github.lionheartlattice.user_center.service.UserService;
 import io.github.lionheartlattice.util.ExcelExportUtil;
 import io.github.lionheartlattice.util.parent.ParentController;
@@ -34,7 +35,7 @@ public class UserController extends ParentController<UserService> {
 
     //分页查询
     @PostMapping("page")
-    public ApiResult<?> page(@RequestBody User dto) {
+    public ApiResult<?> page(@RequestBody UserPageVO dto) {
         return ApiResult.success(service.page(dto));
     }
 

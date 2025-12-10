@@ -20,8 +20,6 @@ import java.util.Date;
  */
 @Data
 public class UserPageVO extends PageRequest<UserPageVO> {
-
-
     /**
      * 用户ID
      */
@@ -33,11 +31,6 @@ public class UserPageVO extends PageRequest<UserPageVO> {
      */
     @Schema(description = "用户名", requiredMode = Schema.RequiredMode.REQUIRED)
     private String username;
-    /**
-     * 密码
-     */
-    @Schema(description = "密码", requiredMode = Schema.RequiredMode.REQUIRED)
-    private String pwd;
     /**
      * 手机号
      */
@@ -53,16 +46,7 @@ public class UserPageVO extends PageRequest<UserPageVO> {
      */
     @Schema(description = "性别 未知-男-女")
     private String sex;
-    /**
-     * 生日
-     */
-    @Schema(description = "生日")
-    private LocalDate birthday;
-    /**
-     * 头像base64
-     */
-    @Schema(description = "头像base64")
-    private String logo;
+
     /**
      * 身份证
      */
@@ -73,16 +57,7 @@ public class UserPageVO extends PageRequest<UserPageVO> {
      */
     @Schema(description = "邮箱地址")
     private String email;
-    /**
-     * 更新时间
-     */
-    @Schema(description = "更新时间")
-    private Date updateTime;
-    /**
-     * 是否删除
-     */
-    @Schema(description = "是否删除")
-    private Boolean delFlag;
+
     /**
      * 创建人ID
      */
