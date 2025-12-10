@@ -37,7 +37,7 @@ public class UserService extends ParentService<User> {
                     u.email().eq(dto.getEmail());
                     u.createId().eq(dto.getCreateId());
                     u.updateId().eq(dto.getUpdateId());
-                }).orderBy(dto.getOrders() != null, u -> {
+                }).orderBy(isNotNull(dto.getOrders()), u -> {
                     for (PageRequest.InternalOrder order : dto.getOrders()) {
                         u.anyColumn(order.getProperty()).orderBy(order.isAsc());
                     }

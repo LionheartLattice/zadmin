@@ -20,13 +20,12 @@ public class UserPageDTO extends PageRequest<UserPageDTO> {
     /**
      * 用户ID
      */
-    @Schema(description = "用户ID", requiredMode = Schema.RequiredMode.REQUIRED)
     @Column(value = "id")
     private Long id;
     /**
      * 用户名
      */
-    @Schema(description = "用户名", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "用户名")
     private String username;
     /**
      * 手机号
