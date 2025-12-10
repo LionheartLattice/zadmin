@@ -2,11 +2,11 @@ package io.github.lionheartlattice.user_center.controller;
 
 import io.github.lionheartlattice.entity.user_center.dto.UserCreatDTO;
 import io.github.lionheartlattice.entity.user_center.dto.UserPageDTO;
+import io.github.lionheartlattice.entity.user_center.po.UserUpdateDTO;
 import io.github.lionheartlattice.user_center.service.UserService;
 import io.github.lionheartlattice.util.ExcelExportUtil;
 import io.github.lionheartlattice.util.parent.ParentController;
 import io.github.lionheartlattice.util.response.ApiResult;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +25,11 @@ public class UserController extends ParentController<UserService> {
     @PostMapping("create")
     public ApiResult<?> create(@RequestBody UserCreatDTO dto) {
         return ApiResult.success(service.create(dto));
+    }
+
+    @PostMapping("update")
+    public ApiResult<?> update(@RequestBody UserUpdateDTO dto) {
+        return ApiResult.success(service.update(dto));
     }
 
     @PostMapping("page")
