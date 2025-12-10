@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserController extends ParentController<UserService> {
 
-    @PostMapping("add")
+    @PostMapping("create")
     public ApiResult<?> create(@RequestBody UserCreatDTO dto) {
         return ApiResult.success(service.create(dto));
     }
@@ -32,7 +32,6 @@ public class UserController extends ParentController<UserService> {
         return ApiResult.success(service.page(dto));
     }
 
-    @Operation(summary = "excel")
     @PostMapping("export")
     public void export(@RequestBody UserPageDTO dto, HttpServletResponse response) {
         ExcelExportUtil.export(response, "用户列表.xlsx", service.page(dto).getData());
