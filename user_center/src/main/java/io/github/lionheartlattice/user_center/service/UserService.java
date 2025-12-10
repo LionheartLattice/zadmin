@@ -26,7 +26,7 @@ public class UserService extends ParentService<User> {
     public EasyPageResult<User> page(UserPageDTO dto) {
         return createPo().queryable().filterConfigure(NotNullOrEmptyValueFilter.DEFAULT_PROPAGATION_SUPPORTS).where(u -> {
             u.id().eq(dto.getId());
-            u.username().contains(dto.getUsername());
+            u.username().eq(dto.getUsername());
             u.phone().eq(dto.getPhone());
             u.nickname().contains(dto.getNickname());
             u.sex().eq(dto.getSex());
