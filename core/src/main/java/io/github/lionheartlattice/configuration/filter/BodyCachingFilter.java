@@ -18,7 +18,7 @@ import java.io.IOException;
 @Component
 public class BodyCachingFilter extends OncePerRequestFilter {
 
-    @Value("${app.request-cache.max-size:50MB}")
+    @Value("${app.request-cache.max-size:100MB}")
     private DataSize cacheLimit;
 
     @Override
