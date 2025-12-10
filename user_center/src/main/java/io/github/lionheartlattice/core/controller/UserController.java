@@ -39,6 +39,6 @@ public class UserController extends ParentUtil<User> {
     @GetMapping("export")
     public void export(HttpServletResponse response) {
         List<User> users = createPo().queryable().toList();
-        ExcelExportUtil.exportWithSchema(response, "用户列表.xlsx", users, User.class);
+        ExcelExportUtil.exportWithSchema(response, "用户列表.xlsx", users);
     }
 }
