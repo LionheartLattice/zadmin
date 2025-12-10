@@ -54,7 +54,8 @@ public class UserService extends ParentService<User> {
     @Transactional
     public Boolean saveBatch(List<UserCreatDTO> dtos) {
         List<User> entities = CopyUtil.copyList(dtos, User.class);
-        return createPo().insertable(entities).batch(true).executeRows() > 0;
+        Long row = transactionTemplate.execute(status -> createPo().insertable(entities).batch(true).executeRows());
+        return isNotNull(row);
     }
 }
 

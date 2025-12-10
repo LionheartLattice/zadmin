@@ -1,7 +1,5 @@
 package io.github.lionheartlattice.user_center.controller;
 
-import cn.hutool.poi.excel.ExcelReader;
-import cn.hutool.poi.excel.ExcelUtil;
 import io.github.lionheartlattice.entity.user_center.dto.UserCreatDTO;
 import io.github.lionheartlattice.entity.user_center.dto.UserPageDTO;
 import io.github.lionheartlattice.entity.user_center.po.UserUpdateDTO;
@@ -13,15 +11,10 @@ import io.github.lionheartlattice.util.response.ApiResult;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-
-import static io.github.lionheartlattice.configuration.easyquery.MultiDataSourceConfiguration.PRIMARY;
-import static io.github.lionheartlattice.configuration.easyquery.MultiDataSourceConfiguration.TRANSACTION_MANAGER;
 
 
 @Tag(name = "用户管理")
@@ -50,12 +43,9 @@ public class UserController extends ParentController<UserService> {
         return ApiResult.success(service.delete(ids));
     }
 
-    @SneakyThrows
     @PostMapping("upload")
-    @Transactional(transactionManager = PRIMARY + TRANSACTION_MANAGER)
     public ApiResult<?> upload(@RequestParam("file") MultipartFile file) {
         List<UserCreatDTO> dtos = ExcelImportUtil.importExcel(file, UserCreatDTO.class);
-        log.warn(dtos.toString());
         return ApiResult.success(service.saveBatch(dtos));
     }
 
