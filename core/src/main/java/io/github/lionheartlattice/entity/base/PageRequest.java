@@ -10,21 +10,24 @@ import java.util.List;
 @Schema(description = "分页请求参数")
 public class PageRequest<T> extends ParentCloneable<T> {
     @Schema(description = "页码，从1开始", example = "1")
-    private Integer pageIndex;
+    private Integer pageIndex = 1;
 
     @Schema(description = "每页条数", example = "20")
-    private Integer pageSize;
+    private Integer pageSize = 20;
 
     @Schema(description = "排序字段列表")
     private List<InternalOrder> orders;
+
+    @Schema(description = "下载空excel供导入",example = "false")
+    private boolean downloadEmptyExcel = false;
 
     @Data
     @Schema(description = "排序字段")
     public static class InternalOrder {
         @Schema(description = "排序属性名", example = "id")
-        private String property;
+        private String property = "id";
 
         @Schema(description = "是否升序", example = "false")
-        private boolean asc;
+        private boolean asc = false;
     }
 }

@@ -58,11 +58,10 @@ public class UserController extends ParentController<UserService> {
 
     @PostMapping("export")
     public void downLoad(@RequestBody UserPageDTO dto, HttpServletResponse response) {
-        log.warn(dto.toString());
-        if (isNotNull(dto)) {
-            ExcelExportUtil.export(response, "导出列表.xlsx", service.page(dto).getData());
-        } else {
+        if (dto.isDownloadEmptyExcel()) {
             ExcelExportUtil.export(response, "导入模板.xlsx", new ArrayList<UserCreatDTO>());
+        } else {
+            ExcelExportUtil.export(response, "导出列表.xlsx", service.page(dto).getData());
         }
     }
 }
