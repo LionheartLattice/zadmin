@@ -10,7 +10,6 @@ import io.github.lionheartlattice.util.CopyUtil;
 import io.github.lionheartlattice.util.parent.ParentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 

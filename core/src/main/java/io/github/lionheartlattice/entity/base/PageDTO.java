@@ -18,22 +18,11 @@ public class PageDTO extends ParentCloneable<PageDTO> {
     @Schema(description = "下载空excel供导入", example = "false")
     private boolean downloadEmptyExcel = false;
 
-    @Schema(description = "排序字段列表")
-    private List<InternalOrder> orders;
-
     @Schema(description = "搜索字段列表")
     private List<InternalSearch> searches;
 
-
-    @Data
-    @Schema(description = "排序字段")
-    public static class InternalOrder {
-        @Schema(description = "排序属性名", example = "id")
-        private String property = "id";
-
-        @Schema(description = "是否升序", example = "false")
-        private boolean asc = false;
-    }
+    @Schema(description = "排序字段列表")
+    private List<InternalOrder> orders;
 
     @Data
     @Schema(description = "搜索字段")
@@ -47,4 +36,16 @@ public class PageDTO extends ParentCloneable<PageDTO> {
         @Schema(description = "搜索值", example = "张三")
         private String value;
     }
+
+    @Data
+    @Schema(description = "排序字段")
+    public static class InternalOrder {
+        @Schema(description = "排序属性名", example = "id")
+        private String property = "id";
+
+        @Schema(description = "是否升序", example = "false")
+        private boolean asc = false;
+    }
+
+
 }
