@@ -7,9 +7,11 @@ import io.github.lionheartlattice.entity.user_center.dto.UserCreatDTO;
 import io.github.lionheartlattice.entity.user_center.dto.UserPageDTO;
 import io.github.lionheartlattice.entity.user_center.po.User;
 import io.github.lionheartlattice.entity.user_center.po.UserUpdateDTO;
+import io.github.lionheartlattice.util.CopyUtil;
 import io.github.lionheartlattice.util.parent.ParentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -42,8 +44,13 @@ public class UserService extends ParentService<User> {
         return createPo().copyFrom(dto).updatable().executeRows() > 0;
     }
 
-    public Object delete(List<Long> ids) {
+    public Boolean delete(List<Long> ids) {
         return createPo().expressionDeletable().where(u -> u.id().in(ids)).executeRows() > 0;
+    }
+
+    @Transactional
+    public Boolean saveBatch(List<UserCreatDTO> dtos) {
+        return createPo().insertable(CopyUtil.copyList(dtos, User.class)).executeRows() > 0;
     }
 }
 

@@ -1,5 +1,7 @@
 package io.github.lionheartlattice.user_center.controller;
 
+import cn.hutool.poi.excel.ExcelReader;
+import cn.hutool.poi.excel.ExcelUtil;
 import io.github.lionheartlattice.entity.user_center.dto.UserCreatDTO;
 import io.github.lionheartlattice.entity.user_center.dto.UserPageDTO;
 import io.github.lionheartlattice.entity.user_center.po.UserUpdateDTO;
@@ -10,10 +12,9 @@ import io.github.lionheartlattice.util.response.ApiResult;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.SneakyThrows;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -44,8 +45,17 @@ public class UserController extends ParentController<UserService> {
         return ApiResult.success(service.delete(ids));
     }
 
+    @SneakyThrows
+    @PostMapping("upload")
+    public ApiResult<?> upload(@RequestParam("file") MultipartFile file) {
+        ExcelReader reader = ExcelUtil.getReader(file.getInputStream());
+        List<UserCreatDTO> dtos = reader.readAll(UserCreatDTO.class);
+        reader.close();
+        return ApiResult.success(service.saveBatch(dtos));
+    }
+
     @PostMapping("export")
-    public void export(@RequestBody UserPageDTO dto, HttpServletResponse response) {
+    public void downLoad(@RequestBody UserPageDTO dto, HttpServletResponse response) {
         ExcelExportUtil.export(response, "用户列表.xlsx", service.page(dto).getData());
     }
 }
