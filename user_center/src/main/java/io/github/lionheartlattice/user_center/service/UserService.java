@@ -29,16 +29,15 @@ public class UserService extends ParentService<User> {
                 .filterConfigure(NotNullOrEmptyValueFilter.DEFAULT_PROPAGATION_SUPPORTS)
                 .where(u -> {
                     u.id().eq(dto.getId());
-                    u.username().like(dto.getUsername());
+                    u.username().contains(dto.getUsername());
                     u.phone().eq(dto.getPhone());
-                    u.nickname().like(dto.getNickname());
+                    u.nickname().contains(dto.getNickname());
                     u.sex().eq(dto.getSex());
                     u.idCard().eq(dto.getIdCard());
-                    u.email().like(dto.getEmail());
+                    u.email().eq(dto.getEmail());
                     u.createId().eq(dto.getCreateId());
                     u.updateId().eq(dto.getUpdateId());
                 }).toPageResult(dto.getPageIndex(), dto.getPageSize());
-
 
 
         return null;
