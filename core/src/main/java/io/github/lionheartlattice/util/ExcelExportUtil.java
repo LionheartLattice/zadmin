@@ -4,10 +4,13 @@ import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
+import io.github.lionheartlattice.util.response.ErrorEnum;
+import io.github.lionheartlattice.util.response.ExceptionWithEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import org.apache.poi.ss.usermodel.DataFormat;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.net.URLEncoder;
@@ -51,8 +54,10 @@ public class ExcelExportUtil {
      */
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    public static <T> void export(HttpServletResponse response, String fileName, List<T> data) {
-
+    public static <T> void export(HttpServletResponse response, String fileName,   List<T> data) {
+        if (NullUtil.isNull(data)) {
+            throw new ExceptionWithEnum(ErrorEnum.DATA_IS_NULL);
+        }
         Class<T> clazz = (Class<T>) data.get(0).getClass();
         // 构建表头别名：字段名 -> @Schema.description()
         Map<String, String> headerAlias = new LinkedHashMap<>();

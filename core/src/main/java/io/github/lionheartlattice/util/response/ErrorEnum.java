@@ -20,6 +20,7 @@ public enum ErrorEnum {
     INVALID_PERMISSION(108, "抱歉，您目前无权执行此操作，请联系管理员获取相应权限。"),
     WEBSOCKET_SEND_FAIL(109, "WebSocket消息发送异常"),
     DEBOUNCE(110, "您的请求过于频繁，请稍后再试！"),
+    DATA_IS_NULL(111, "数据为空"),
 
     INVALID_ID(1000, "无效ID"),
     EXISTS(1001, "已存在"),
