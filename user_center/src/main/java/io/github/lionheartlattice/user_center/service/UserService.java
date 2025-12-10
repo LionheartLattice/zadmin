@@ -17,6 +17,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class UserService extends ParentService<User> {
+
     public boolean create(UserCreatDTO dto) {
         long rows = createPo().copyFrom(dto).setUpdateId(0L).insertable().executeRows();
         return isNotNull(rows); //如果操作异常会直接抛异常，或者数据库影响行数为0，因此只需要判定非空非0即可，下列的也是类似
