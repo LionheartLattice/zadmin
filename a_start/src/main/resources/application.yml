@@ -26,8 +26,8 @@ spring:
       max-lifetime: 1200000
   servlet:
     multipart:
-      max-file-size: 10MB
-      max-request-size: 15MB
+      max-file-size: 100MB
+      max-request-size: 100MB
   data:
     redis:
       host: 192.168.9.105
@@ -38,7 +38,7 @@ spring:
       lettuce:
         pool:
           max-active: 100
-          max-wait: -1
+          max-wait: 30s
           max-idle: 30
           min-idle: 10
 
@@ -59,7 +59,7 @@ server:
     keep-alive-timeout: 60s
     max-keep-alive-requests: 200
     processor-cache: 500            # 增大处理器缓存
-    max-http-form-post-size: 15MB
+    max-http-form-post-size: 100MB
   compression:
     enabled: true
     mime-types: application/json,application/xml,text/html,text/plain,text/css,application/javascript
@@ -77,6 +77,11 @@ logging:
   level:
     com.easy.query: info
 
-snowflake:
-  epoch: 1704067200000  # 2024-01-01 00:00:00
-  worker-id: 1
+
+
+app:
+  snowflake:
+    epoch: 1704067200000  # 2024-01-01 00:00:00
+    worker-id: 1
+  request-cache:
+    max-size: 50MB

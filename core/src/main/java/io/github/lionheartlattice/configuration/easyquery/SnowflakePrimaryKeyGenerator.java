@@ -74,8 +74,8 @@ public class SnowflakePrimaryKeyGenerator implements PrimaryKeyGenerator {
      * @param workerId 机器ID
      */
     public SnowflakePrimaryKeyGenerator(
-            @Value("${snowflake.epoch:1704067200000}") long epoch,
-            @Value("${snowflake.worker-id:1}") long workerId) {
+            @Value("${app.snowflake.epoch:1704067200000}") long epoch,
+            @Value("${app.snowflake.worker-id:1}") long workerId) {
         this.epoch = epoch;
         if (workerId < 0 || workerId > MAX_WORKER_ID) {
             throw new IllegalArgumentException("机器ID必须在0-" + MAX_WORKER_ID + "之间");
