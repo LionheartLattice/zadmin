@@ -63,10 +63,14 @@ public abstract class ParentService<P> extends NullUtil {
     protected final TransactionTemplate ds2TransactionTemplate = DataAccessUtils.getDs2TransactionTemplate();
 
     /**
-     * 当前 Spring 管理的本类实例，便于在方法中直接调用
+     * 获取当前 Spring 管理的本类实例
+     *
+     * @return 当前实例的代理/Bean
      */
     @SuppressWarnings("unchecked")
-    protected final ParentService<P> self = (ParentService<P>) SpringUtils.getBean(getClass());
+    protected <S extends ParentService<P>> S self() {
+        return (S) SpringUtils.getBean(getClass());
+    }
 
     /**
      * 获取实体类的泛型类型
