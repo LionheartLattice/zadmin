@@ -26,6 +26,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.sql.DataSource;
@@ -99,6 +100,13 @@ public class MultiDataSourceConfiguration {
             TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
             DynamicBeanFactory.registerBean(key + TRANSACTION_TEMPLATE, transactionTemplate);
         });
+    }
+
+    @Bean
+    @Primary
+    public PlatformTransactionManager platformTransactionManager() {
+        ConfigurableListableBeanFactory beanFactory = DynamicBeanFactory.getConfigurableBeanFactory();
+        return beanFactory.getBean(PRIMARY + TRANSACTION_MANAGER, PlatformTransactionManager.class);
     }
 
     @Bean
