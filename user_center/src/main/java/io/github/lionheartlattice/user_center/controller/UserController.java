@@ -4,6 +4,7 @@ import io.github.lionheartlattice.entity.user_center.dto.UserDTO;
 import io.github.lionheartlattice.entity.user_center.po.User;
 import io.github.lionheartlattice.user_center.service.UserService;
 import io.github.lionheartlattice.util.ExcelExportUtil;
+import io.github.lionheartlattice.util.parent.ParentController;
 import io.github.lionheartlattice.util.parent.ParentUtil;
 import io.github.lionheartlattice.util.response.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,7 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("z_user")
 @RequiredArgsConstructor
-public class UserController extends ParentUtil<User> {
+public class UserController extends ParentController<UserService> {
 
     private final UserService userService;
 
@@ -30,17 +31,17 @@ public class UserController extends ParentUtil<User> {
     }
 
 
-    //列表查询
-    @PostMapping("list")
-    public ApiResult<?> list() {
-        log.warn("测试");
-        return ApiResult.success(createPo().queryable().toList());
-    }
-
-    @Operation(summary = "导出用户列表Excel", description = "基于列表查询结果导出Excel报表")
-    @GetMapping("export")
-    public void export(HttpServletResponse response) {
-        List<User> users = createPo().queryable().toList();
-        ExcelExportUtil.exportWithSchema(response, "用户列表.xlsx", users);
-    }
+//    //列表查询
+//    @PostMapping("list")
+//    public ApiResult<?> list() {
+//        log.warn("测试");
+//        return ApiResult.success(createPo().queryable().toList());
+//    }
+//
+//    @Operation(summary = "导出用户列表Excel", description = "基于列表查询结果导出Excel报表")
+//    @GetMapping("export")
+//    public void export(HttpServletResponse response) {
+//        List<User> users = createPo().queryable().toList();
+//        ExcelExportUtil.exportWithSchema(response, "用户列表.xlsx", users);
+//    }
 }
