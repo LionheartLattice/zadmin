@@ -5,7 +5,7 @@ import com.easy.query.core.expression.builder.core.NotNullOrEmptyValueFilter;
 import io.github.lionheartlattice.entity.base.PageRequest;
 import io.github.lionheartlattice.entity.user_center.dto.UserCreatDTO;
 import io.github.lionheartlattice.entity.user_center.po.User;
-import io.github.lionheartlattice.entity.user_center.vo.UserPageVO;
+import io.github.lionheartlattice.entity.user_center.vo.UserPageDTO;
 import io.github.lionheartlattice.util.parent.ParentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ public class UserService extends ParentService<User> {
         return createPo().queryable().toList();
     }
 
-    public Object page(UserPageVO dto) {
+    public Object page(UserPageDTO dto) {
 
         EasyPageResult<User> pageResult = createPo().queryable()
                 .filterConfigure(NotNullOrEmptyValueFilter.DEFAULT_PROPAGATION_SUPPORTS)
