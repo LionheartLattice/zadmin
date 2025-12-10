@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import org.apache.poi.ss.usermodel.DataFormat;
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -25,6 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Date;
 
 
 @Tag(name = "用户模块", description = "用户管理")
@@ -70,13 +74,23 @@ public class UserController extends ParentUtil<User> {
             }
         }
 
-        // 将所有字段值转换为字符串
+        // 日期格式化器
+        DateTimeFormatter localDateFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        SimpleDateFormat dateFmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        // 将所有字段值转换为字符串（日期字段格式化）
         List<Map<String, String>> stringRows = new ArrayList<>();
         for (User user : users) {
             Map<String, String> row = new LinkedHashMap<>();
             for (Map.Entry<String, Field> entry : fieldMap.entrySet()) {
                 Object val = entry.getValue().get(user);
-                row.put(entry.getKey(), Objects.toString(val, ""));
+                if (val instanceof LocalDate ld) {
+                    row.put(entry.getKey(), ld.format(localDateFmt));
+                } else if (val instanceof Date d) {
+                    row.put(entry.getKey(), dateFmt.format(d));
+                } else {
+                    row.put(entry.getKey(), Objects.toString(val, ""));
+                }
             }
             stringRows.add(row);
         }
