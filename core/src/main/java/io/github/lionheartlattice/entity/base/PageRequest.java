@@ -7,13 +7,13 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-@Schema(description = "分页请求参数", example = "{\"pageIndex\":1,\"pageSize\":20,\"orders\":[{\"property\":\"id\",\"asc\":false}]}")
+@Schema(description = "分页请求参数")
 public class PageRequest<T> extends ParentCloneable<T> {
     @Schema(description = "页码，从1开始", example = "1")
-    private Integer pageIndex = 1;
+    private Integer pageIndex;
 
     @Schema(description = "每页条数", example = "20")
-    private Integer pageSize = 20;
+    private Integer pageSize;
 
     @Schema(description = "排序字段列表")
     private List<InternalOrder> orders;
@@ -25,6 +25,6 @@ public class PageRequest<T> extends ParentCloneable<T> {
         private String property;
 
         @Schema(description = "是否升序", example = "false")
-        private boolean asc = false;
+        private boolean asc;
     }
 }
