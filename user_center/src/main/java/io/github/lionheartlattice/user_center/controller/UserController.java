@@ -1,4 +1,4 @@
-package io.github.lionheartlattice.core.controller;
+package io.github.lionheartlattice.user_center.controller;
 
 import io.github.lionheartlattice.entity.user_center.dto.UserDTO;
 import io.github.lionheartlattice.entity.user_center.po.User;
@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,6 +29,7 @@ public class UserController extends ParentUtil<User> {
     //列表查询
     @PostMapping("list")
     public ApiResult<?> list() {
+        log.warn("测试");
         return ApiResult.success(createPo().queryable().toList());
     }
 
