@@ -42,17 +42,18 @@ spring:
           max-idle: 30
           min-idle: 10
 
-  jackson:
-    default-property-inclusion: ALWAYS
-    time-zone: GMT+8
-    deserialization:
-      FAIL_ON_UNKNOWN_PROPERTIES: false
-    datatype:
-      datetime:
-        WRITE_DATES_AS_TIMESTAMPS: false
-    mapper:
-      SORT_CREATOR_PROPERTIES_FIRST: true
-      SORT_PROPERTIES_ALPHABETICALLY: false
+  jackson: # Jackson 全局配置
+    default-property-inclusion: ALWAYS # 属性默认全部序列化/反序列化
+    time-zone: GMT+8 # 时区配置
+    deserialization: # 反序列化配置
+      FAIL_ON_UNKNOWN_PROPERTIES: false # 忽略未知字段
+      ACCEPT_EMPTY_STRING_AS_NULL_OBJECT: true # 空字符串反序列化为 null
+    datatype: # 数据类型相关配置
+      datetime: # 日期时间配置
+        WRITE_DATES_AS_TIMESTAMPS: false # 日期时间不写为时间戳
+    mapper: # 映射器配置
+      SORT_CREATOR_PROPERTIES_FIRST: true # 构造参数属性优先排序
+      SORT_PROPERTIES_ALPHABETICALLY: false # 不按字母序排序属性
 server:
   tomcat:
     max-connections: 20000          # 可适当增大
