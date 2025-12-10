@@ -15,7 +15,7 @@ public class PageDTO extends ParentCloneable<PageDTO> {
     @Schema(description = "每页条数", example = "20")
     private Integer pageSize = 20;
 
-    @Schema(description = "下载空excel供导入", example = "false")
+    @Schema(description = "下载空excel供导入,download专用", example = "false")
     private boolean downloadEmptyExcel = false;
 
     @Schema(description = "搜索字段列表")
