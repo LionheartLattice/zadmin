@@ -22,7 +22,8 @@ public class UserService extends ParentService<User> {
 
     public Object page(User dto) {
         createPo().queryable().filterConfigure(NotNullOrEmptyValueFilter.DEFAULT_PROPAGATION_SUPPORTS)
-                .where(u -> u.id().eq())
+                .where(u -> {u.id().eq()})
+                .toPageResult()
         return null;
     }
 }
