@@ -16,8 +16,8 @@ import lombok.SneakyThrows;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 
 @Tag(name = "用户管理")
@@ -59,7 +59,7 @@ public class UserController extends ParentController<UserService> {
     @PostMapping("export")
     public void downLoad(@RequestBody UserPageDTO dto, HttpServletResponse response) {
         if (dto.isDownloadEmptyExcel()) {
-            ExcelExportUtil.export(response, "导入模板.xlsx", new ArrayList<UserCreatDTO>());
+            ExcelExportUtil.export(response, "导入模板.xlsx", Stream.generate(UserCreatDTO::new).limit(100).toList());
         } else {
             ExcelExportUtil.export(response, "导出列表.xlsx", service.page(dto).getData());
         }
