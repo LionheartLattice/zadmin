@@ -14,11 +14,11 @@ import org.springframework.transaction.support.TransactionTemplate;
 /**
  * 父级工具类，提供实体类操作的通用方法
  *
- * @param <T> 实体类类型
+ * @param <P> 实体类类型
  * @author lionheart
  * @since 1.0
  */
-public abstract class ParentUtil<T> extends NullUtil {
+public abstract class ParentService<P> extends NullUtil {
 
     /**
      *
@@ -68,8 +68,8 @@ public abstract class ParentUtil<T> extends NullUtil {
      * @return 泛型类型 Class
      */
     @SuppressWarnings("unchecked")
-    protected Class<T> entityClass() {
-        return (Class<T>) ResolvableType.forClass(getClass()).as(ParentUtil.class)
+    protected Class<P> entityClass() {
+        return (Class<P>) ResolvableType.forClass(getClass()).as(ParentService.class)
                 .getGeneric(0).resolve();
     }
 
@@ -78,7 +78,7 @@ public abstract class ParentUtil<T> extends NullUtil {
      *
      * @return 实体类新实例
      */
-    protected T createPo() {
+    protected P createPo() {
         return BeanUtils.instantiateClass(entityClass());
     }
 }
