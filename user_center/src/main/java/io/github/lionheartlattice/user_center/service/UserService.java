@@ -11,6 +11,8 @@ import io.github.lionheartlattice.util.parent.ParentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class UserService extends ParentService<User> {
@@ -19,26 +21,29 @@ public class UserService extends ParentService<User> {
     }
 
     public EasyPageResult<User> page(UserPageDTO dto) {
-        return createPo().queryable()
-                .filterConfigure(NotNullOrEmptyValueFilter.DEFAULT_PROPAGATION_SUPPORTS)
-                .where(u -> {
-                    u.id().eq(dto.getId());
-                    u.username().contains(dto.getUsername());
-                    u.phone().eq(dto.getPhone());
-                    u.nickname().contains(dto.getNickname());
-                    u.sex().eq(dto.getSex());
-                    u.idCard().eq(dto.getIdCard());
-                    u.email().eq(dto.getEmail());
-                    u.createId().eq(dto.getCreateId());
-                    u.updateId().eq(dto.getUpdateId());
-                }).orderBy(isNotNull(dto.getOrders()), u -> {
-                    for (PageRequest.InternalOrder order : dto.getOrders()) {
-                        u.anyColumn(order.getProperty()).orderBy(order.isAsc());
-                    }
-                }).toPageResult(dto.getPageIndex(), dto.getPageSize());
+        return createPo().queryable().filterConfigure(NotNullOrEmptyValueFilter.DEFAULT_PROPAGATION_SUPPORTS).where(u -> {
+            u.id().eq(dto.getId());
+            u.username().contains(dto.getUsername());
+            u.phone().eq(dto.getPhone());
+            u.nickname().contains(dto.getNickname());
+            u.sex().eq(dto.getSex());
+            u.idCard().eq(dto.getIdCard());
+            u.email().eq(dto.getEmail());
+            u.createId().eq(dto.getCreateId());
+            u.updateId().eq(dto.getUpdateId());
+        }).orderBy(isNotNull(dto.getOrders()), u -> {
+            for (PageRequest.InternalOrder order : dto.getOrders()) {
+                u.anyColumn(order.getProperty()).orderBy(order.isAsc());
+            }
+        }).toPageResult(dto.getPageIndex(), dto.getPageSize());
     }
 
     public Boolean update(UserUpdateDTO dto) {
         return createPo().copyFrom(dto).updatable().executeRows() > 0;
     }
+
+    public Object delete(List<Long> ids) {
+        return createPo().expressionDeletable().where(u -> u.id().in(ids)).executeRows() > 0;
+    }
 }
+

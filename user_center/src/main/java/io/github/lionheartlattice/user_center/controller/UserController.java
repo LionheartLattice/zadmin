@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 
 @Tag(name = "用户管理")
 @RestController
@@ -35,6 +37,11 @@ public class UserController extends ParentController<UserService> {
     @PostMapping("page")
     public ApiResult<?> page(@RequestBody UserPageDTO dto) {
         return ApiResult.success(service.page(dto));
+    }
+
+    @PostMapping("delete")
+    public ApiResult<?> delete(@RequestBody List<Long> ids) {
+        return ApiResult.success(service.delete(ids));
     }
 
     @PostMapping("export")
