@@ -65,6 +65,31 @@ public class ExcelImportUtil {
     }
 
     /**
+     * 遍历所有字符串字段：trim 后若为空串则设为 null。
+     */
+    private static <T> void trimAndBlankToNull(List<T> list) {
+        if (CollUtil.isEmpty(list)) {
+            return;
+        }
+        Class<?> clazz = list.get(0).getClass();
+        List<Field> stringFields = Arrays.stream(clazz.getDeclaredFields()).filter(f -> f.getType() == String.class).toList();
+        for (T item : list) {
+            for (Field field : stringFields) {
+                field.setAccessible(true);
+                try {
+                    String val = (String) field.get(item);
+                    if (val != null) {
+                        String trimmed = val.trim();
+                        field.set(item, StrUtil.isEmpty(trimmed) ? null : trimmed);
+                    }
+                } catch (IllegalAccessException e) {
+                    throw new IllegalStateException("清洗字符串字段失败: " + field.getName(), e);
+                }
+            }
+        }
+    }
+
+    /**
      * 构建“表头名 -> 字段名”映射，表头名取自 @Schema.description。
      */
     private static Map<String, String> buildHeaderAlias(Class<?> clazz) {
