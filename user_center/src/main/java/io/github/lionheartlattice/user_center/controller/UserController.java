@@ -1,7 +1,7 @@
 package io.github.lionheartlattice.user_center.controller;
 
+import io.github.lionheartlattice.entity.base.PageDTO;
 import io.github.lionheartlattice.entity.user_center.dto.UserCreatDTO;
-import io.github.lionheartlattice.entity.user_center.dto.UserPageDTO;
 import io.github.lionheartlattice.entity.user_center.po.UserUpdateDTO;
 import io.github.lionheartlattice.user_center.service.UserService;
 import io.github.lionheartlattice.util.ExcelExportUtil;
@@ -34,7 +34,7 @@ public class UserController extends ParentController<UserService> {
     }
 
     @PostMapping("page")
-    public ApiResult<?> page(@RequestBody UserPageDTO dto) {
+    public ApiResult<?> page(@RequestBody PageDTO dto) {
         return ApiResult.success(service.page(dto));
     }
 
@@ -50,7 +50,7 @@ public class UserController extends ParentController<UserService> {
     }
 
     @PostMapping("export")
-    public void downLoad(@RequestBody UserPageDTO dto, HttpServletResponse response) {
+    public void downLoad(@RequestBody PageDTO dto, HttpServletResponse response) {
         if (dto.isDownloadEmptyExcel()) {
             ExcelExportUtil.downloadEmpty(response, UserCreatDTO.class);
         } else {

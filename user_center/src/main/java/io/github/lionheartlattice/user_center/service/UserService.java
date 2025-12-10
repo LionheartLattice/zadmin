@@ -2,9 +2,8 @@ package io.github.lionheartlattice.user_center.service;
 
 import com.easy.query.core.api.pagination.EasyPageResult;
 import com.easy.query.core.expression.builder.core.NotNullOrEmptyValueFilter;
-import io.github.lionheartlattice.entity.base.PageRequest;
+import io.github.lionheartlattice.entity.base.PageDTO;
 import io.github.lionheartlattice.entity.user_center.dto.UserCreatDTO;
-import io.github.lionheartlattice.entity.user_center.dto.UserPageDTO;
 import io.github.lionheartlattice.entity.user_center.po.User;
 import io.github.lionheartlattice.entity.user_center.po.UserUpdateDTO;
 import io.github.lionheartlattice.util.CopyUtil;
@@ -23,22 +22,21 @@ public class UserService extends ParentService<User> {
         return isNotNull(rows); //如果操作异常会直接抛异常，或者数据库影响行数为0，因此只需要判定非空非0即可，下列的也是类似
     }
 
-    public EasyPageResult<User> page(UserPageDTO dto) {
-        return createPo().queryable().filterConfigure(NotNullOrEmptyValueFilter.DEFAULT_PROPAGATION_SUPPORTS).where(u -> {
-            u.id().eq(dto.getId());
-            u.username().eq(dto.getUsername());
-            u.phone().eq(dto.getPhone());
-            u.nickname().contains(dto.getNickname());
-            u.sex().eq(dto.getSex());
-            u.idCard().eq(dto.getIdCard());
-            u.email().eq(dto.getEmail());
-            u.createId().eq(dto.getCreateId());
-            u.updateId().eq(dto.getUpdateId());
-        }).orderBy(isNotNull(dto.getOrders()), u -> {
-            for (PageRequest.InternalOrder order : dto.getOrders()) {
-                u.anyColumn(order.getProperty()).orderBy(order.isAsc());
-            }
-        }).toPageResult(dto.getPageIndex(), dto.getPageSize());
+    public EasyPageResult<User> page(PageDTO dto) {
+        return createPo().queryable().filterConfigure(NotNullOrEmptyValueFilter.DEFAULT_PROPAGATION_SUPPORTS)
+                .where(isNotNull(dto.getSearches()), u -> {
+                    for (PageDTO.InternalSearch search : dto.getSearches()) {
+                        if (search.isLike()) {
+                            u.anyColumn(search.getProperty()).like(search.getValue());
+                        } else {
+                            u.anyColumn(search.getProperty()).eq(search.getValue());              // 精确匹配
+                        }
+                    }
+                }).orderBy(isNotNull(dto.getOrders()), u -> {
+                    for (PageDTO.InternalOrder order : dto.getOrders()) {
+                        u.anyColumn(order.getProperty()).orderBy(order.isAsc());
+                    }
+                }).toPageResult(dto.getPageIndex(), dto.getPageSize());
     }
 
     public Boolean update(UserUpdateDTO dto) {

@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @Schema(description = "分页请求参数")
-public class PageRequest<T> extends ParentCloneable<T> {
+public class PageDTO extends ParentCloneable<PageDTO> {
     @Schema(description = "页码，从1开始", example = "1")
     private Integer pageIndex = 1;
 
@@ -18,11 +18,11 @@ public class PageRequest<T> extends ParentCloneable<T> {
     @Schema(description = "下载空excel供导入", example = "false")
     private boolean downloadEmptyExcel = false;
 
-    @Schema(description = "搜索字段列表")
-    private List<InternalSearch> searches;
-
     @Schema(description = "排序字段列表")
     private List<InternalOrder> orders;
+
+    @Schema(description = "搜索字段列表")
+    private List<InternalSearch> searches;
 
 
     @Data
@@ -41,10 +41,10 @@ public class PageRequest<T> extends ParentCloneable<T> {
         @Schema(description = "搜索属性名", example = "username")
         private String property;
 
-        @Schema(description = "是否Contain模糊查询", example = "false")
-        private boolean isContain;
+        @Schema(description = "是否like模糊查询", example = "false")
+        private boolean like;
 
         @Schema(description = "搜索值", example = "张三")
-        private Object value;
+        private String value;
     }
 }
