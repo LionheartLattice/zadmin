@@ -53,6 +53,8 @@ public class UserController extends ParentUtil<User> {
         try {
             // 写入数据（自动根据属性名生成表头）
             writer.write(users, true);
+            // 按内容自动调整所有列宽
+            writer.autoSizeColumnAll();
             writer.flush(response.getOutputStream(), true);
         } finally {
             IoUtil.close(writer);
