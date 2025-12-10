@@ -22,14 +22,14 @@ import java.util.List;
 public class UserController extends ParentUtil<User> {
     //    新增用户
     @PostMapping("add")
-    public ApiResult<Boolean> add(@RequestBody UserDTO dto) {
+    public ApiResult<?> add(@RequestBody UserDTO dto) {
         long rows = createPo().copyFrom(dto).setUpdateId(0L).insertable().executeRows();
         return ApiResult.success(rows > 0);
     }
 
     //列表查询
     @PostMapping("list")
-    public ApiResult<List<User>> list() {
+    public ApiResult<?> list() {
         return ApiResult.success(createPo().queryable().toList());
     }
 
