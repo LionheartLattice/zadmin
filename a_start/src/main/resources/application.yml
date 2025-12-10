@@ -52,7 +52,7 @@ spring:
         WRITE_DATES_AS_TIMESTAMPS: false
     mapper:
       SORT_CREATOR_PROPERTIES_FIRST: true
-
+      SORT_PROPERTIES_ALPHABETICALLY: false
 server:
   tomcat:
     max-connections: 20000          # 可适当增大
