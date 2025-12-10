@@ -123,9 +123,9 @@ public class ExcelExportUtil {
             for (Map<String, String> row : rows) {
                 maxUnits = Math.max(maxUnits, displayWidth(row.get(key)));
             }
-            // 预留边距，限制 Excel 最大列宽
-            int withMargin = maxUnits + 2;
-            int poiWidth = Math.min(255 * 256, (int) (withMargin * 256 * 1.1));
+            // 缩小边距，更贴近内容
+            int withMargin = maxUnits + 1;
+            int poiWidth = Math.min(255 * 256, (int) (withMargin * 256 * 1.05));
             writer.getSheet().setColumnWidth(col, poiWidth);
         }
     }
