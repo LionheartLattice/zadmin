@@ -19,7 +19,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService extends ParentService<User> {
     public boolean create(UserCreatDTO dto) {
-        return createPo().copyFrom(dto).setUpdateId(0L).insertable().executeRows() > 0;
+        long rows = createPo().copyFrom(dto).setUpdateId(0L).insertable().executeRows();
+        return isNotNull(rows);
     }
 
     public EasyPageResult<User> page(UserPageDTO dto) {
@@ -41,18 +42,19 @@ public class UserService extends ParentService<User> {
     }
 
     public Boolean update(UserUpdateDTO dto) {
-        return createPo().copyFrom(dto).updatable().executeRows() > 0;
+        long rows = createPo().copyFrom(dto).updatable().executeRows();
+        return isNotNull(rows);
     }
 
     public Boolean delete(List<Long> ids) {
-        return createPo().expressionDeletable().where(u -> u.id().in(ids)).executeRows() > 0;
+        long rows = createPo().expressionDeletable().where(u -> u.id().in(ids)).executeRows();
+        return isNotNull(rows);
     }
 
     @Transactional
     public Boolean saveBatch(List<UserCreatDTO> dtos) {
         List<User> entities = CopyUtil.copyList(dtos, User.class);
-        return createPo().insertable(entities).batch(true) // 启用批量执行（配合 Postgres 连接串 reWriteBatchedInserts=true）
-                .executeRows() > 0;
+        return createPo().insertable(entities).batch(true).executeRows() > 0;
     }
 }
 

@@ -21,6 +21,33 @@ public class NullUtil {
     }
 
     /**
+     * 判断 long 非空且非0
+     */
+    public static boolean isNotNull(long val) {
+        return val != 0L;
+    }
+
+    /**
+     * 判断 Long 非空且非0
+     */
+    public static boolean isNotNull(Long val) {
+        return val != null && val != 0L;
+    }
+
+    /**
+     * 判断 long 为空或为0
+     */
+    public static boolean isNull(long val) {
+        return !isNotNull(val);
+    }
+
+    /**
+     * 判断 Long 为空或为0
+     */
+    public static boolean isNull(Long val) {
+        return !isNotNull(val);
+    }
+    /**
      * 判断集合非空
      */
     public static boolean isNotNull(Collection<?> collection) {
