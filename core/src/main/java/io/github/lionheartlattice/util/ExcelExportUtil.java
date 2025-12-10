@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Excel 导出工具：表头基于 @Schema，文本格式输出，自动列宽。
@@ -23,6 +24,22 @@ import java.util.*;
 public class ExcelExportUtil {
 
     private ExcelExportUtil() {
+    }
+
+    @SneakyThrows
+    public static <T> void downloadEmpty(HttpServletResponse response, Class<T> clazz) {
+        List<T> data = Stream.generate(() -> {
+            try {
+                return clazz.getDeclaredConstructor().newInstance();
+            } catch (Exception e) {
+                throw new IllegalStateException(e);
+            }
+        }).limit(100).toList();
+        export(response, "导入模板.xlsx", data);
+    }
+
+    public static <T> void export(HttpServletResponse response, List<T> data) {
+        export(response, "导出列表.xlsx", data);
     }
 
     /**

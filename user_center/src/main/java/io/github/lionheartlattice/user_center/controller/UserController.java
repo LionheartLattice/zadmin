@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 
 @Tag(name = "用户管理")
@@ -49,19 +48,19 @@ public class UserController extends ParentController<UserService> {
     @SneakyThrows
     @PostMapping("upload")
     public ApiResult<?> upload(@RequestParam("file") MultipartFile file) {
-        ExcelReader reader = ExcelUtil.getReader(file.getInputStream());
-        List<UserCreatDTO> dtos = reader.readAll(UserCreatDTO.class);
-        log.warn(dtos.toString());
-        reader.close();
-        return ApiResult.success(service.saveBatch(dtos));
+        try (ExcelReader reader = ExcelUtil.getReader(file.getInputStream())) {
+            List<UserCreatDTO> dtos = reader.readAll(UserCreatDTO.class);
+            return ApiResult.success(service.saveBatch(dtos));
+        }
     }
 
     @PostMapping("export")
     public void downLoad(@RequestBody UserPageDTO dto, HttpServletResponse response) {
         if (dto.isDownloadEmptyExcel()) {
-            ExcelExportUtil.export(response, "导入模板.xlsx", Stream.generate(UserCreatDTO::new).limit(100).toList());
+            ExcelExportUtil.downloadEmpty(response, UserCreatDTO.class);
         } else {
-            ExcelExportUtil.export(response, "导出列表.xlsx", service.page(dto).getData());
+            ExcelExportUtil.export(response, service.page(dto).getData());
         }
     }
+
 }
