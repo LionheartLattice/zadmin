@@ -35,6 +35,6 @@ public class UserController extends ParentController<UserService> {
     @Operation(summary = "excel")
     @PostMapping("export")
     public void export(@RequestBody UserPageDTO dto, HttpServletResponse response) {
-        ExcelExportUtil.exportWithSchema(response, "用户列表.xlsx", service.page(dto).getData());
+        ExcelExportUtil.export(response, "用户列表.xlsx", service.page(dto).getData());
     }
 }

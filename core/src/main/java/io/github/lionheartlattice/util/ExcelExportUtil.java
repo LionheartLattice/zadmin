@@ -34,7 +34,7 @@ public class ExcelExportUtil {
      */
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    public static <T> void exportWithSchema(HttpServletResponse response, String fileName, List<T> data) {
+    public static <T> void export(HttpServletResponse response, String fileName, List<T> data) {
 
         Class<T> clazz = (Class<T>) data.get(0).getClass();
         // 构建表头别名：字段名 -> @Schema.description()
