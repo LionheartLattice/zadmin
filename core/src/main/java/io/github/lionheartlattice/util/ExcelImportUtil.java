@@ -61,7 +61,9 @@ public class ExcelImportUtil {
             throw new IllegalArgumentException("Excel 缺少表头: " + missing);
         }
 
-        return reader.readAll(clazz);
+        List<T> list = reader.readAll(clazz); // 原始读取
+        trimAndBlankToNull(list);             // 统一 trim，空串置为 null
+        return list;
     }
 
     /**

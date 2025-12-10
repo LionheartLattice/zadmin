@@ -55,6 +55,7 @@ public class UserController extends ParentController<UserService> {
     @Transactional(transactionManager = PRIMARY + TRANSACTION_MANAGER)
     public ApiResult<?> upload(@RequestParam("file") MultipartFile file) {
         List<UserCreatDTO> dtos = ExcelImportUtil.importExcel(file, UserCreatDTO.class);
+        log.warn(dtos.toString());
         return ApiResult.success(service.saveBatch(dtos));
     }
 
