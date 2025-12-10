@@ -101,12 +101,46 @@ public class ExcelExportUtil {
 
             writer.setHeaderAlias(headerAlias);
             writer.write(stringRows, true);
-            writer.autoSizeColumnAll();
+            // 表头+数据一起计算宽度，适配中英混排
+            adjustColumnWidths(writer, headerAlias, stringRows);
             writer.flush(response.getOutputStream(), true);
         } finally {
             IoUtil.close(writer);
             IoUtil.close(response.getOutputStream());
         }
+    }
+
+    /**
+     * 按表头与数据的最大展示宽度设置列宽（中文按双字节估算，留出边距）。
+     */
+    private static void adjustColumnWidths(ExcelWriter writer,
+                                               Map<String, String> headerAlias,
+                                               List<Map<String, String>> rows) {
+        List<String> keys = new ArrayList<>(headerAlias.keySet());
+        for (int col = 0; col < keys.size(); col++) {
+            String key = keys.get(col);
+            int maxUnits = displayWidth(headerAlias.get(key));
+            for (Map<String, String> row : rows) {
+                maxUnits = Math.max(maxUnits, displayWidth(row.get(key)));
+            }
+            // 预留边距，限制 Excel 最大列宽
+            int withMargin = maxUnits + 2;
+            int poiWidth = Math.min(255 * 256, (int) (withMargin * 256 * 1.1));
+            writer.getSheet().setColumnWidth(col, poiWidth);
+        }
+    }
+
+    /**
+     * 估算字符串显示宽度：英文≈1，中文≈2，空值给4个字符宽。
+     */
+    private static int displayWidth(String s) {
+        if (StrUtil.isEmpty(s)) {
+            return 4;
+        }
+        int chars = s.length();
+        int bytes = s.getBytes(StandardCharsets.UTF_8).length;
+        int doubleBytes = Math.max(0, bytes - chars); // 非ASCII近似双宽
+        return chars + doubleBytes;
     }
 
     private ExcelExportUtil() {
