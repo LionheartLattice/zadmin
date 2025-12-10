@@ -1,19 +1,15 @@
 package io.github.lionheartlattice.user_center.controller;
 
 import io.github.lionheartlattice.entity.user_center.dto.UserDTO;
-import io.github.lionheartlattice.entity.user_center.po.User;
 import io.github.lionheartlattice.user_center.service.UserService;
-import io.github.lionheartlattice.util.ExcelExportUtil;
 import io.github.lionheartlattice.util.parent.ParentController;
-import io.github.lionheartlattice.util.parent.ParentUtil;
 import io.github.lionheartlattice.util.response.ApiResult;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 
 @Tag(name = "用户模块", description = "用户管理")
@@ -22,12 +18,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController extends ParentController<UserService> {
 
-    private final UserService userService;
-
     //    新增用户
     @PostMapping("add")
     public ApiResult<?> create(@RequestBody UserDTO dto) {
-        return ApiResult.success(userService.create(dto));
+        return ApiResult.success(service.create(dto));
     }
 
 

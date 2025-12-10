@@ -13,7 +13,7 @@ public abstract class ParentController<S> extends NullUtil {
      */
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
-
+    protected final S service = SpringUtils.getBean(serviceClass());
 
     /**
      * 获取当前控制器泛型声明的 Service 类型
@@ -26,10 +26,4 @@ public abstract class ParentController<S> extends NullUtil {
                 .resolve();
     }
 
-    /**
-     * 直接从 Spring 容器获取 Service Bean，供子类调用
-     */
-    protected S service() {
-        return SpringUtils.getBean(serviceClass());
-    }
 }
