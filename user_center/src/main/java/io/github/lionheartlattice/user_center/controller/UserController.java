@@ -16,6 +16,7 @@ import lombok.SneakyThrows;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -50,12 +51,18 @@ public class UserController extends ParentController<UserService> {
     public ApiResult<?> upload(@RequestParam("file") MultipartFile file) {
         ExcelReader reader = ExcelUtil.getReader(file.getInputStream());
         List<UserCreatDTO> dtos = reader.readAll(UserCreatDTO.class);
+        log.warn(dtos.toString());
         reader.close();
         return ApiResult.success(service.saveBatch(dtos));
     }
 
     @PostMapping("export")
     public void downLoad(@RequestBody UserPageDTO dto, HttpServletResponse response) {
-        ExcelExportUtil.export(response, "用户列表.xlsx", service.page(dto).getData());
+        log.warn(dto.toString());
+        if (isNotNull(dto)) {
+            ExcelExportUtil.export(response, "导出列表.xlsx", service.page(dto).getData());
+        } else {
+            ExcelExportUtil.export(response, "导入模板.xlsx", new ArrayList<UserCreatDTO>());
+        }
     }
 }
