@@ -1,4 +1,4 @@
-package io.github.lionheartlattice.entity.user_center.vo;
+package io.github.lionheartlattice.entity.user_center.dto;
 
 
 import com.easy.query.core.annotation.Column;
