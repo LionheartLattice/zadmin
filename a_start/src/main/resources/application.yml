@@ -50,6 +50,8 @@ spring:
     datatype:
       datetime:
         WRITE_DATES_AS_TIMESTAMPS: false
+    mapper:
+      SORT_CREATOR_PROPERTIES_FIRST: true
 
 server:
   tomcat:
