@@ -33,8 +33,6 @@ public class UserController extends ParentUtil<User> {
         return ApiResult.success(createPo().queryable().toList());
     }
 
-
-    @SneakyThrows
     @Operation(summary = "导出用户列表Excel", description = "基于列表查询结果导出Excel报表")
     @GetMapping("export")
     public void export(HttpServletResponse response) {
