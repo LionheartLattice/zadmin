@@ -1,4 +1,4 @@
-package io.github.lionheartlattice.controller;
+package io.github.lionheartlattice.hello.controller;
 
 import io.github.lionheartlattice.util.response.ApiResult;
 import io.github.lionheartlattice.util.response.ErrorEnum;

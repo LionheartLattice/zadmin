@@ -1,4 +1,4 @@
-package io.github.lionheartlattice.controller;
+package io.github.lionheartlattice.hello.controller;
 
 import io.github.lionheartlattice.entity.user_center.po.User;
 import io.swagger.v3.oas.annotations.Operation;

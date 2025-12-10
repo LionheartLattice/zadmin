@@ -2,6 +2,7 @@ package io.github.lionheartlattice.user_center.controller;
 
 import io.github.lionheartlattice.entity.user_center.dto.UserDTO;
 import io.github.lionheartlattice.entity.user_center.po.User;
+import io.github.lionheartlattice.user_center.service.UserService;
 import io.github.lionheartlattice.util.ExcelExportUtil;
 import io.github.lionheartlattice.util.parent.ParentUtil;
 import io.github.lionheartlattice.util.response.ApiResult;
@@ -19,12 +20,15 @@ import java.util.List;
 @RequestMapping("z_user")
 @RequiredArgsConstructor
 public class UserController extends ParentUtil<User> {
+
+    private final UserService userService;
+
     //    新增用户
     @PostMapping("add")
-    public ApiResult<?> add(@RequestBody UserDTO dto) {
-        long rows = createPo().copyFrom(dto).setUpdateId(0L).insertable().executeRows();
-        return ApiResult.success(rows > 0);
+    public ApiResult<?> create(@RequestBody UserDTO dto) {
+        return ApiResult.success(userService.create(dto));
     }
+
 
     //列表查询
     @PostMapping("list")

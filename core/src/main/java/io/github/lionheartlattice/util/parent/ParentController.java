@@ -24,12 +24,4 @@ public abstract class ParentController<T> extends NullUtil {
                 .getGeneric(0).resolve();
     }
 
-    /**
-     * 创建实体类实例
-     *
-     * @return 实体类新实例
-     */
-    protected T createPo() {
-        return BeanUtils.instantiateClass(entityClass());
-    }
 }
