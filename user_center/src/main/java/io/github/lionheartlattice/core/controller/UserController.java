@@ -8,15 +8,19 @@ import io.github.lionheartlattice.entity.user_center.po.User;
 import io.github.lionheartlattice.util.parent.ParentUtil;
 import io.github.lionheartlattice.util.response.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Tag(name = "用户模块", description = "用户管理")
@@ -49,9 +53,18 @@ public class UserController extends ParentUtil<User> {
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
 
+        // 构建表头别名：字段名 -> @Schema.description()
+        Map<String, String> headerAlias = new LinkedHashMap<>();
+        for (Field field : User.class.getDeclaredFields()) {
+            Schema schema = field.getAnnotation(Schema.class);
+            if (schema != null && cn.hutool.core.util.StrUtil.isNotBlank(schema.description())) {
+                headerAlias.put(field.getName(), schema.description());
+            }
+        }
+
         ExcelWriter writer = ExcelUtil.getWriter(true);
         try {
-            // 写入数据（自动根据属性名生成表头）
+            writer.setHeaderAlias(headerAlias);
             writer.write(users, true);
             // 按内容自动调整所有列宽
             writer.autoSizeColumnAll();
