@@ -6,10 +6,16 @@ import io.github.lionheartlattice.util.parent.ParentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class UserService extends ParentService<User> {
     public boolean create(UserDTO dto) {
         return createPo().copyFrom(dto).setUpdateId(0L).insertable().executeRows() > 0;
+    }
+
+    public List<User> list() {
+        return createPo().queryable().toList();
     }
 }
