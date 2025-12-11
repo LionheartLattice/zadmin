@@ -37,7 +37,7 @@ public class PageDTO extends ParentCloneable<PageDTO> {
         private String property;
 
         @Schema(description = "搜索值", example = "张三")
-        private String value;
+        private Object value;
 
         @Schema(description = "开始时间", example = "2024-01-01T00:00:00")
         private LocalDateTime timeStart;
