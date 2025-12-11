@@ -1,8 +1,10 @@
 package io.github.lionheartlattice.user_center.controller;
 
+import com.easy.query.core.api.pagination.EasyPageResult;
 import io.github.lionheartlattice.entity.base.PageDTO;
 import io.github.lionheartlattice.entity.user_center.dto.UserCreatDTO;
 import io.github.lionheartlattice.entity.user_center.dto.UserUpdateDTO;
+import io.github.lionheartlattice.entity.user_center.po.User;
 import io.github.lionheartlattice.user_center.service.UserService;
 import io.github.lionheartlattice.util.ExcelExportUtil;
 import io.github.lionheartlattice.util.ExcelImportUtil;
@@ -25,32 +27,32 @@ public class UserController extends ParentController {
     private final UserService userService;
 
     @PostMapping("create")
-    public ApiResult<?> create(@RequestBody UserCreatDTO dto) {
+    public ApiResult<Boolean> create(@RequestBody UserCreatDTO dto) {
         return ApiResult.success(userService.create(dto));
     }
 
     @PostMapping("detail")
-    public ApiResult<?> detail(@RequestParam Long id) {
+    public ApiResult<UserUpdateDTO> detail(@RequestParam Long id) {
         return ApiResult.success(userService.detail(id));
     }
 
     @PostMapping("update")
-    public ApiResult<?> update(@RequestBody UserUpdateDTO dto) {
+    public ApiResult<Boolean> update(@RequestBody UserUpdateDTO dto) {
         return ApiResult.success(userService.update(dto));
     }
 
     @PostMapping("page")
-    public ApiResult<?> page(@RequestBody PageDTO dto) {
+    public ApiResult<EasyPageResult<User>> page(@RequestBody PageDTO dto) {
         return ApiResult.success(userService.page(dto));
     }
 
     @PostMapping("delete")
-    public ApiResult<?> delete(@RequestBody List<Long> ids) {
+    public ApiResult<Boolean> delete(@RequestBody List<Long> ids) {
         return ApiResult.success(userService.delete(ids));
     }
 
     @PostMapping("upload")
-    public ApiResult<?> upload(@RequestParam("file") MultipartFile file) {
+    public ApiResult<Boolean> upload(@RequestParam("file") MultipartFile file) {
         List<UserCreatDTO> dtos = ExcelImportUtil.importExcel(file, UserCreatDTO.class);
         return ApiResult.success(userService.saveBatch(dtos));
     }
@@ -60,9 +62,9 @@ public class UserController extends ParentController {
         if (dto.isDownloadEmptyExcel()) {
             ExcelExportUtil.downloadEmpty(response, UserCreatDTO.class);
         } else {
-            ExcelExportUtil.export(response, userService.page(dto)
-                                                        .getData());
+            ExcelExportUtil.export(response, userService.page(dto).getData());
         }
     }
+
 
 }
