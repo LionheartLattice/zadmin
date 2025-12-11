@@ -42,3 +42,10 @@ apply: 始终
 - user_center: 用户中心模块
 - generator: 代码生成器
 - a_start: 启动模块
+
+## 数据库
+- 我之前使用mysql，现在要迁移到pgsql，现在完全使用pgsql
+- 主键改为雪花算法由java程序维护，建表语句不必维护
+- create_time字段不需要，因为雪花算法内含时间戳
+- 如有del_flag字段，要添加索引
+- VARCHAR类型要么是NOT NULL，要么是DEFAULT '' 空字符串
