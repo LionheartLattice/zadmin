@@ -29,6 +29,11 @@ public class UserController extends ParentController {
         return ApiResult.success(userService.create(dto));
     }
 
+    @PostMapping("detail")
+    public ApiResult<?> detail(@RequestParam Long id) {
+        return ApiResult.success(userService.detail(id));
+    }
+
     @PostMapping("update")
     public ApiResult<?> update(@RequestBody UserUpdateDTO dto) {
         return ApiResult.success(userService.update(dto));
@@ -55,7 +60,8 @@ public class UserController extends ParentController {
         if (dto.isDownloadEmptyExcel()) {
             ExcelExportUtil.downloadEmpty(response, UserCreatDTO.class);
         } else {
-            ExcelExportUtil.export(response, userService.page(dto).getData());
+            ExcelExportUtil.export(response, userService.page(dto)
+                                                        .getData());
         }
     }
 
