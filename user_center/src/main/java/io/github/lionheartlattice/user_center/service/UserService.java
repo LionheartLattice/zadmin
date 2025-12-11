@@ -32,7 +32,7 @@ public class UserService extends ParentService {
         return new User().queryable()
                          .filterConfigure(NotNullOrEmptyValueFilter.DEFAULT_PROPAGATION_SUPPORTS)
                          .include(UserProxy::deptList)
-                         .include(UserProxy::roleList, r -> r.include(RoleProxy::menuList))
+                         .include(UserProxy::roleList)
                          .where(isNotNull(dto.getSearches()), u -> {
                              for (PageDTO.InternalSearch search : dto.getSearches()) {
                                  if (search.isLike()) {
@@ -40,7 +40,7 @@ public class UserService extends ParentService {
                                       .like(search.getValue());
                                  } else {
                                      u.anyColumn(search.getProperty())
-                                      .eq(search.getValue());  // 精确匹配
+                                      .eq(search.getValue());
                                  }
                              }
                          })
