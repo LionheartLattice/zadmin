@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static io.github.lionheartlattice.entity.base.PageDTO.*;
+
 @Service
 @RequiredArgsConstructor
 public class UserService extends ParentService {
@@ -36,15 +38,13 @@ public class UserService extends ParentService {
                          .where(isNotNull(dto.getSearches()), u -> {
                              for (PageDTO.InternalSearch search : dto.getSearches()) {
                                  String queryType = search.getQueryType();
-                                 if (PageDTO.InternalSearch.EQ.equals(queryType)) {
+                                 if (EQ.equals(queryType)) {
                                      u.anyColumn(search.getProperty())
                                       .eq(search.getValue());
-                                 }
-                                 else if (PageDTO.InternalSearch.LIKE.equals(queryType)) {
+                                 } else if (LIKE.equals(queryType)) {
                                      u.anyColumn(search.getProperty())
                                       .like(search.getValue());
-                                 }
-                                 else if (PageDTO.InternalSearch.DATE.equals(queryType)) {
+                                 } else if (DATE.equals(queryType)) {
                                      if (isNotNull(search.getTimeStart())) {
                                          u.anyColumn(search.getProperty())
                                           .ge(search.getTimeStart());
