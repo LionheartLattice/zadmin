@@ -8,7 +8,7 @@ spring:
     dynamic:
       primary:
         type: com.zaxxer.hikari.HikariDataSource
-        url: jdbc:postgresql://192.168.9.105:35432/my_admin?currentSchema=public&reWriteBatchedInserts=true&stringtype=unspecified&socketTimeout=60&connectTimeout=60&tcpKeepAlive=true
+        url: jdbc:postgresql://192.168.9.105:35432/my_admin?currentSchema=public&reWriteBatchedInserts=true&socketTimeout=60&connectTimeout=60&tcpKeepAlive=true
         username: postgres
         password: Zs2806478963
         driver-class-name: org.postgresql.Driver
