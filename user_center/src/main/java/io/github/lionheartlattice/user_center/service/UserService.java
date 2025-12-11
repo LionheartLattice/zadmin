@@ -38,11 +38,11 @@ public class UserService extends ParentService {
                          .where(isNotNull(dto.getSearches()), u -> {
                              for (PageDTO.InternalSearch search : dto.getSearches()) {
                                  switch (search.getQueryType()) {
-                                     case PageDTO.EQ -> u.anyColumn(search.getProperty())
-                                                         .eq(search.getValue());
-                                     case PageDTO.LIKE -> u.anyColumn(search.getProperty())
-                                                           .like(search.getValue());
-                                     case PageDTO.DATE -> {
+                                     case 1 -> u.anyColumn(search.getProperty())
+                                                .eq(search.getValue());
+                                     case 2 -> u.anyColumn(search.getProperty())
+                                                .like(search.getValue());
+                                     case 3 -> {
                                          if (isNotNull(search.getTimeStart())) {
                                              u.anyColumn(search.getProperty())
                                               .ge(search.getTimeStart());
