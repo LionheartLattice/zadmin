@@ -83,5 +83,13 @@ public class UserService extends ParentService {
                          .select(u -> new ClassProxy<>(UserUpdateDTO.class).selectAll(u))
                          .singleNotNull();
     }
+
+    public User detailWithInclude(Long id) {
+        return new User().queryable()
+                         .include(UserProxy::deptList)
+                         .include(UserProxy::roleList, r -> r.include(RoleProxy::menuList))
+                         .whereById(id)
+                         .singleNotNull();
+    }
 }
 
