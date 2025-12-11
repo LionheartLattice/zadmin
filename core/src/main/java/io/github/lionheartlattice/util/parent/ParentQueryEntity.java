@@ -1,5 +1,6 @@
 package io.github.lionheartlattice.util.parent;
 
+import com.easy.query.core.api.client.EasyQueryClient;
 import com.easy.query.core.basic.api.insert.map.MapClientInsertable;
 import com.easy.query.core.basic.api.update.map.MapClientUpdatable;
 import com.easy.query.core.basic.extension.track.EntityState;
@@ -228,4 +229,25 @@ public abstract class ParentQueryEntity<T> extends ParentCloneable<T> {
     protected static QueryRuntimeContext getRuntimeContext() {
         return getEntityQuery().getRuntimeContext();
     }
+
+    /**
+     * 获取底层 EasyQueryClient 客户端
+     *
+     * @return EasyQueryClient
+     */
+    protected static EasyQueryClient getEasyQueryClient() {
+        return getEntityQuery().getEasyQueryClient();
+    }
+
+    /**
+     * 对保存的对象进行主键设置
+     * 如果对象的id不存在追踪上下文那么将会被视为非法id从而重新赋值
+     *
+     * @param entity 实体对象
+     */
+    protected static void saveEntitySetPrimaryKey(@NotNull Object entity) {
+        getEntityQuery().saveEntitySetPrimaryKey(entity);
+    }
+
+
 }

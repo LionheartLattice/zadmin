@@ -1,5 +1,6 @@
 package io.github.lionheartlattice.util.parent;
 
+import com.easy.query.api.proxy.base.MapProxy;
 import com.easy.query.api.proxy.entity.EntityQueryProxyManager;
 import com.easy.query.api.proxy.entity.delete.EntityDeletable;
 import com.easy.query.api.proxy.entity.delete.ExpressionDeletable;
@@ -16,6 +17,7 @@ import com.easy.query.core.expression.lambda.SQLFuncExpression;
 import com.easy.query.core.expression.lambda.SQLFuncExpression1;
 import com.easy.query.core.expression.parser.core.PropColumn;
 import com.easy.query.core.migration.MigrationEntityParser;
+import com.easy.query.core.proxy.DbSet;
 import com.easy.query.core.proxy.ProxyEntity;
 import com.easy.query.core.proxy.ProxyEntityAvailable;
 import com.easy.query.core.trigger.TriggerEvent;
@@ -26,6 +28,7 @@ import org.springframework.core.ResolvableType;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import static io.github.lionheartlattice.util.DataAccessUtils.getEntityQuery;
@@ -128,6 +131,16 @@ public abstract class ParentClientEntity<T extends ParentClientEntity<T, TProxy>
     }
 
     /**
+     * 创建Map查询器
+     *
+     * @param tableName 表名
+     * @return Map查询器
+     */
+    public static EntityQueryable<MapProxy, Map<String, Object>> mapQueryable(String tableName) {
+        return getEntityQuery().mapQueryable(tableName);
+    }
+
+    /**
      * 获取当前对象的泛型实际类型
      *
      * @return 实体类Class
@@ -173,6 +186,16 @@ public abstract class ParentClientEntity<T extends ParentClientEntity<T, TProxy>
         return getEntityQuery().queryable(sql, entityClass(), params);
     }
 
+    /**
+     * 使用代理对象创建查询器
+     *
+     * @param tProxy 代理对象
+     * @return 查询器
+     */
+    public EntityQueryable<TProxy, T> queryable(TProxy tProxy) {
+        return getEntityQuery().queryable(tProxy);
+    }
+
     // ==================== 插入方法 ====================
 
     /**
@@ -194,6 +217,16 @@ public abstract class ParentClientEntity<T extends ParentClientEntity<T, TProxy>
      */
     public EntityInsertable<TProxy, T> insertable(Collection<T> entities) {
         return getEntityQuery().insertable(entities);
+    }
+
+    /**
+     * 使用代理对象创建插入器
+     *
+     * @param tProxy 代理对象
+     * @return 插入器
+     */
+    public EntityInsertable<TProxy, T> insertable(TProxy tProxy) {
+        return getEntityQuery().insertable(tProxy);
     }
 
     // ==================== 更新方法 ====================
@@ -229,6 +262,26 @@ public abstract class ParentClientEntity<T extends ParentClientEntity<T, TProxy>
         return getEntityQuery().updatable(entityClass());
     }
 
+    /**
+     * 使用代理对象创建表达式更新器
+     *
+     * @param tProxy 代理对象
+     * @return 表达式更新器
+     */
+    public ExpressionUpdatable<TProxy, T> expressionUpdatable(TProxy tProxy) {
+        return getEntityQuery().expressionUpdatable(tProxy);
+    }
+
+    /**
+     * 使用代理对象创建实体更新器
+     *
+     * @param tProxy 代理对象
+     * @return 实体更新器
+     */
+    public EntityUpdatable<TProxy, T> entityUpdatable(TProxy tProxy) {
+        return getEntityQuery().entityUpdatable(tProxy);
+    }
+
     // ==================== 删除方法 ====================
 
     /**
@@ -262,6 +315,26 @@ public abstract class ParentClientEntity<T extends ParentClientEntity<T, TProxy>
         return getEntityQuery().deletable(entityClass());
     }
 
+    /**
+     * 使用代理对象创建表达式删除器
+     *
+     * @param tProxy 代理对象
+     * @return 表达式删除器
+     */
+    public ExpressionDeletable<TProxy, T> expressionDeletable(TProxy tProxy) {
+        return getEntityQuery().expressionDeletable(tProxy);
+    }
+
+    /**
+     * 使用代理对象创建实体删除器
+     *
+     * @param tProxy 代理对象
+     * @return 实体删除器
+     */
+    public EntityDeletable<TProxy, T> entityDeletable(TProxy tProxy) {
+        return getEntityQuery().entityDeletable(tProxy);
+    }
+
     // ==================== 保存方法 ====================
 
     /**
@@ -283,6 +356,35 @@ public abstract class ParentClientEntity<T extends ParentClientEntity<T, TProxy>
      */
     public EntitySavable<TProxy, T> savable(Collection<T> entities) {
         return getEntityQuery().savable(entities);
+    }
+
+    /**
+     * 使用代理对象创建保存器
+     *
+     * @param tProxy 代理对象
+     * @return 保存器
+     */
+    public EntitySavable<TProxy, T> savable(TProxy tProxy) {
+        return getEntityQuery().savable(tProxy);
+    }
+
+    /**
+     * 创建DbSet
+     *
+     * @param tProxy 代理对象
+     * @return DbSet
+     */
+    public DbSet<TProxy, T> createDbSet(TProxy tProxy) {
+        return getEntityQuery().createDbSet(tProxy);
+    }
+
+    /**
+     * 创建当前实体的DbSet
+     *
+     * @return DbSet
+     */
+    public DbSet<TProxy, T> createDbSet() {
+        return getEntityQuery().createDbSet(EntityQueryProxyManager.create(entityClass()));
     }
 
     // ==================== 查询便捷方法 ====================
