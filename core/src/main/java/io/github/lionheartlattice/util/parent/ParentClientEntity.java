@@ -21,14 +21,14 @@ import com.easy.query.core.proxy.ProxyEntityAvailable;
 import com.easy.query.core.trigger.TriggerEvent;
 import com.easy.query.core.util.EasyCollectionUtil;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.core.ResolvableType;
 
-import java.io.Serial;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static io.github.lionheartlattice.util.DataAccessUtils.*;
+import static io.github.lionheartlattice.util.DataAccessUtils.getEntityQuery;
 
 /**
  * 基础客户端实体类，提供 BaseEntityClient 相关功能
@@ -38,8 +38,6 @@ import static io.github.lionheartlattice.util.DataAccessUtils.*;
  * @param <TProxy> 对应的代理实体类型
  */
 public abstract class ParentClientEntity<T extends ParentClientEntity<T, TProxy> & ProxyEntityAvailable<T, TProxy>, TProxy extends ProxyEntity<TProxy, T>> extends ParentQueryEntity<T> implements ProxyEntityAvailable<T, TProxy> {
-
-    // ==================== 追踪作用域方法 ====================
 
     /**
      * 开启一个新的追踪环境
@@ -52,6 +50,8 @@ public abstract class ParentClientEntity<T extends ParentClientEntity<T, TProxy>
         return getEntityQuery().trackScope(trackHandle);
     }
 
+    // ==================== 追踪作用域方法 ====================
+
     /**
      * 在无追踪环境下执行
      *
@@ -63,8 +63,6 @@ public abstract class ParentClientEntity<T extends ParentClientEntity<T, TProxy>
         return getEntityQuery().noTackScope(trackHandle);
     }
 
-    // ==================== 数据库管理方法 ====================
-
     /**
      * 获取数据库 CodeFirst 对象
      * 用于数据库迁移和表结构管理
@@ -72,8 +70,11 @@ public abstract class ParentClientEntity<T extends ParentClientEntity<T, TProxy>
      * @return DatabaseCodeFirst
      */
     public static DatabaseCodeFirst getDatabaseCodeFirst() {
-        return getEntityQuery().getEasyQueryClient().getDatabaseCodeFirst();
+        return getEntityQuery().getEasyQueryClient()
+                               .getDatabaseCodeFirst();
     }
+
+    // ==================== 数据库管理方法 ====================
 
     /**
      * 设置迁移解析器
@@ -81,7 +82,8 @@ public abstract class ParentClientEntity<T extends ParentClientEntity<T, TProxy>
      * @param migrationParser 迁移解析器
      */
     public static void setMigrationParser(MigrationEntityParser migrationParser) {
-        getEntityQuery().getEasyQueryClient().setMigrationParser(migrationParser);
+        getEntityQuery().getEasyQueryClient()
+                        .setMigrationParser(migrationParser);
     }
 
     /**
@@ -90,7 +92,8 @@ public abstract class ParentClientEntity<T extends ParentClientEntity<T, TProxy>
      * @param eventConsumer 事件消费者
      */
     public static void addTriggerListener(Consumer<TriggerEvent> eventConsumer) {
-        getEntityQuery().getEasyQueryClient().addTriggerListener(eventConsumer);
+        getEntityQuery().getEasyQueryClient()
+                        .addTriggerListener(eventConsumer);
     }
 
     /**
@@ -99,7 +102,8 @@ public abstract class ParentClientEntity<T extends ParentClientEntity<T, TProxy>
      * @param packageNames 包名列表
      */
     public static void loadTableEntityByPackage(String... packageNames) {
-        getEntityQuery().getEasyQueryClient().loadTableEntityByPackage(packageNames);
+        getEntityQuery().getEasyQueryClient()
+                        .loadTableEntityByPackage(packageNames);
     }
 
     /**
@@ -108,7 +112,8 @@ public abstract class ParentClientEntity<T extends ParentClientEntity<T, TProxy>
      * @param packageNames 包名列表
      */
     public static void syncTableByPackage(String... packageNames) {
-        getEntityQuery().getEasyQueryClient().syncTableByPackage(packageNames);
+        getEntityQuery().getEasyQueryClient()
+                        .syncTableByPackage(packageNames);
     }
 
     /**
@@ -118,7 +123,21 @@ public abstract class ParentClientEntity<T extends ParentClientEntity<T, TProxy>
      * @param packageNames 包名列表
      */
     public static void syncTableByPackage(int groupSize, String... packageNames) {
-        getEntityQuery().getEasyQueryClient().syncTableByPackage(groupSize, packageNames);
+        getEntityQuery().getEasyQueryClient()
+                        .syncTableByPackage(groupSize, packageNames);
+    }
+
+    /**
+     * 获取当前对象的泛型实际类型
+     *
+     * @return 实体类Class
+     */
+    @SuppressWarnings("unchecked")
+    public Class<TProxy> entityTProxyClass() {
+        return (Class<TProxy>) ResolvableType.forClass(getClass())
+                                             .as(ParentCloneable.class)
+                                             .getGeneric(0)
+                                             .resolve();
     }
 
     // ==================== 查询方法（返回构建器） ====================
@@ -275,7 +294,8 @@ public abstract class ParentClientEntity<T extends ParentClientEntity<T, TProxy>
      * @return 实体对象，不存在返回 null
      */
     public T findById(Object id) {
-        return getEntityQuery().queryable(entityClass()).findOrNull(id);
+        return getEntityQuery().queryable(entityClass())
+                               .findOrNull(id);
     }
 
     /**
@@ -285,7 +305,8 @@ public abstract class ParentClientEntity<T extends ParentClientEntity<T, TProxy>
      * @return 实体对象
      */
     public T findByIdNotNull(Object id) {
-        return getEntityQuery().queryable(entityClass()).findNotNull(id);
+        return getEntityQuery().queryable(entityClass())
+                               .findNotNull(id);
     }
 
     /**
@@ -294,7 +315,8 @@ public abstract class ParentClientEntity<T extends ParentClientEntity<T, TProxy>
      * @return 实体列表
      */
     public List<T> findAll() {
-        return getEntityQuery().queryable(entityClass()).toList();
+        return getEntityQuery().queryable(entityClass())
+                               .toList();
     }
 
     /**
@@ -303,7 +325,8 @@ public abstract class ParentClientEntity<T extends ParentClientEntity<T, TProxy>
      * @return 记录数
      */
     public long count() {
-        return getEntityQuery().queryable(entityClass()).count();
+        return getEntityQuery().queryable(entityClass())
+                               .count();
     }
 
     /**
@@ -312,7 +335,8 @@ public abstract class ParentClientEntity<T extends ParentClientEntity<T, TProxy>
      * @return 是否存在
      */
     public boolean exists() {
-        return getEntityQuery().queryable(entityClass()).any();
+        return getEntityQuery().queryable(entityClass())
+                               .any();
     }
 
     // ==================== 实例追踪方法 ====================
@@ -409,6 +433,6 @@ public abstract class ParentClientEntity<T extends ParentClientEntity<T, TProxy>
         TProxy tProxy = EntityQueryProxyManager.create(entityClass());
         PropColumn propColumn = navigateProperty.apply(tProxy);
         getEntityQuery().getEasyQueryClient()
-                .loadInclude(entities, propColumn.getValue(), configure);
+                        .loadInclude(entities, propColumn.getValue(), configure);
     }
 }
