@@ -112,5 +112,10 @@ public class User extends ParentClientEntity<User, UserProxy> implements ProxyEn
     @Schema(description = "更新人ID")
     private Long updateId;
 
+    /**
+     * 租户ID
+     */
+    @Schema(description = "租户ID")
+    private Long tenantId;
 
 }
