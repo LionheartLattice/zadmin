@@ -36,7 +36,7 @@ public class UserService extends ParentService {
                                       .like(search.getValue());
                                  } else {
                                      u.anyColumn(search.getProperty())
-                                      .eq(search.getValue());              // 精确匹配
+                                      .eq(search.getValue());  // 精确匹配
                                  }
                              }
                          })
@@ -46,6 +46,8 @@ public class UserService extends ParentService {
                                   .orderBy(order.isAsc());
                              }
                          })
+                         // 加载用户的角色列表，并在角色上继续 include 菜单列表
+                         .include(u -> u.roleList(), r -> r.include(rp -> rp.menuList()))
                          .toPageResult(dto.getPageIndex(), dto.getPageSize());
     }
 
