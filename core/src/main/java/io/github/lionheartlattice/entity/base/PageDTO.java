@@ -2,6 +2,8 @@ package io.github.lionheartlattice.entity.base;
 
 import io.github.lionheartlattice.util.NullUtil;
 import io.github.lionheartlattice.util.parent.ParentCloneable;
+import io.github.lionheartlattice.util.response.ErrorEnum;
+import io.github.lionheartlattice.util.response.ExceptionWithEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -34,9 +36,8 @@ public class PageDTO extends ParentCloneable<PageDTO> {
      */
     public static LocalDateTime[] parseDateRange(Object value) {
         if (NullUtil.isNull(value) || !(value instanceof String)) {
-            return new LocalDateTime[]{null, null};
+            throw new ExceptionWithEnum(ErrorEnum.VALID_ERROR);
         }
-
         String[] parts = ((String) value).split(",");
         LocalDateTime[] result = new LocalDateTime[2];
 
@@ -50,8 +51,7 @@ public class PageDTO extends ParentCloneable<PageDTO> {
                 result[1] = LocalDateTime.parse(parts[1].trim());
             }
         } catch (Exception e) {
-            // 日期格式错误，返回null
-            return new LocalDateTime[]{null, null};
+            throw new ExceptionWithEnum(ErrorEnum.VALID_ERROR);
         }
 
         return result;
