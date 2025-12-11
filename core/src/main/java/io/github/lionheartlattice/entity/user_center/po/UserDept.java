@@ -17,7 +17,7 @@ import lombok.Data;
 
 @Data
 @Schema(name = "用户部门关联表")
-@Table(value = "z_user_role")
+@Table(value = "z_user_dept")
 @EntityProxy
 @EasyAssertMessage("未找到对应的用户部门关联表信息")
 public class UserDept extends ParentClientEntity<UserDept, UserDeptProxy> implements ProxyEntityAvailable<UserDept, UserDeptProxy> {

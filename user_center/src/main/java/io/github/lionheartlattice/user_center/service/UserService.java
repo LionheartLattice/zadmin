@@ -7,6 +7,8 @@ import io.github.lionheartlattice.entity.base.PageDTO;
 import io.github.lionheartlattice.entity.user_center.dto.UserCreatDTO;
 import io.github.lionheartlattice.entity.user_center.dto.UserUpdateDTO;
 import io.github.lionheartlattice.entity.user_center.po.User;
+import io.github.lionheartlattice.entity.user_center.po.proxy.RoleProxy;
+import io.github.lionheartlattice.entity.user_center.po.proxy.UserProxy;
 import io.github.lionheartlattice.util.CopyUtil;
 import io.github.lionheartlattice.util.parent.ParentService;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,8 @@ public class UserService extends ParentService {
     public EasyPageResult<User> page(PageDTO dto) {
         return new User().queryable()
                          .filterConfigure(NotNullOrEmptyValueFilter.DEFAULT_PROPAGATION_SUPPORTS)
+                         .include(UserProxy::deptList)
+                         .include(UserProxy::roleList, r -> r.include(RoleProxy::menuList))
                          .where(isNotNull(dto.getSearches()), u -> {
                              for (PageDTO.InternalSearch search : dto.getSearches()) {
                                  if (search.isLike()) {
@@ -46,8 +50,6 @@ public class UserService extends ParentService {
                                   .orderBy(order.isAsc());
                              }
                          })
-                         // 加载用户的角色列表，并在角色上继续 include 菜单列表
-                         .include(u -> u.roleList(), r -> r.include(rp -> rp.menuList()))
                          .toPageResult(dto.getPageIndex(), dto.getPageSize());
     }
 
