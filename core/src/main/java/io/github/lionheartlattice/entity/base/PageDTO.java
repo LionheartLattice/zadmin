@@ -10,6 +10,7 @@ import java.util.List;
 @Data
 @Schema(description = "分页请求参数")
 public class PageDTO extends ParentCloneable<PageDTO> {
+
     @Schema(description = "页码，从1开始", example = "1")
     private Integer pageIndex = 1;
 
@@ -28,11 +29,11 @@ public class PageDTO extends ParentCloneable<PageDTO> {
     @Data
     @Schema(description = "搜索字段")
     public static class InternalSearch {
+        public static final String EQ = "eq";
+        public static final String LIKE = "like";
+        public static final String DATE = "date";
 
-//        @Schema(description = "是否like模糊查询", example = "false")
-//        private boolean like;
-
-        @Schema(description = "查询方式：eq-like-date",example = "eq")
+        @Schema(description = "查询方式：eq-like-date", example = "eq")
         private String queryType = "eq";
 
         @Schema(description = "搜索属性名", example = "username")

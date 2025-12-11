@@ -35,12 +35,24 @@ public class UserService extends ParentService {
                          .include(UserProxy::roleList)
                          .where(isNotNull(dto.getSearches()), u -> {
                              for (PageDTO.InternalSearch search : dto.getSearches()) {
-                                 if (search.isLike()) {
-                                     u.anyColumn(search.getProperty())
-                                      .like(search.getValue());
-                                 } else {
+                                 String queryType = search.getQueryType();
+                                 if (PageDTO.InternalSearch.EQ.equals(queryType)) {
                                      u.anyColumn(search.getProperty())
                                       .eq(search.getValue());
+                                 }
+                                 else if (PageDTO.InternalSearch.LIKE.equals(queryType)) {
+                                     u.anyColumn(search.getProperty())
+                                      .like(search.getValue());
+                                 }
+                                 else if (PageDTO.InternalSearch.DATE.equals(queryType)) {
+                                     if (isNotNull(search.getTimeStart())) {
+                                         u.anyColumn(search.getProperty())
+                                          .ge(search.getTimeStart());
+                                     }
+                                     if (isNotNull(search.getTimeEnd())) {
+                                         u.anyColumn(search.getProperty())
+                                          .le(search.getTimeEnd());
+                                     }
                                  }
                              }
                          })
