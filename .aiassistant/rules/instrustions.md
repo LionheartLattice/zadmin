@@ -47,5 +47,9 @@ apply: 始终
 - 我之前使用mysql，现在要迁移到pgsql，现在完全使用pgsql
 - 主键改为雪花算法由java程序维护，建表语句不必维护
 - create_time字段不需要，因为雪花算法内含时间戳
-- 如有del_flag字段，要添加索引
+- update_time字段为NOT NULL
+- 如有del_flag字段，tenant_id字段，要添加索引
 - VARCHAR类型要么是NOT NULL，要么是DEFAULT '' 空字符串
+- 非主键字段的BIGINT一般情况下DEFAULT 0
+- enum ('T', 'F')类型转化为BOOLEAN类型
+- 系统相关表前缀由sys_转换为z_
