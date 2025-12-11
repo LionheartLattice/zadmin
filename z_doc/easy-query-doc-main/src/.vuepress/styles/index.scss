@@ -1,0 +1,127 @@
+@media (min-width: 1280px) {
+  html {
+    --content-width: calc(100vw - 18rem)
+  }
+}
+
+@media (min-width: 1440px) {
+  html {
+    --content-width: calc(100vw - 40rem) !important
+  }
+}
+.margin-right-home{
+    margin-right: 250px;
+}
+.color-var{
+    color: #de485a;
+}
+.color-method{
+    color: #5298e3;
+}
+.color-clazz{
+    color: #d1a44a;
+}
+.color-lambda{
+    color: #c27f3c;
+}
+.color-const{
+    color: #86c569;
+}
+.color-key{
+    color: #a347b7;
+}
+.vp-hero-info{
+    justify-content: center;
+}
+.vp-hero-info .vp-hero-image{
+
+}
+// .vp-hero-info-wrapper {
+//     min-height: 600px;
+// }
+// .vp-highlight-info-wrapper{
+//     justify-content:flex-start
+// }
+// place your custom styles here
+@media (min-width: 1000px){
+    .vp-hero-infos{
+        min-width: 1000px;
+        display: block;
+    }
+    #main-description{
+        max-width: none;
+        height: 170px;
+    }
+}
+@media (max-width: 959px){
+    .vuepress_typed{
+        display: none;
+    }
+    .typed-cursor{
+        display: none;
+    }
+    #main-description{
+        max-width: none;
+    }
+}
+
+
+.mermaid-content{
+    // .row-rect-odd{
+    //     .nodeLabel{
+    //         p{
+    //             color: #000;
+    //         }
+    //     }
+    // }
+    .nodeLabel{
+        p{
+            color: #000;
+        }
+    }
+    //  .row-rect-odd{
+    //     path{
+    
+    //         fill: #fff;
+    //         [data-theme="dark"] & {
+    //             fill: #88edc1;
+    //         }
+    //     }
+    // }
+    
+    // path{
+
+    //     fill: #fff;
+    //     [data-theme="dark"] & {
+    //         fill: #000;
+    //     }
+    // }
+    // .divider{
+    //     path{
+    //         fill: #389d70;
+    //     }
+    // }
+}
+
+
+.com-box-f{
+    padding: 1em 1em 30px;
+    text-align: center;}
+.com-box-f h2{font-size: 30px; color: #000; font-weight: 400;}
+.com-box{display: flex; flex-wrap: wrap; width: 100%; margin-bottom: 50px; justify-content: flex-start;}
+.com-box a{display: block; flex: 0 0 13%; margin: 5px; cursor: pointer; border: 0px #ddd solid;}
+.com-box a{line-height: 75px;}
+.com-box a img{transition: all 0.2s; vertical-align: middle; min-width: 60%; max-width: 100%; max-height: 100%;}
+.com-box a img:hover{transform: scale(1.05, 1.05);}
+.com-box-you a img:hover{transform: none;}
+.com-box-you a{flex: 0 0 14.5%; line-height: 60px; height: 60px; margin: 10px;}
+.com-box-you a img{min-width: 60%; max-width: 85%; vertical-align: middle; max-height: 100%;}
+.markmap-wrapper .markmap-svg{
+    min-height: 400px;
+}
+
+@media (min-width: 1000px){
+    .markmap-wrapper .markmap-svg{
+    min-height: 600px;
+}
+}
