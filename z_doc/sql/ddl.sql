@@ -80,7 +80,7 @@ CREATE TABLE z_menu
     path         VARCHAR(255) DEFAULT ''    NOT NULL,
     name         VARCHAR(64)  DEFAULT ''    NOT NULL,
     title        VARCHAR(64)                NOT NULL,
-    icon         VARCHAR(64)  DEFAULT ''    NOT NULL,
+    icon         TEXT         DEFAULT ''    NOT NULL,
     component    VARCHAR(255) DEFAULT ''    NOT NULL,
     redirect     VARCHAR(255) DEFAULT ''    NOT NULL,
     sort         INTEGER                    NOT NULL,
