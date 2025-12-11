@@ -4,8 +4,8 @@ import com.easy.query.core.api.pagination.EasyPageResult;
 import com.easy.query.core.expression.builder.core.NotNullOrEmptyValueFilter;
 import io.github.lionheartlattice.entity.base.PageDTO;
 import io.github.lionheartlattice.entity.user_center.dto.UserCreatDTO;
+import io.github.lionheartlattice.entity.user_center.dto.UserUpdateDTO;
 import io.github.lionheartlattice.entity.user_center.po.User;
-import io.github.lionheartlattice.entity.user_center.po.UserUpdateDTO;
 import io.github.lionheartlattice.util.CopyUtil;
 import io.github.lionheartlattice.util.parent.ParentService;
 import lombok.RequiredArgsConstructor;
@@ -15,15 +15,15 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class UserService extends ParentService<User> {
+public class UserService extends ParentService {
 
     public boolean create(UserCreatDTO dto) {
-        long rows = createPo().copyFrom(dto).setUpdateId(0L).insertable().executeRows();
+        long rows = new User().copyFrom(dto).setUpdateId(0L).insertable().executeRows();
         return isNotNull(rows); //如果操作异常会直接抛异常，或者数据库影响行数为0，因此只需要判定非空非0即可，下列的也是类似
     }
 
     public EasyPageResult<User> page(PageDTO dto) {
-        return createPo().queryable().filterConfigure(NotNullOrEmptyValueFilter.DEFAULT_PROPAGATION_SUPPORTS)
+        return new User().queryable().filterConfigure(NotNullOrEmptyValueFilter.DEFAULT_PROPAGATION_SUPPORTS)
                 .where(isNotNull(dto.getSearches()), u -> {
                     for (PageDTO.InternalSearch search : dto.getSearches()) {
                         if (search.isLike()) {
@@ -40,18 +40,18 @@ public class UserService extends ParentService<User> {
     }
 
     public Boolean update(UserUpdateDTO dto) {
-        long rows = createPo().copyFrom(dto).updatable().executeRows();
+        long rows = new User().copyFrom(dto).updatable().executeRows();
         return isNotNull(rows);
     }
 
     public Boolean delete(List<Long> ids) {
-        long rows = createPo().expressionDeletable().where(u -> u.id().in(ids)).executeRows();
+        long rows = new User().expressionDeletable().where(u -> u.id().in(ids)).executeRows();
         return isNotNull(rows);
     }
 
     public Boolean saveBatch(List<UserCreatDTO> dtos) {
         List<User> entities = CopyUtil.copyList(dtos, User.class);
-        Long row = transactionTemplate.execute(status -> createPo().insertable(entities).batch(true).executeRows());
+        Long row = transactionTemplate.execute(status -> new User().insertable(entities).batch(true).executeRows());
         return isNotNull(row);
     }
 }

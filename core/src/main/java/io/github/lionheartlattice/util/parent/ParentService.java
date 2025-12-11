@@ -15,11 +15,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 /**
  * 父级工具类，提供实体类操作的通用方法
  *
- * @param <P> 实体类类型
  * @author lionheart
  * @since 1.0
  */
-public abstract class ParentService<P> extends NullUtil {
+public abstract class ParentService extends NullUtil {
 
     /**
      *
@@ -68,27 +67,8 @@ public abstract class ParentService<P> extends NullUtil {
      * @return 当前实例的代理/Bean
      */
     @SuppressWarnings("unchecked")
-    protected <S extends ParentService<P>> S self() {
+    protected <S extends ParentService> S self() {
         return (S) SpringUtils.getBean(getClass());
     }
 
-    /**
-     * 获取实体类的泛型类型
-     *
-     * @return 泛型类型 Class
-     */
-    @SuppressWarnings("unchecked")
-    protected Class<P> entityClass() {
-        return (Class<P>) ResolvableType.forClass(getClass()).as(ParentService.class)
-                .getGeneric(0).resolve();
-    }
-
-    /**
-     * 创建实体类实例
-     *
-     * @return 实体类新实例
-     */
-    protected P createPo() {
-        return BeanUtils.instantiateClass(entityClass());
-    }
 }

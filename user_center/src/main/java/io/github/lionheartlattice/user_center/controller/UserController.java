@@ -2,7 +2,7 @@ package io.github.lionheartlattice.user_center.controller;
 
 import io.github.lionheartlattice.entity.base.PageDTO;
 import io.github.lionheartlattice.entity.user_center.dto.UserCreatDTO;
-import io.github.lionheartlattice.entity.user_center.po.UserUpdateDTO;
+import io.github.lionheartlattice.entity.user_center.dto.UserUpdateDTO;
 import io.github.lionheartlattice.user_center.service.UserService;
 import io.github.lionheartlattice.util.ExcelExportUtil;
 import io.github.lionheartlattice.util.ExcelImportUtil;
@@ -21,32 +21,33 @@ import java.util.List;
 @RestController
 @RequestMapping("z_user")
 @RequiredArgsConstructor
-public class UserController extends ParentController<UserService> {
+public class UserController extends ParentController {
+    private final UserService userService;
 
     @PostMapping("create")
     public ApiResult<?> create(@RequestBody UserCreatDTO dto) {
-        return ApiResult.success(service.create(dto));
+        return ApiResult.success(userService.create(dto));
     }
 
     @PostMapping("update")
     public ApiResult<?> update(@RequestBody UserUpdateDTO dto) {
-        return ApiResult.success(service.update(dto));
+        return ApiResult.success(userService.update(dto));
     }
 
     @PostMapping("page")
     public ApiResult<?> page(@RequestBody PageDTO dto) {
-        return ApiResult.success(service.page(dto));
+        return ApiResult.success(userService.page(dto));
     }
 
     @PostMapping("delete")
     public ApiResult<?> delete(@RequestBody List<Long> ids) {
-        return ApiResult.success(service.delete(ids));
+        return ApiResult.success(userService.delete(ids));
     }
 
     @PostMapping("upload")
     public ApiResult<?> upload(@RequestParam("file") MultipartFile file) {
         List<UserCreatDTO> dtos = ExcelImportUtil.importExcel(file, UserCreatDTO.class);
-        return ApiResult.success(service.saveBatch(dtos));
+        return ApiResult.success(userService.saveBatch(dtos));
     }
 
     @PostMapping("export")
@@ -54,7 +55,7 @@ public class UserController extends ParentController<UserService> {
         if (dto.isDownloadEmptyExcel()) {
             ExcelExportUtil.downloadEmpty(response, UserCreatDTO.class);
         } else {
-            ExcelExportUtil.export(response, service.page(dto).getData());
+            ExcelExportUtil.export(response, userService.page(dto).getData());
         }
     }
 
