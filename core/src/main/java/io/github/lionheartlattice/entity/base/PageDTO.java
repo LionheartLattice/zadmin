@@ -4,6 +4,7 @@ import io.github.lionheartlattice.util.parent.ParentCloneable;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -27,14 +28,24 @@ public class PageDTO extends ParentCloneable<PageDTO> {
     @Data
     @Schema(description = "搜索字段")
     public static class InternalSearch {
+
+//        @Schema(description = "是否like模糊查询", example = "false")
+//        private boolean like;
+
+        @Schema(description = "查询方式：eq-like-date",example = "eq")
+        private String queryType = "eq";
+
         @Schema(description = "搜索属性名", example = "username")
         private String property;
 
-        @Schema(description = "是否like模糊查询", example = "false")
-        private boolean like;
-
         @Schema(description = "搜索值", example = "张三")
         private String value;
+
+        @Schema(description = "开始时间", example = "2024-01-01T00:00:00")
+        private LocalDateTime timeStart;
+
+        @Schema(description = "结束时间", example = "2024-12-31T23:59:59")
+        private LocalDateTime timeEnd;
     }
 
     @Data
