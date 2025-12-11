@@ -62,7 +62,8 @@ public class UserController extends ParentController {
         if (dto.isDownloadEmptyExcel()) {
             ExcelExportUtil.downloadEmpty(response, UserCreatDTO.class);
         } else {
-            ExcelExportUtil.export(response, userService.page(dto).getData());
+            ExcelExportUtil.export(response, userService.page(dto)
+                                                        .getData());
         }
     }
 
