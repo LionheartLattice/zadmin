@@ -2,6 +2,7 @@ package io.github.lionheartlattice.entity.user_center.po;
 
 import com.easy.query.core.annotation.*;
 import com.easy.query.core.basic.extension.logicdel.LogicDeleteStrategyEnum;
+import com.easy.query.core.enums.RelationTypeEnum;
 import com.easy.query.core.proxy.ProxyEntityAvailable;
 import io.github.lionheartlattice.configuration.easyquery.SnowflakePrimaryKeyGenerator;
 import io.github.lionheartlattice.entity.user_center.po.proxy.MenuProxy;
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 系统菜单表 实体类。
@@ -158,5 +160,11 @@ public class Menu extends ParentClientEntity<Menu, MenuProxy> implements ProxyEn
      */
     @Schema(description = "租户ID")
     private Long tenantId;
+
+    /**
+     *
+     **/
+    @Navigate(value = RelationTypeEnum.OneToMany, selfProperty = {MenuProxy.Fields.pid}, targetProperty = {MenuProxy.Fields.id})
+    private List<Menu> menuList;
 
 }

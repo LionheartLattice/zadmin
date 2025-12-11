@@ -2,14 +2,16 @@ package io.github.lionheartlattice.entity.user_center.po;
 
 import com.easy.query.core.annotation.*;
 import com.easy.query.core.basic.extension.logicdel.LogicDeleteStrategyEnum;
+import com.easy.query.core.enums.RelationTypeEnum;
 import com.easy.query.core.proxy.ProxyEntityAvailable;
 import io.github.lionheartlattice.configuration.easyquery.SnowflakePrimaryKeyGenerator;
-import io.github.lionheartlattice.entity.user_center.po.proxy.RoleProxy;
+import io.github.lionheartlattice.entity.user_center.po.proxy.*;
 import io.github.lionheartlattice.util.parent.ParentClientEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 系统角色表 实体类。
@@ -87,4 +89,15 @@ public class Role extends ParentClientEntity<Role, RoleProxy> implements ProxyEn
     @Schema(description = "租户ID")
     private Long tenantId;
 
+    /**
+     *
+     **/
+    @Navigate(value = RelationTypeEnum.ManyToMany, selfProperty = {RoleProxy.Fields.id}, selfMappingProperty = {UserRoleProxy.Fields.roleId}, mappingClass = UserRole.class, targetProperty = {UserProxy.Fields.id}, targetMappingProperty = {UserRoleProxy.Fields.userId})
+    private List<User> userList;
+
+    /**
+     *
+     **/
+    @Navigate(value = RelationTypeEnum.ManyToMany, selfProperty = {RoleProxy.Fields.id}, selfMappingProperty = {RoleMenuProxy.Fields.roleId}, mappingClass = RoleMenu.class, targetProperty = {MenuProxy.Fields.id}, targetMappingProperty = {RoleMenuProxy.Fields.menuId})
+    private List<Menu> menuList;
 }
