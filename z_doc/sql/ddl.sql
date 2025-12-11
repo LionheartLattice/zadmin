@@ -36,9 +36,9 @@ COMMENT ON COLUMN z_user.update_id IS '更新人ID';
 COMMENT ON COLUMN z_user.tenant_id IS '租户ID';
 
 -- 创建索引
-CREATE INDEX del_flag_index ON z_user (del_flag);
-CREATE INDEX username_index ON z_user (username);
-CREATE INDEX tenant_id_index ON z_user (tenant_id);
+CREATE INDEX IF NOT EXISTS del_flag_index ON z_user (del_flag);
+CREATE INDEX IF NOT EXISTS username_index ON z_user (username);
+CREATE INDEX IF NOT EXISTS tenant_id_index ON z_user (tenant_id);
 
 -- 创建系统角色表（表前缀改为 z_）
 CREATE TABLE z_role
@@ -55,7 +55,6 @@ CREATE TABLE z_role
     tenant_id   BIGINT       DEFAULT 0                      -- 租户ID，默认 0
 );
 
-
 COMMENT ON TABLE z_role IS '系统角色表';
 COMMENT ON COLUMN z_role.id IS '角色ID';
 COMMENT ON COLUMN z_role.role_name IS '角色名称';
@@ -69,8 +68,8 @@ COMMENT ON COLUMN z_role.is_lock IS '是否锁定';
 COMMENT ON COLUMN z_role.tenant_id IS '租户ID';
 
 -- 创建索引
-CREATE INDEX del_flag_index ON z_role (del_flag);
-CREATE INDEX tenant_id_index ON z_role (tenant_id);
+CREATE INDEX IF NOT EXISTS del_flag_index ON z_role (del_flag);
+CREATE INDEX IF NOT EXISTS tenant_id_index ON z_role (tenant_id);
 
 -- 创建系统菜单表（表前缀改为 z_，PostgreSQL 建表语句，已移除不需要的字段，添加 tenant_id，并符合项目规范）
 CREATE TABLE z_menu
@@ -124,31 +123,33 @@ COMMENT ON COLUMN z_menu.del_flag IS '是否删除';
 COMMENT ON COLUMN z_menu.tenant_id IS '租户ID';
 
 -- 创建索引
-CREATE INDEX del_flag_index ON z_menu (del_flag);
-CREATE INDEX tenant_id_index ON z_menu (tenant_id);
+CREATE INDEX IF NOT EXISTS del_flag_index ON z_menu (del_flag);
+CREATE INDEX IF NOT EXISTS tenant_id_index ON z_menu (tenant_id);
 
 -- 创建部门表（PostgreSQL 建表语句，表前缀改为 z_，符合项目规范）
 CREATE TABLE z_dept
 (
-    id           BIGINT                     NOT NULL PRIMARY KEY,
-    name         VARCHAR(64)                NOT NULL,
-    pid          BIGINT                     NOT NULL,
-    deep         INTEGER                    NULL,
-    sort         INTEGER                    NULL,
-    has_children BOOLEAN      DEFAULT FALSE,
-    is_lock      BOOLEAN      DEFAULT FALSE NOT NULL,
-    del_flag     BOOLEAN      DEFAULT FALSE NOT NULL,
-    remark       VARCHAR(128) DEFAULT ''    NULL,
-    create_id    BIGINT       DEFAULT 0,
-    update_id    BIGINT       DEFAULT 0,
-    update_time  TIMESTAMP                  NOT NULL, -- 规范：update_time 字段为 NOT NULL
-    tenant_id    BIGINT       DEFAULT 0               -- 租户ID，默认 0
+    id              BIGINT                     NOT NULL PRIMARY KEY,
+    name            VARCHAR(64)                NOT NULL,
+    pid             BIGINT                     NOT NULL,
+    default_role_id BIGINT       DEFAULT 0,
+    deep            INTEGER                    NULL,
+    sort            INTEGER                    NULL,
+    has_children    BOOLEAN      DEFAULT FALSE,
+    is_lock         BOOLEAN      DEFAULT FALSE NOT NULL,
+    del_flag        BOOLEAN      DEFAULT FALSE NOT NULL,
+    remark          VARCHAR(128) DEFAULT ''    NULL,
+    create_id       BIGINT       DEFAULT 0,
+    update_id       BIGINT       DEFAULT 0,
+    update_time     TIMESTAMP                  NOT NULL, -- 规范：update_time 字段为 NOT NULL
+    tenant_id       BIGINT       DEFAULT 0               -- 租户ID，默认 0
 );
 
 COMMENT ON TABLE z_dept IS '部门表';
 COMMENT ON COLUMN z_dept.id IS '部门ID';
 COMMENT ON COLUMN z_dept.name IS '部门名称';
 COMMENT ON COLUMN z_dept.pid IS '父级ID';
+COMMENT ON COLUMN z_dept.default_role_id IS '默认分配角色ID';
 COMMENT ON COLUMN z_dept.deep IS '层级';
 COMMENT ON COLUMN z_dept.sort IS '排序';
 COMMENT ON COLUMN z_dept.has_children IS '是否有子级';
@@ -161,5 +162,74 @@ COMMENT ON COLUMN z_dept.update_time IS '更新时间';
 COMMENT ON COLUMN z_dept.tenant_id IS '租户ID';
 
 -- 创建索引
-CREATE INDEX del_flag_index ON z_dept (del_flag);
-CREATE INDEX tenant_id_index ON z_dept (tenant_id);
+CREATE INDEX IF NOT EXISTS del_flag_index ON z_dept (del_flag);
+CREATE INDEX IF NOT EXISTS tenant_id_index ON z_dept (tenant_id);
+
+-- 创建用户角色关联表（多对多）
+CREATE TABLE z_user_role
+(
+    id        BIGINT NOT NULL PRIMARY KEY,
+    user_id   BIGINT NOT NULL,
+    role_id   BIGINT NOT NULL,
+    create_id BIGINT DEFAULT 0
+);
+
+COMMENT ON TABLE z_user_role IS '用户角色关联表';
+COMMENT ON COLUMN z_user_role.id IS '关联ID';
+COMMENT ON COLUMN z_user_role.user_id IS '用户ID';
+COMMENT ON COLUMN z_user_role.role_id IS '角色ID';
+COMMENT ON COLUMN z_user_role.create_id IS '创建人ID';
+
+-- 创建唯一约束防止重复关联
+ALTER TABLE z_user_role
+    ADD CONSTRAINT unique_user_role UNIQUE (user_id, role_id);
+
+-- 创建索引
+CREATE INDEX IF NOT EXISTS user_id_index ON z_user_role (user_id);
+CREATE INDEX IF NOT EXISTS role_id_index ON z_user_role (role_id);
+
+-- 创建角色菜单关联表（多对多）
+CREATE TABLE z_role_menu
+(
+    id        BIGINT NOT NULL PRIMARY KEY,
+    role_id   BIGINT NOT NULL,
+    menu_id   BIGINT NOT NULL,
+    create_id BIGINT DEFAULT 0
+);
+
+COMMENT ON TABLE z_role_menu IS '角色菜单关联表';
+COMMENT ON COLUMN z_role_menu.id IS '关联ID';
+COMMENT ON COLUMN z_role_menu.role_id IS '角色ID';
+COMMENT ON COLUMN z_role_menu.menu_id IS '菜单ID';
+COMMENT ON COLUMN z_role_menu.create_id IS '创建人ID';
+
+-- 创建唯一约束防止重复关联
+ALTER TABLE z_role_menu
+    ADD CONSTRAINT unique_role_menu UNIQUE (role_id, menu_id);
+
+-- 创建索引
+CREATE INDEX IF NOT EXISTS role_id_index ON z_role_menu (role_id);
+CREATE INDEX IF NOT EXISTS menu_id_index ON z_role_menu (menu_id);
+
+-- 创建用户部门关联表（多对多）
+CREATE TABLE z_user_dept
+(
+    id        BIGINT NOT NULL PRIMARY KEY,
+    user_id   BIGINT NOT NULL,
+    dept_id   BIGINT NOT NULL,
+    create_id BIGINT DEFAULT 0
+);
+
+COMMENT ON TABLE z_user_dept IS '用户部门关联表';
+COMMENT ON COLUMN z_user_dept.id IS '关联ID';
+COMMENT ON COLUMN z_user_dept.user_id IS '用户ID';
+COMMENT ON COLUMN z_user_dept.dept_id IS '部门ID';
+COMMENT ON COLUMN z_user_dept.create_id IS '创建人ID';
+
+-- 创建唯一约束防止重复关联
+ALTER TABLE z_user_dept
+    ADD CONSTRAINT unique_user_dept UNIQUE (user_id, dept_id);
+
+-- 创建索引
+CREATE INDEX IF NOT EXISTS user_id_index ON z_user_dept (user_id);
+CREATE INDEX IF NOT EXISTS dept_id_index ON z_user_dept (dept_id);
