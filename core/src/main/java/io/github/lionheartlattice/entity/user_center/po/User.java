@@ -1,9 +1,7 @@
 package io.github.lionheartlattice.entity.user_center.po;
 
-import com.easy.query.core.annotation.Column;
-import com.easy.query.core.annotation.EasyAssertMessage;
-import com.easy.query.core.annotation.EntityProxy;
-import com.easy.query.core.annotation.Table;
+import com.easy.query.core.annotation.*;
+import com.easy.query.core.basic.extension.logicdel.LogicDeleteStrategyEnum;
 import com.easy.query.core.proxy.ProxyEntityAvailable;
 import io.github.lionheartlattice.configuration.easyquery.SnowflakePrimaryKeyGenerator;
 import io.github.lionheartlattice.entity.user_center.po.proxy.UserProxy;
@@ -98,6 +96,7 @@ public class User extends ParentClientEntity<User, UserProxy> implements ProxyEn
     /**
      * 是否删除
      */
+    @LogicDelete(strategy = LogicDeleteStrategyEnum.BOOLEAN)
     @Schema(description = "是否删除")
     private Boolean delFlag;
 
