@@ -11,12 +11,12 @@ import io.github.lionheartlattice.entity.user_center.po.proxy.RoleProxy;
 import io.github.lionheartlattice.entity.user_center.po.proxy.UserProxy;
 import io.github.lionheartlattice.util.CopyUtil;
 import io.github.lionheartlattice.util.parent.ParentService;
+import io.github.lionheartlattice.util.response.ErrorEnum;
+import io.github.lionheartlattice.util.response.ExceptionWithEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
-import static io.github.lionheartlattice.entity.base.PageDTO.*;
 
 @Service
 @RequiredArgsConstructor
@@ -37,22 +37,22 @@ public class UserService extends ParentService {
                          .include(UserProxy::roleList)
                          .where(isNotNull(dto.getSearches()), u -> {
                              for (PageDTO.InternalSearch search : dto.getSearches()) {
-                                 String queryType = search.getQueryType();
-                                 if (EQ.equals(queryType)) {
-                                     u.anyColumn(search.getProperty())
-                                      .eq(search.getValue());
-                                 } else if (LIKE.equals(queryType)) {
-                                     u.anyColumn(search.getProperty())
-                                      .like(search.getValue());
-                                 } else if (DATE.equals(queryType)) {
-                                     if (isNotNull(search.getTimeStart())) {
-                                         u.anyColumn(search.getProperty())
-                                          .ge(search.getTimeStart());
+                                 switch (search.getQueryType()) {
+                                     case PageDTO.EQ -> u.anyColumn(search.getProperty())
+                                                         .eq(search.getValue());
+                                     case PageDTO.LIKE -> u.anyColumn(search.getProperty())
+                                                           .like(search.getValue());
+                                     case PageDTO.DATE -> {
+                                         if (isNotNull(search.getTimeStart())) {
+                                             u.anyColumn(search.getProperty())
+                                              .ge(search.getTimeStart());
+                                         }
+                                         if (isNotNull(search.getTimeEnd())) {
+                                             u.anyColumn(search.getProperty())
+                                              .le(search.getTimeEnd());
+                                         }
                                      }
-                                     if (isNotNull(search.getTimeEnd())) {
-                                         u.anyColumn(search.getProperty())
-                                          .le(search.getTimeEnd());
-                                     }
+                                     default -> throw new ExceptionWithEnum(ErrorEnum.VALID_ERROR);
                                  }
                              }
                          })
