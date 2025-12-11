@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -93,7 +94,7 @@ public class User extends ParentClientEntity<User, UserProxy> implements ProxyEn
      * 更新时间
      */
     @Schema(description = "更新时间")
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
     /**
      * 是否删除

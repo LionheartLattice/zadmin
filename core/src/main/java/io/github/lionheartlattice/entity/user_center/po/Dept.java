@@ -9,6 +9,7 @@ import io.github.lionheartlattice.util.parent.ParentClientEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -103,7 +104,7 @@ public class Dept extends ParentClientEntity<Dept, DeptProxy> implements ProxyEn
      * 更新时间
      */
     @Schema(description = "更新时间", requiredMode = Schema.RequiredMode.REQUIRED)
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
     /**
      * 租户ID

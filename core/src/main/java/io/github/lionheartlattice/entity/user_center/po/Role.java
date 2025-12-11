@@ -10,6 +10,7 @@ import io.github.lionheartlattice.util.parent.ParentClientEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -63,7 +64,7 @@ public class Role extends ParentClientEntity<Role, RoleProxy> implements ProxyEn
      * 更新时间
      */
     @Schema(description = "更新时间")
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
     /**
      * 创建人ID
