@@ -16,6 +16,7 @@ import io.github.lionheartlattice.util.response.ExceptionWithEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -43,13 +44,15 @@ public class UserService extends ParentService {
                                      case 2 -> u.anyColumn(search.getProperty())
                                                 .like(search.getValue());
                                      case 3 -> {
-                                         if (isNotNull(search.getTimeStart())) {
+                                         // 解析日期范围
+                                         LocalDateTime[] dateRange = PageDTO.parseDateRange(search.getValue());
+                                         if (isNotNull(dateRange[0])) {
                                              u.anyColumn(search.getProperty())
-                                              .ge(search.getTimeStart());
+                                              .ge(dateRange[0]);
                                          }
-                                         if (isNotNull(search.getTimeEnd())) {
+                                         if (isNotNull(dateRange[1])) {
                                              u.anyColumn(search.getProperty())
-                                              .le(search.getTimeEnd());
+                                              .le(dateRange[1]);
                                          }
                                      }
                                      default -> throw new ExceptionWithEnum(ErrorEnum.VALID_ERROR);
