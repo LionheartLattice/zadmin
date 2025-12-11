@@ -9,7 +9,7 @@ apply: 始终
 - 使用 easy-query 作为ORM框架 文档地址zadmin\z_doc\easy-query-doc-main\src  在线文档地址https://www.easy-query.com/easy-query-doc/feature-map.html
 - 使用 postgres18 redis8作为依赖
 - 使用 Maven 多模块项目结构
-- 编写代码要注重简洁高效
+- 编写代码要注重简洁高效，但是最好返回完整文件
 
 ## 代码风格
 

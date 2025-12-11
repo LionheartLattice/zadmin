@@ -30,7 +30,7 @@
     <properties>
         <java.sdk.version>25</java.sdk.version>
         <java.version>${java.sdk.version}</java.version>
-        <easy-query.version>3.1.57</easy-query.version>
+        <easy-query.version>3.1.69</easy-query.version>
         <revision>0.0.1-SNAPSHOT</revision>
     </properties>
     <modules>
