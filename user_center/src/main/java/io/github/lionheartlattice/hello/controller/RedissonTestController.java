@@ -25,14 +25,16 @@ public class RedissonTestController {
     private final RedissonClient redissonClient;
 
     /**
-     * 设置缓存值
+     * 设置缓存值（带过期时间）
      */
-    @Operation(summary = "设置缓存", description = "设置Redis缓存键值对")
+    @Operation(summary = "设置缓存(带过期时间)", description = "设置Redis缓存键值对，并指定TTL(秒)")
     @GetMapping("set")
-    public String setCache(@RequestParam String key, @RequestParam String value) {
+    public String setCache(@RequestParam String key,
+                           @RequestParam String value,
+                           @RequestParam(defaultValue = "60") long ttlSeconds) {
         redissonClient.getBucket(key)
-                      .set(value);
-        return "设置成功: " + key + " = " + value;
+                      .set(value, ttlSeconds, TimeUnit.SECONDS);
+        return "设置成功: " + key + " = " + value + "，TTL=" + ttlSeconds + "s";
     }
 
     /**
