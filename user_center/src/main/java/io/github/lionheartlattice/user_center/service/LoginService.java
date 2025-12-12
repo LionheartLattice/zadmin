@@ -1,5 +1,6 @@
 package io.github.lionheartlattice.user_center.service;
 
+import io.github.lionheartlattice.entity.user_center.dto.LoginDTO;
 import io.github.lionheartlattice.entity.user_center.po.User;
 import io.github.lionheartlattice.entity.user_center.po.proxy.RoleProxy;
 import io.github.lionheartlattice.entity.user_center.po.proxy.UserProxy;
@@ -16,5 +17,9 @@ public class LoginService extends ParentService {
                          .include(UserProxy::roleList, r -> r.include(RoleProxy::menuList))
                          .whereById(id)
                          .singleNotNull();
+    }
+
+    public String login(LoginDTO dto) {
+        return null;
     }
 }
