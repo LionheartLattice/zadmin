@@ -1,3 +1,17 @@
+create function update_updated_at_column() returns trigger
+    language plpgsql
+as
+$$
+BEGIN
+    NEW.update_time = NOW();
+    RETURN NEW;
+END;
+$$;
+
+alter function update_updated_at_column() owner to postgres;
+
+
+
 create table public.z_user
 (
     id          bigint                     not null
