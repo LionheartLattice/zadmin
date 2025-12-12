@@ -4,10 +4,9 @@ import com.easy.query.api.proxy.client.EasyEntityQuery;
 import io.github.lionheartlattice.util.DataAccessUtils;
 import io.github.lionheartlattice.util.NullUtil;
 import io.github.lionheartlattice.util.SpringUtils;
+import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.core.ResolvableType;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -51,6 +50,10 @@ public abstract class ParentService extends NullUtil {
      */
     protected final StringRedisTemplate redisTemplate = DataAccessUtils.getStringRedisTemplate();
 
+    /*
+     * RedissonClient
+     */
+    protected final RedissonClient redissonClient = DataAccessUtils.getRedissonClient();
     /**
      * 主数据源 TransactionTemplate
      */

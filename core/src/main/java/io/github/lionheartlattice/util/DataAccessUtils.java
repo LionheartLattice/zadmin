@@ -1,6 +1,7 @@
 package io.github.lionheartlattice.util;
 
 import com.easy.query.api.proxy.client.EasyEntityQuery;
+import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -51,6 +52,11 @@ public class DataAccessUtils {
     // Redis
     public static StringRedisTemplate getStringRedisTemplate() {
         return SpringUtils.getBean(StringRedisTemplate.class);
+    }
+
+    //RedissonClient
+    public static RedissonClient getRedissonClient() {
+        return SpringUtils.getBean(RedissonClient.class);
     }
 
     /**
