@@ -10,7 +10,7 @@ import io.github.lionheartlattice.entity.user_center.dto.UserUpdateDTO;
 import io.github.lionheartlattice.entity.user_center.po.User;
 import io.github.lionheartlattice.entity.user_center.po.proxy.UserProxy;
 import io.github.lionheartlattice.util.CopyUtil;
-import io.github.lionheartlattice.util.parent.PageDTO;
+import io.github.lionheartlattice.entity.parent.PageDTO;
 import io.github.lionheartlattice.util.response.ErrorEnum;
 import io.github.lionheartlattice.util.response.ExceptionWithEnum;
 import lombok.RequiredArgsConstructor;

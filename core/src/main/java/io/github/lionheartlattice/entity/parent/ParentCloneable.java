@@ -1,4 +1,4 @@
-package io.github.lionheartlattice.util.parent;
+package io.github.lionheartlattice.entity.parent;
 
 import cn.hutool.core.clone.CloneSupport;
 import cn.hutool.core.clone.Cloneable;

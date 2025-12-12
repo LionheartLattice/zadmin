@@ -1,4 +1,4 @@
-package io.github.lionheartlattice.util.parent;
+package io.github.lionheartlattice.entity.parent;
 
 import com.easy.query.api.proxy.client.EasyEntityQuery;
 import io.github.lionheartlattice.util.DataAccessUtils;

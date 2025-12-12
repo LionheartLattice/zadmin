@@ -1,4 +1,4 @@
-package io.github.lionheartlattice.util.parent;
+package io.github.lionheartlattice.entity.parent;
 
 import com.easy.query.core.api.client.EasyQueryClient;
 import com.easy.query.core.basic.api.insert.map.MapClientInsertable;
@@ -10,7 +10,6 @@ import com.easy.query.core.context.QueryRuntimeContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.Serial;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
