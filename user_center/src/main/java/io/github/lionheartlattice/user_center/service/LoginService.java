@@ -1,5 +1,6 @@
 package io.github.lionheartlattice.user_center.service;
 
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.crypto.digest.BCrypt;
 import com.easy.query.core.proxy.core.draft.Draft2;
 import com.easy.query.core.proxy.sql.Select;
@@ -10,11 +11,24 @@ import io.github.lionheartlattice.entity.user_center.po.proxy.UserProxy;
 import io.github.lionheartlattice.util.response.ErrorEnum;
 import io.github.lionheartlattice.util.response.ExceptionWithEnum;
 import lombok.RequiredArgsConstructor;
+import org.redisson.api.RedissonClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
 public class LoginService {
+    private static final String TOKEN_KEY_PREFIX = "login:token:";
+    private final RedissonClient redissonClient;
+    /**
+     * token 过期时间（秒）
+     * 默认 7 天：7*24*3600
+     */
+    @Value("${app.auth.token-ttl-seconds:604800}")
+    private long tokenTtlSeconds;
+
     public User detailWithInclude(Long id) {
         return new User().queryable()
                          .include(UserProxy::deptList)
@@ -32,9 +46,47 @@ public class LoginService {
         boolean checkpwed = BCrypt.checkpw(dto.getPassword(), draft2.getValue2());
         if (!checkpwed) {
             throw new ExceptionWithEnum(ErrorEnum.BAD_USERNAME_OR_PASSWORD);
-        } else {
-            //返回token
+        }
+        return createToken(draft2.getValue1());
+    }
+
+    /**
+     * 创建 token 并写入 Redis
+     *
+     * @param userId 用户ID
+     * @return token 字符串
+     */
+    public String createToken(Long userId) {
+        // Hutool：fastUUID() 无 '-'，更短更适合当 token
+        String token = IdUtil.fastUUID();
+        String key = TOKEN_KEY_PREFIX + token;
+
+        redissonClient.getBucket(key)
+                      .set(userId, tokenTtlSeconds, TimeUnit.SECONDS);
+
+        return token;
+    }
+
+    /**
+     * 根据 token 获取 userId（用于鉴权）
+     */
+    public Long getUserIdByToken(String token) {
+        if (token == null || token.isBlank()) {
             return null;
         }
+        Object value = redissonClient.getBucket(TOKEN_KEY_PREFIX + token)
+                                     .get();
+        return value instanceof Long ? (Long) value : null;
+    }
+
+    /**
+     * 退出登录：删除 token
+     */
+    public boolean revokeToken(String token) {
+        if (token == null || token.isBlank()) {
+            return false;
+        }
+        return redissonClient.getBucket(TOKEN_KEY_PREFIX + token)
+                             .delete();
     }
 }
