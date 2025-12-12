@@ -8,7 +8,6 @@ import io.github.lionheartlattice.entity.user_center.po.User;
 import io.github.lionheartlattice.user_center.service.UserService;
 import io.github.lionheartlattice.util.ExcelExportUtil;
 import io.github.lionheartlattice.util.ExcelImportUtil;
-import io.github.lionheartlattice.util.parent.ParentController;
 import io.github.lionheartlattice.util.response.ApiResult;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,7 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping("z_user")
 @RequiredArgsConstructor
-public class UserController extends ParentController {
+public class UserController {
     private final UserService userService;
 
     @PostMapping("create")
