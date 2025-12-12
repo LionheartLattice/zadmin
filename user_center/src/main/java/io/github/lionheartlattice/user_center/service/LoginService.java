@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 public class LoginService {
     private final RedissonClient redissonClient;
     @Value("${app.auth.token-key-prefix:Bearer_}")
-    private String TOKEN_KEY_PREFIX;
+    private String tokenKeyPrefix;
     @Value("${app.auth.token-ttl-seconds:604800}")
     private long tokenTtlSeconds;
 
@@ -61,7 +61,7 @@ public class LoginService {
     public String createToken(Long userId) {
         // Hutool：fastUUID() 无 '-'，更短更适合当 token
         String token = IdUtil.fastUUID();
-        String key = TOKEN_KEY_PREFIX + token;
+        String key = tokenKeyPrefix + token;
 
         redissonClient.getBucket(key)
                       .set(detailWithInclude(userId), tokenTtlSeconds, TimeUnit.SECONDS);
@@ -73,7 +73,7 @@ public class LoginService {
      * 根据 token 获取 User（用于鉴权）
      */
     public User getUserByToken(String token) {
-        Object value = redissonClient.getBucket(TOKEN_KEY_PREFIX + token)
+        Object value = redissonClient.getBucket(tokenKeyPrefix + token)
                                      .get();
         return (User) value;
     }
@@ -85,14 +85,14 @@ public class LoginService {
         if (token == null || token.isBlank()) {
             return false;
         }
-        return redissonClient.getBucket(TOKEN_KEY_PREFIX + token)
+        return redissonClient.getBucket(tokenKeyPrefix + token)
                              .delete();
     }
 
     private String resolveToken(HttpServletRequest request) {
         String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (StringUtils.hasText(auth) && auth.startsWith(TOKEN_KEY_PREFIX)) {
-            return auth.substring(TOKEN_KEY_PREFIX.length())
+        if (StringUtils.hasText(auth) && auth.startsWith(tokenKeyPrefix)) {
+            return auth.substring(tokenKeyPrefix.length())
                        .trim();
         } else {
             throw new ExceptionWithEnum(ErrorEnum.BAD_USERNAME_OR_PASSWORD);
@@ -109,7 +109,7 @@ public class LoginService {
         if (!StringUtils.hasText(token)) {
             return false;
         }
-        boolean deleted = redissonClient.getBucket(TOKEN_KEY_PREFIX + token)
+        boolean deleted = redissonClient.getBucket(tokenKeyPrefix + token)
                                         .delete();
         if (deleted) {
             log.info("Token revoked: {}", token);
