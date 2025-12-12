@@ -17,26 +17,20 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.nio.charset.StandardCharsets;
 
-/**
- * Spring Security 配置：基于自定义 Token 的无状态鉴权
- * <p>
- * 说明：
- * 1) 不使用默认的 UserDetailsService（避免自动生成密码）
- * 2) 用自定义 TokenAuthenticationFilter 直接从 Redis 校验 token
- * 3) 无状态，不使用 session
- */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-
     private final LoginService loginService;
+
+    @Value("${app.auth.token-key-prefix:token:}")
+    private String tokenKeyPrefix;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        TokenAuthenticationFilter tokenFilter = new TokenAuthenticationFilter(loginService);
+        TokenAuthenticationFilter tokenFilter = new TokenAuthenticationFilter(loginService, tokenKeyPrefix);
 
         return http.csrf(AbstractHttpConfigurer::disable)
                    .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -47,19 +41,12 @@ public class SecurityConfig {
                        resp.getWriter()
                            .write("{\"success\":false,\"message\":\"未登录或token无效\"}");
                    }))
-                   .authorizeHttpRequests(auth -> auth
-                           // 登录 / 登出放行
-                           .requestMatchers("/z_login/login")
-                           .permitAll()
-
-                           // Swagger / Knife4j 放行
-                           .requestMatchers("/doc.html", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/v3/api-docs.json", "/webjars/**")
-                           .permitAll()
-
-
-                           .anyRequest()
-//                           .authenticated()) //拦截其他
-                           .permitAll())      //暂时放开所有
+                   .authorizeHttpRequests(auth -> auth.requestMatchers("/z_login/login")
+                                                      .permitAll()
+                                                      .requestMatchers("/doc.html", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/v3/api-docs.json", "/webjars/**")
+                                                      .permitAll()
+                                                      .anyRequest()
+                                                      .authenticated())
                    .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class)
                    .build();
     }

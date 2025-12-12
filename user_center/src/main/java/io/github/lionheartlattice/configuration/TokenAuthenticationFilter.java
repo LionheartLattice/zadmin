@@ -7,9 +7,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.NonNull;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,32 +18,27 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 /**
- * Token 鉴权过滤器：从 HTTP Header 解析 token，并转换为 Spring Security 的 Authentication
- * <p>
- * 支持两种 Header：
- * 1) Authorization: Bearer <token>（标准）
- * 2) X-Token: <token>（自定义）
+ * Token 鉴权过滤器
  */
 @RequiredArgsConstructor
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private final LoginService loginService;
-    @Value("${app.auth.token-key-prefix:Bearer_}")
-    private String TOKEN_KEY_PREFIX;
+    /**
+     * 与 LoginService 写 Redis 的前缀保持一致，来自配置
+     */
+    private final String tokenKeyPrefix;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
 
         String token = resolveToken(request);
 
-        // 如果能解析出 token，且当前还没有认证
         if (StringUtils.hasText(token) && SecurityContextHolder.getContext()
                                                                .getAuthentication() == null) {
             User user = loginService.getUserByToken(token);
             if (user != null) {
-                // 构建认证对象（principal = user 对象，credentials = token）
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, token, AuthorityUtils.NO_AUTHORITIES  // 暂时没有权限，后续可补
-                );
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, token, AuthorityUtils.NO_AUTHORITIES);
                 SecurityContextHolder.getContext()
                                      .setAuthentication(authentication);
             }
@@ -54,16 +48,31 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     }
 
     /**
-     * 从 HTTP Header 中解析 token
+     * 解析请求头中的 token
+     * 优先级：
+     * 1) Authorization: Bearer <token>
+     * 2) Authorization: <tokenKeyPrefix><token>   （如 token:xxxx）
+     * 3) X-Token: <token>
      */
     private String resolveToken(HttpServletRequest request) {
-        // 1) 标准 Authorization header
         String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (StringUtils.hasText(auth) && auth.startsWith("Bearer ")) {
-            return auth.substring(TOKEN_KEY_PREFIX.length())
-                       .trim();
+        if (StringUtils.hasText(auth)) {
+            // 标准 Bearer
+            if (auth.startsWith("Bearer ")) {
+                return auth.substring("Bearer ".length())
+                           .trim();
+            }
+            // 自定义前缀
+            if (StringUtils.hasText(tokenKeyPrefix) && auth.startsWith(tokenKeyPrefix)) {
+                return auth.substring(tokenKeyPrefix.length())
+                           .trim();
+            }
         }
-
+        // 兜底：自定义头
+        String xToken = request.getHeader("X-Token");
+        if (StringUtils.hasText(xToken)) {
+            return xToken.trim();
+        }
         return null;
     }
 }

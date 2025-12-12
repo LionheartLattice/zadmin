@@ -3,3 +3,5 @@
 ssh-keygen -t rsa -b 4096 -C "2451809708@qq.com"
 
 io.github.lionheartlattice
+
+token:74451743-10c5-4e46-b07f-f1511ed32215
