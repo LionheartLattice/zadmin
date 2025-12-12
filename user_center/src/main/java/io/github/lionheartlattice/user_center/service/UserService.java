@@ -92,7 +92,7 @@ public class UserService extends ParentService {
         return isNotNull(row);
     }
 
-    public UserUpdateDTO detail(Long id) {
+    public UserUpdateDTO getById(Long id) {
         return new User().queryable()
                          .whereById(id)
                          .select(u -> new ClassProxy<>(UserUpdateDTO.class).selectAll(u))

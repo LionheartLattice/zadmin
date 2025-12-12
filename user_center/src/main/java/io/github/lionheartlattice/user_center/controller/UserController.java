@@ -32,8 +32,8 @@ public class UserController extends ParentController {
     }
 
     @PostMapping("detail")
-    public ApiResult<UserUpdateDTO> detail(@RequestParam Long id) {
-        return ApiResult.success(userService.detail(id));
+    public ApiResult<UserUpdateDTO> getById(@RequestParam Long id) {
+        return ApiResult.success(userService.getById(id));
     }
 
     @PostMapping("update")
