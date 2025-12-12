@@ -49,10 +49,6 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     /**
      * 解析请求头中的 token
-     * 优先级：
-     * 1) Authorization: Bearer <token>
-     * 2) Authorization: <tokenKeyPrefix><token>   （如 token:xxxx）
-     * 3) X-Token: <token>
      */
     private String resolveToken(HttpServletRequest request) {
         String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
