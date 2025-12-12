@@ -3,6 +3,7 @@ package io.github.lionheartlattice.configuration;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
+import org.redisson.codec.JsonJacksonCodec;
 import org.redisson.config.Config;
 import org.redisson.config.SingleServerConfig;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,11 +32,13 @@ public class RedissonConfig {
     ) {
         Config config = new Config();
 
+        // 关键：避免 Kryo(Unsafe) 的终局废弃警告，改用 JSON codec
+        config.setCodec(new JsonJacksonCodec());
+
         SingleServerConfig single = config.useSingleServer()
                                           .setAddress("redis://" + host + ":" + port)
                                           .setDatabase(database);
 
-        // password 为空/空串时不要设置
         if (StringUtils.hasText(password)) {
             single.setPassword(password);
         }
