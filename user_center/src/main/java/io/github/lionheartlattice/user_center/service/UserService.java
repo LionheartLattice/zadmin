@@ -1,14 +1,15 @@
 package io.github.lionheartlattice.user_center.service;
 
+import cn.hutool.crypto.digest.BCrypt;
 import com.easy.query.api.proxy.base.ClassProxy;
 import com.easy.query.core.api.pagination.EasyPageResult;
 import com.easy.query.core.expression.builder.core.NotNullOrEmptyValueFilter;
-import io.github.lionheartlattice.util.parent.PageDTO;
 import io.github.lionheartlattice.entity.user_center.dto.UserCreatDTO;
 import io.github.lionheartlattice.entity.user_center.dto.UserUpdateDTO;
 import io.github.lionheartlattice.entity.user_center.po.User;
 import io.github.lionheartlattice.entity.user_center.po.proxy.UserProxy;
 import io.github.lionheartlattice.util.CopyUtil;
+import io.github.lionheartlattice.util.parent.PageDTO;
 import io.github.lionheartlattice.util.parent.ParentService;
 import io.github.lionheartlattice.util.response.ErrorEnum;
 import io.github.lionheartlattice.util.response.ExceptionWithEnum;
@@ -23,8 +24,12 @@ import java.util.List;
 public class UserService extends ParentService {
 
     public boolean create(UserCreatDTO dto) {
+        String hashpw = BCrypt.hashpw(dto.getPwd(), BCrypt.gensalt(12));
+//        解密：BCrypt.checkpw(rawPassword, hashedPassword)
+
         long rows = new User().copyFrom(dto)
                               .setUpdateId(0L)
+                              .setPwd(hashpw)
                               .insertable()
                               .executeRows();
         return isNotNull(rows); //如果操作异常会直接抛异常，或者数据库影响行数为0，因此只需要判定非空非0即可，下列的也是类似
