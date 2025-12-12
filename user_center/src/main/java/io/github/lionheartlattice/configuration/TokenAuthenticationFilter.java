@@ -65,12 +65,6 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                        .trim();
         }
 
-        // 2) 自定义 X-Token header
-        String xToken = request.getHeader("X-Token");
-        if (StringUtils.hasText(xToken)) {
-            return xToken.trim();
-        }
-
         return null;
     }
 }
