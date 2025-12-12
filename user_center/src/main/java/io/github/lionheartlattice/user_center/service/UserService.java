@@ -38,6 +38,14 @@ public class UserService {
         return isNotNull(rows); //如果操作异常会直接抛异常，或者数据库影响行数为0，因此只需要判定非空非0即可，下列的也是类似
     }
 
+    public boolean encoderPwd(Long id) {
+        User user = new User().queryable()
+                              .whereById(id)
+                              .singleNotNull();
+        BCrypt.hashpw(user.getPwd(), BCrypt.gensalt(12)); //加密密码并更新到数据库(这里只是为了演示，实际开发中应该在登录时加密密码)
+        return true;
+    }
+
     public EasyPageResult<User> page(PageDTO dto) {
         return new User().queryable()
                          .filterConfigure(NotNullOrEmptyValueFilter.DEFAULT_PROPAGATION_SUPPORTS)
