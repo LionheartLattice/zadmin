@@ -57,22 +57,13 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     private String resolveToken(HttpServletRequest request) {
         String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (StringUtils.hasText(auth)) {
-            // 标准 Bearer
-            if (auth.startsWith("Bearer ")) {
-                return auth.substring("Bearer ".length())
-                           .trim();
-            }
             // 自定义前缀
             if (StringUtils.hasText(tokenKeyPrefix) && auth.startsWith(tokenKeyPrefix)) {
                 return auth.substring(tokenKeyPrefix.length())
                            .trim();
             }
         }
-        // 兜底：自定义头
-        String xToken = request.getHeader("X-Token");
-        if (StringUtils.hasText(xToken)) {
-            return xToken.trim();
-        }
-        return null;
+
+        return auth;
     }
 }
