@@ -99,12 +99,5 @@ public class UserService extends ParentService {
                          .singleNotNull();
     }
 
-    public User detailWithInclude(Long id) {
-        return new User().queryable()
-                         .include(UserProxy::deptList)
-                         .include(UserProxy::roleList, r -> r.include(RoleProxy::menuList))
-                         .whereById(id)
-                         .singleNotNull();
-    }
 }
 
