@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 @RequiredArgsConstructor
 public class LoginService {
-    private static final String TOKEN_KEY_PREFIX = "bearer:";
+    private static final String TOKEN_KEY_PREFIX = "Bearer:";
     private final RedissonClient redissonClient;
     /**
      * token 过期时间（秒）
@@ -91,10 +91,10 @@ public class LoginService {
     }
 
     private String resolveToken(HttpServletRequest request) {
-        // 1) 优先标准 Authorization: bearer:<token>
+        // 1) 优先标准 Authorization: Bearer:<token>
         String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (StringUtils.hasText(auth) && auth.startsWith("bearer:")) {
-            return auth.substring("bearer:".length())
+        if (StringUtils.hasText(auth) && auth.startsWith("Bearer:")) {
+            return auth.substring("Bearer:".length())
                        .trim();
         } else {
             throw new ExceptionWithEnum(ErrorEnum.BAD_USERNAME_OR_PASSWORD);
