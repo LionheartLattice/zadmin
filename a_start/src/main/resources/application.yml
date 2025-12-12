@@ -92,3 +92,5 @@ app:
     worker-id: 1
   request-cache:
     max-size: 100MB
+  auth:
+    token-ttl-seconds: 604800
