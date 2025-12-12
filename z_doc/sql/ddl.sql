@@ -322,3 +322,9 @@ VALUES (12, 3, 5, 0), -- 管理员分配首页
 INSERT INTO z_user_dept (id, user_id, dept_id, create_id)
 VALUES (17, 1, 9, 0), -- 张三分配到技术部
        (18, 2, 9, 0); -- 李四分配到技术部
+
+
+select * from z_user;
+
+
+
