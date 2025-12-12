@@ -10,17 +10,20 @@ import io.github.lionheartlattice.entity.user_center.po.proxy.RoleProxy;
 import io.github.lionheartlattice.entity.user_center.po.proxy.UserProxy;
 import io.github.lionheartlattice.util.response.ErrorEnum;
 import io.github.lionheartlattice.util.response.ExceptionWithEnum;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
 public class LoginService {
-    private static final String TOKEN_KEY_PREFIX = "login:token:";
+    private static final String TOKEN_KEY_PREFIX = "bearer:";
     private final RedissonClient redissonClient;
     /**
      * token 过期时间（秒）
@@ -62,21 +65,18 @@ public class LoginService {
         String key = TOKEN_KEY_PREFIX + token;
 
         redissonClient.getBucket(key)
-                      .set(userId, tokenTtlSeconds, TimeUnit.SECONDS);
+                      .set(detailWithInclude(userId), tokenTtlSeconds, TimeUnit.SECONDS);
 
         return token;
     }
 
     /**
-     * 根据 token 获取 userId（用于鉴权）
+     * 根据 token 获取 User（用于鉴权）
      */
-    public Long getUserIdByToken(String token) {
-        if (token == null || token.isBlank()) {
-            return null;
-        }
+    public User getUserByToken(String token) {
         Object value = redissonClient.getBucket(TOKEN_KEY_PREFIX + token)
                                      .get();
-        return value instanceof Long ? (Long) value : null;
+        return (User) value;
     }
 
     /**
@@ -88,5 +88,16 @@ public class LoginService {
         }
         return redissonClient.getBucket(TOKEN_KEY_PREFIX + token)
                              .delete();
+    }
+
+    private String resolveToken(HttpServletRequest request) {
+        // 1) 优先标准 Authorization: bearer:<token>
+        String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (StringUtils.hasText(auth) && auth.startsWith("bearer:")) {
+            return auth.substring("bearer:".length())
+                       .trim();
+        } else {
+            throw new ExceptionWithEnum(ErrorEnum.BAD_USERNAME_OR_PASSWORD);
+        }
     }
 }
