@@ -1,7 +1,7 @@
 package io.github.lionheartlattice.user_center.controller;
 
 import com.easy.query.core.api.pagination.EasyPageResult;
-import io.github.lionheartlattice.entity.base.PageDTO;
+import io.github.lionheartlattice.util.parent.PageDTO;
 import io.github.lionheartlattice.entity.user_center.dto.UserCreatDTO;
 import io.github.lionheartlattice.entity.user_center.dto.UserUpdateDTO;
 import io.github.lionheartlattice.entity.user_center.po.User;

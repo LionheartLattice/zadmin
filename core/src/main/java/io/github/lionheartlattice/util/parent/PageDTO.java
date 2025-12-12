@@ -1,7 +1,6 @@
-package io.github.lionheartlattice.entity.base;
+package io.github.lionheartlattice.util.parent;
 
 import io.github.lionheartlattice.util.NullUtil;
-import io.github.lionheartlattice.util.parent.ParentCloneable;
 import io.github.lionheartlattice.util.response.ErrorEnum;
 import io.github.lionheartlattice.util.response.ExceptionWithEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
