@@ -79,7 +79,11 @@ logging:
       file-name-pattern: ${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz
   level:
     com.easy.query: info
-
+    org.redisson: debug
+    org.redisson.client: debug
+    org.redisson.connection: info
+    org.redisson.command: debug
+    io.netty: info
 
 
 app:
