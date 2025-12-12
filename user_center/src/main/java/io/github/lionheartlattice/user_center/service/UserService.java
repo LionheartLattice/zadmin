@@ -10,18 +10,21 @@ import io.github.lionheartlattice.entity.user_center.po.User;
 import io.github.lionheartlattice.entity.user_center.po.proxy.UserProxy;
 import io.github.lionheartlattice.util.CopyUtil;
 import io.github.lionheartlattice.util.parent.PageDTO;
-import io.github.lionheartlattice.util.parent.ParentService;
 import io.github.lionheartlattice.util.response.ErrorEnum;
 import io.github.lionheartlattice.util.response.ExceptionWithEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static io.github.lionheartlattice.util.NullUtil.isNotNull;
+
 @Service
 @RequiredArgsConstructor
-public class UserService extends ParentService {
+public class UserService {
+    private final TransactionTemplate transactionTemplate;
 
     public boolean create(UserCreatDTO dto) {
         String hashpw = BCrypt.hashpw(dto.getPwd(), BCrypt.gensalt(12));

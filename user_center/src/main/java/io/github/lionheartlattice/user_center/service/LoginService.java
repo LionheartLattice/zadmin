@@ -4,13 +4,12 @@ import io.github.lionheartlattice.entity.user_center.dto.LoginDTO;
 import io.github.lionheartlattice.entity.user_center.po.User;
 import io.github.lionheartlattice.entity.user_center.po.proxy.RoleProxy;
 import io.github.lionheartlattice.entity.user_center.po.proxy.UserProxy;
-import io.github.lionheartlattice.util.parent.ParentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class LoginService extends ParentService {
+public class LoginService {
     public User detailWithInclude(Long id) {
         return new User().queryable()
                          .include(UserProxy::deptList)
