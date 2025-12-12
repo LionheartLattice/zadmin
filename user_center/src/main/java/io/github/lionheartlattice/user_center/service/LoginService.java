@@ -12,6 +12,7 @@ import io.github.lionheartlattice.util.response.ErrorEnum;
 import io.github.lionheartlattice.util.response.ExceptionWithEnum;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class LoginService {
     private static final String TOKEN_KEY_PREFIX = "Bearer:";
     private final RedissonClient redissonClient;
@@ -99,5 +101,22 @@ public class LoginService {
         } else {
             throw new ExceptionWithEnum(ErrorEnum.BAD_USERNAME_OR_PASSWORD);
         }
+    }
+
+    /**
+     * 登出：删除 token
+     *
+     * @param token token 字符串
+     * @return 删除是否成功
+     */
+    public boolean logout(String token) {
+        if (!StringUtils.hasText(token)) {
+            return false;
+        }
+        boolean deleted = redissonClient.getBucket(TOKEN_KEY_PREFIX + token).delete();
+        if (deleted) {
+            log.info("Token revoked: {}", token);
+        }
+        return deleted;
     }
 }
