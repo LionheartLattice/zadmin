@@ -25,12 +25,9 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 @Slf4j
 public class LoginService {
-    private static final String TOKEN_KEY_PREFIX = "Bearer:";
     private final RedissonClient redissonClient;
-    /**
-     * token 过期时间（秒）
-     * 默认 7 天：7*24*3600
-     */
+    @Value("${app.auth.token-key-prefix:Bearer_}")
+    private String TOKEN_KEY_PREFIX;
     @Value("${app.auth.token-ttl-seconds:604800}")
     private long tokenTtlSeconds;
 
@@ -93,10 +90,9 @@ public class LoginService {
     }
 
     private String resolveToken(HttpServletRequest request) {
-        // 1) 优先标准 Authorization: Bearer:<token>
         String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (StringUtils.hasText(auth) && auth.startsWith("Bearer:")) {
-            return auth.substring("Bearer:".length())
+        if (StringUtils.hasText(auth) && auth.startsWith(TOKEN_KEY_PREFIX)) {
+            return auth.substring(TOKEN_KEY_PREFIX.length())
                        .trim();
         } else {
             throw new ExceptionWithEnum(ErrorEnum.BAD_USERNAME_OR_PASSWORD);
@@ -113,7 +109,8 @@ public class LoginService {
         if (!StringUtils.hasText(token)) {
             return false;
         }
-        boolean deleted = redissonClient.getBucket(TOKEN_KEY_PREFIX + token).delete();
+        boolean deleted = redissonClient.getBucket(TOKEN_KEY_PREFIX + token)
+                                        .delete();
         if (deleted) {
             log.info("Token revoked: {}", token);
         }

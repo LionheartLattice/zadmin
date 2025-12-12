@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -28,6 +29,8 @@ import java.io.IOException;
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private final LoginService loginService;
+    @Value("${app.auth.token-key-prefix:Bearer_}")
+    private String TOKEN_KEY_PREFIX;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
@@ -52,16 +55,12 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     /**
      * 从 HTTP Header 中解析 token
-     * <p>
-     * 优先级：
-     * 1) Authorization: Bearer <token>
-     * 2) X-Token: <token>
      */
     private String resolveToken(HttpServletRequest request) {
         // 1) 标准 Authorization header
         String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (StringUtils.hasText(auth) && auth.startsWith("Bearer ")) {
-            return auth.substring("Bearer ".length())
+            return auth.substring(TOKEN_KEY_PREFIX.length())
                        .trim();
         }
 

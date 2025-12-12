@@ -3,6 +3,7 @@ package io.github.lionheartlattice.configuration;
 import io.github.lionheartlattice.user_center.service.LoginService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -29,6 +30,7 @@ import java.nio.charset.StandardCharsets;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
 
     private final LoginService loginService;
 

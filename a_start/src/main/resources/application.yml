@@ -94,3 +94,4 @@ app:
     max-size: 100MB
   auth:
     token-ttl-seconds: 604800
+    token-key-prefix: "token:"
