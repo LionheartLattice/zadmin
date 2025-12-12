@@ -3,6 +3,7 @@ package io.github.lionheartlattice.user_center.service;
 import cn.hutool.crypto.digest.BCrypt;
 import com.easy.query.api.proxy.base.ClassProxy;
 import com.easy.query.core.api.pagination.EasyPageResult;
+import com.easy.query.core.enums.SQLExecuteStrategyEnum;
 import com.easy.query.core.expression.builder.core.NotNullOrEmptyValueFilter;
 import io.github.lionheartlattice.entity.user_center.dto.UserCreatDTO;
 import io.github.lionheartlattice.entity.user_center.dto.UserUpdateDTO;
@@ -42,7 +43,8 @@ public class UserService {
         User user = new User().queryable()
                               .whereById(id)
                               .singleNotNull();
-        BCrypt.hashpw(user.getPwd(), BCrypt.gensalt(12)); //加密密码并更新到数据库(这里只是为了演示，实际开发中应该在登录时加密密码)
+        String hashpw = BCrypt.hashpw(user.getPwd(), BCrypt.gensalt(12));//加密密码并更新到数据库(这里只是为了演示，实际开发中应该在登录时加密密码)
+        new User().setId(user.getId()).setPwd(hashpw).updatable().setSQLStrategy(SQLExecuteStrategyEnum.ONLY_NOT_NULL_COLUMNS).executeRows();
         return true;
     }
 

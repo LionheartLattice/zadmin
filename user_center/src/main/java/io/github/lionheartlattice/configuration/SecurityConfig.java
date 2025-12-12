@@ -49,16 +49,17 @@ public class SecurityConfig {
                    }))
                    .authorizeHttpRequests(auth -> auth
                            // 登录 / 登出放行
-                           .requestMatchers("/z_login/login", "/z_login/logout")
+                           .requestMatchers("/z_login/login")
                            .permitAll()
 
                            // Swagger / Knife4j 放行
                            .requestMatchers("/doc.html", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/v3/api-docs.json", "/webjars/**")
                            .permitAll()
 
-                           // 其他接口都需要认证
+
                            .anyRequest()
-                           .authenticated())
+//                           .authenticated()) //拦截其他
+                           .permitAll())      //暂时放开所有
                    .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class)
                    .build();
     }
