@@ -1,7 +1,8 @@
 package io.github.lionheartlattice.user_center.service;
 
 import cn.hutool.core.util.IdUtil;
-import cn.hutool.crypto.digest.BCrypt;
+import cn.hutool.crypto.SecureUtil;
+import cn.hutool.crypto.symmetric.AES;
 import com.easy.query.core.proxy.core.draft.Draft2;
 import com.easy.query.core.proxy.sql.Select;
 import io.github.lionheartlattice.entity.user_center.dto.LoginDTO;
@@ -10,6 +11,7 @@ import io.github.lionheartlattice.entity.user_center.po.proxy.RoleProxy;
 import io.github.lionheartlattice.entity.user_center.po.proxy.UserProxy;
 import io.github.lionheartlattice.util.response.ErrorEnum;
 import io.github.lionheartlattice.util.response.ExceptionWithEnum;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -32,6 +35,17 @@ public class LoginService {
     @Value("${app.auth.token-ttl-seconds:604800}")
     private long tokenTtlSeconds;
 
+    @Value("${app.auth.aes-key:LionHeartLattice}")
+    private String aesKey;
+
+    private AES aes;
+
+    @PostConstruct
+    public void init() {
+        // 初始化AES工具
+        this.aes = SecureUtil.aes(aesKey.getBytes(StandardCharsets.UTF_8));
+    }
+
     public User detailWithInclude(BigDecimal id) {
         return new User().queryable()
                          .include(UserProxy::deptList)
@@ -41,13 +55,23 @@ public class LoginService {
     }
 
     public String login(LoginDTO dto) {
+        // 查询用户ID和加密后的密码
+        // 使用 singleOrNull 避免用户不存在时抛出特定异常，统一处理为用户名或密码错误
         Draft2<BigDecimal, String> draft2 = new User().queryable()
                                                       .where(u -> u.username()
-                                                             .eq(dto.getUsername()))
+                                                                   .eq(dto.getUsername()))
                                                       .select(u -> Select.DRAFT.of(u.id(), u.pwd()))
-                                                      .singleNotNull();
-        boolean checkpwed = BCrypt.checkpw(dto.getPassword(), draft2.getValue2());
-        if (!checkpwed) {
+                                                      .singleOrNull();
+
+        if (draft2 == null) {
+            throw new ExceptionWithEnum(ErrorEnum.BAD_USERNAME_OR_PASSWORD);
+        }
+
+        // 使用配置的AES密钥加密输入的密码，然后与数据库中的密文比对
+        // 修正：前端传递的字段为 pwd，对应 DTO 的 getPwd() 方法，原 getPassword() 因字段不匹配导致为 null
+        String inputPwdEncrypted = aes.encryptHex(dto.getPwd());
+
+        if (!inputPwdEncrypted.equals(draft2.getValue2())) {
             throw new ExceptionWithEnum(ErrorEnum.BAD_USERNAME_OR_PASSWORD);
         }
         return createToken(draft2.getValue1());

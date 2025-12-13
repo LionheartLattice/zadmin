@@ -1,6 +1,7 @@
 package io.github.lionheartlattice.user_center.service;
 
-import cn.hutool.crypto.digest.BCrypt;
+import cn.hutool.crypto.SecureUtil;
+import cn.hutool.crypto.symmetric.AES;
 import com.easy.query.api.proxy.base.ClassProxy;
 import com.easy.query.core.api.pagination.EasyPageResult;
 import com.easy.query.core.enums.SQLExecuteStrategyEnum;
@@ -13,11 +14,14 @@ import io.github.lionheartlattice.entity.user_center.po.proxy.UserProxy;
 import io.github.lionheartlattice.util.CopyUtil;
 import io.github.lionheartlattice.util.response.ErrorEnum;
 import io.github.lionheartlattice.util.response.ExceptionWithEnum;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -28,12 +32,23 @@ import static io.github.lionheartlattice.util.NullUtil.isNotNull;
 public class UserService {
     private final TransactionTemplate transactionTemplate;
 
+    @Value("${app.auth.aes-key:LionHeartLattice}")
+    private String aesKey;
+
+    private AES aes;
+
+    @PostConstruct
+    public void init() {
+        // 初始化AES工具
+        this.aes = SecureUtil.aes(aesKey.getBytes(StandardCharsets.UTF_8));
+    }
+
     public boolean create(UserCreatDTO dto) {
-        String hashpw = BCrypt.hashpw(dto.getPwd(), BCrypt.gensalt(12));
+        String encryptPwd = aes.encryptHex(dto.getPwd());
 
         long rows = new User().copyFrom(dto)
                               .setUpdateId(BigDecimal.ZERO)
-                              .setPwd(hashpw)
+                              .setPwd(encryptPwd)
                               .insertable()
                               .executeRows();
         return isNotNull(rows); //如果操作异常会直接抛异常，或者数据库影响行数为0，因此只需要判定非空非0即可，下列的也是类似
@@ -43,9 +58,11 @@ public class UserService {
         User user = new User().queryable()
                               .whereById(id)
                               .singleNotNull();
-        String hashpw = BCrypt.hashpw(user.getPwd(), BCrypt.gensalt(12));//加密密码并更新到数据库(这里只是为了演示，实际开发中应该在登录时加密密码)
+        // 加密密码并更新到数据库(这里只是为了演示，实际开发中应该在登录时加密密码)
+        String encryptPwd = aes.encryptHex(user.getPwd());
+
         new User().setId(user.getId())
-                  .setPwd(hashpw)
+                  .setPwd(encryptPwd)
                   .updatable()
                   .setSQLStrategy(SQLExecuteStrategyEnum.ONLY_NOT_NULL_COLUMNS)
                   .executeRows();
@@ -107,6 +124,13 @@ public class UserService {
 
     public Boolean saveBatch(List<UserCreatDTO> dtos) {
         List<User> entities = CopyUtil.copyList(dtos, User.class);
+        // 批量保存时也需要处理密码加密，这里简单处理，循环加密
+        entities.forEach(user -> {
+            if (user.getPwd() != null) {
+                user.setPwd(aes.encryptHex(user.getPwd()));
+            }
+        });
+
         Long row = transactionTemplate.execute(status -> new User().insertable(entities)
                                                                    .batch(true)
                                                                    .executeRows());
@@ -121,4 +145,3 @@ public class UserService {
     }
 
 }
-
