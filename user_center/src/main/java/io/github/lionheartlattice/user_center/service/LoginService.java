@@ -19,6 +19,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -31,7 +32,7 @@ public class LoginService {
     @Value("${app.auth.token-ttl-seconds:604800}")
     private long tokenTtlSeconds;
 
-    public User detailWithInclude(Long id) {
+    public User detailWithInclude(BigDecimal id) {
         return new User().queryable()
                          .include(UserProxy::deptList)
                          .include(UserProxy::roleList, r -> r.include(RoleProxy::menuList))
@@ -40,11 +41,11 @@ public class LoginService {
     }
 
     public String login(LoginDTO dto) {
-        Draft2<Long, String> draft2 = new User().queryable()
-                                                .where(u -> u.username()
+        Draft2<BigDecimal, String> draft2 = new User().queryable()
+                                                      .where(u -> u.username()
                                                              .eq(dto.getUsername()))
-                                                .select(u -> Select.DRAFT.of(u.id(), u.pwd()))
-                                                .singleNotNull();
+                                                      .select(u -> Select.DRAFT.of(u.id(), u.pwd()))
+                                                      .singleNotNull();
         boolean checkpwed = BCrypt.checkpw(dto.getPassword(), draft2.getValue2());
         if (!checkpwed) {
             throw new ExceptionWithEnum(ErrorEnum.BAD_USERNAME_OR_PASSWORD);
@@ -58,7 +59,7 @@ public class LoginService {
      * @param userId 用户ID
      * @return token 字符串
      */
-    public String createToken(Long userId) {
+    public String createToken(BigDecimal userId) {
         // Hutool：fastUUID() 无 '-'，更短更适合当 token
         String token = IdUtil.fastUUID();
         String key = tokenKeyPrefix + token;
