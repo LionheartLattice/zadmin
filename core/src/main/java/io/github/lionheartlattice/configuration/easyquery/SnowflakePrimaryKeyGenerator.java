@@ -12,13 +12,13 @@ import java.time.format.DateTimeFormatter;
 
 /**
  * 基于 DECIMAL 的可读雪花算法主键生成器
- * 结构:yyyyMMddHHmmssSSS(17位时间戳) + 机器ID(4位) + 序列号(5位)
- * 示例:20250529143025123000100001
+ * 结构:yyyyMMddHHmmssSSS(17位时间戳) + 机器ID(5位) + 序列号(6位)
+ * 示例:2025052914302512300001000001
  * - 时间戳:2025-05-29 14:30:25.123
- * - 机器ID:0001
- * - 序列号:00001
+ * - 机器ID:00001
+ * - 序列号:000001
  * <p>
- * 容量:支持9999个节点,每毫秒99999个ID
+ * 容量:支持99999个节点,每毫秒999999个ID
  */
 @Component
 public class SnowflakePrimaryKeyGenerator implements PrimaryKeyGenerator {
@@ -29,14 +29,14 @@ public class SnowflakePrimaryKeyGenerator implements PrimaryKeyGenerator {
     private static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
 
     /**
-     * 机器ID最大值(9999)
+     * 机器ID最大值(99999)
      */
-    private static final int MAX_WORKER_ID = 9999;
+    private static final int MAX_WORKER_ID = 99999;
 
     /**
-     * 序列号最大值(99999)
+     * 序列号最大值(999999)
      */
-    private static final int MAX_SEQUENCE = 99999;
+    private static final int MAX_SEQUENCE = 999999;
 
     /**
      * 机器ID
@@ -56,7 +56,7 @@ public class SnowflakePrimaryKeyGenerator implements PrimaryKeyGenerator {
     /**
      * 从配置文件读取机器ID
      *
-     * @param workerId 机器ID(1-9999)
+     * @param workerId 机器ID(1-99999)
      */
     public SnowflakePrimaryKeyGenerator(@Value("${app.snowflake.worker-id:1}") int workerId) {
         if (workerId < 1 || workerId > MAX_WORKER_ID) {
@@ -86,10 +86,10 @@ public class SnowflakePrimaryKeyGenerator implements PrimaryKeyGenerator {
      */
     public static int parseWorkerId(BigDecimal id) {
         String idStr = id.toPlainString();
-        if (idStr.length() < 21) {
+        if (idStr.length() < 22) {
             throw new IllegalArgumentException("无效的ID格式");
         }
-        return Integer.parseInt(idStr.substring(17, 21));
+        return Integer.parseInt(idStr.substring(17, 22));
     }
 
     /**
@@ -97,16 +97,16 @@ public class SnowflakePrimaryKeyGenerator implements PrimaryKeyGenerator {
      */
     public static int parseSequence(BigDecimal id) {
         String idStr = id.toPlainString();
-        if (idStr.length() < 26) {
+        if (idStr.length() < 28) {
             throw new IllegalArgumentException("无效的ID格式");
         }
-        return Integer.parseInt(idStr.substring(21, 26));
+        return Integer.parseInt(idStr.substring(22, 28));
     }
 
     /**
      * 生成下一个ID
      *
-     * @return DECIMAL 主键值(26位)
+     * @return DECIMAL 主键值(28位)
      */
     private synchronized BigDecimal nextId() {
         String timestamp = LocalDateTime.now()
@@ -129,8 +129,8 @@ public class SnowflakePrimaryKeyGenerator implements PrimaryKeyGenerator {
 
         lastTimestamp = timestamp;
 
-        // 拼接: 时间戳(17位) + 机器ID(4位) + 序列号(5位)
-        String id = String.format("%s%04d%05d", timestamp, workerId, sequence);
+        // 拼接: 时间戳(17位) + 机器ID(5位) + 序列号(6位)
+        String id = String.format("%s%05d%06d", timestamp, workerId, sequence);
         return new BigDecimal(id);
     }
 

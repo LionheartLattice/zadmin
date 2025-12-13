@@ -62,3 +62,42 @@ ALTER TABLE z_user ALTER COLUMN tenant_id TYPE DECIMAL(26,0);
 ALTER TABLE z_role ALTER COLUMN tenant_id TYPE DECIMAL(26,0);
 ALTER TABLE z_menu ALTER COLUMN tenant_id TYPE DECIMAL(26,0);
 ALTER TABLE z_dept ALTER COLUMN tenant_id TYPE DECIMAL(26,0);
+
+
+
+-- 修改所有主键字段为 numeric(28)
+ALTER TABLE public.z_user ALTER COLUMN id TYPE numeric(28);
+ALTER TABLE public.z_user ALTER COLUMN create_id TYPE numeric(28);
+ALTER TABLE public.z_user ALTER COLUMN update_id TYPE numeric(28);
+ALTER TABLE public.z_user ALTER COLUMN tenant_id TYPE numeric(28);
+
+ALTER TABLE public.z_role ALTER COLUMN id TYPE numeric(28);
+ALTER TABLE public.z_role ALTER COLUMN create_id TYPE numeric(28);
+ALTER TABLE public.z_role ALTER COLUMN update_id TYPE numeric(28);
+ALTER TABLE public.z_role ALTER COLUMN tenant_id TYPE numeric(28);
+
+ALTER TABLE public.z_menu ALTER COLUMN id TYPE numeric(28);
+ALTER TABLE public.z_menu ALTER COLUMN create_id TYPE numeric(28);
+ALTER TABLE public.z_menu ALTER COLUMN update_id TYPE numeric(28);
+ALTER TABLE public.z_menu ALTER COLUMN tenant_id TYPE numeric(28);
+
+ALTER TABLE public.z_dept ALTER COLUMN id TYPE numeric(28);
+ALTER TABLE public.z_dept ALTER COLUMN default_role_id TYPE numeric(28);
+ALTER TABLE public.z_dept ALTER COLUMN create_id TYPE numeric(28);
+ALTER TABLE public.z_dept ALTER COLUMN update_id TYPE numeric(28);
+ALTER TABLE public.z_dept ALTER COLUMN tenant_id TYPE numeric(28);
+
+ALTER TABLE public.z_user_role ALTER COLUMN id TYPE numeric(28);
+ALTER TABLE public.z_user_role ALTER COLUMN user_id TYPE numeric(28);
+ALTER TABLE public.z_user_role ALTER COLUMN role_id TYPE numeric(28);
+ALTER TABLE public.z_user_role ALTER COLUMN create_id TYPE numeric(28);
+
+ALTER TABLE public.z_role_menu ALTER COLUMN id TYPE numeric(28);
+ALTER TABLE public.z_role_menu ALTER COLUMN role_id TYPE numeric(28);
+ALTER TABLE public.z_role_menu ALTER COLUMN menu_id TYPE numeric(28);
+ALTER TABLE public.z_role_menu ALTER COLUMN create_id TYPE numeric(28);
+
+ALTER TABLE public.z_user_dept ALTER COLUMN id TYPE numeric(28);
+ALTER TABLE public.z_user_dept ALTER COLUMN user_id TYPE numeric(28);
+ALTER TABLE public.z_user_dept ALTER COLUMN dept_id TYPE numeric(28);
+ALTER TABLE public.z_user_dept ALTER COLUMN create_id TYPE numeric(28);
