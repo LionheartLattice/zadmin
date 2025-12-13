@@ -45,7 +45,7 @@ apply: 始终
 
 ## 数据库
 - 我之前使用mysql，现在要迁移到pgsql，现在完全使用pgsql
-- 主键改为雪花算法由java程序维护，建表语句不必维护
+- 主键改为雪花算法由java程序维护bigdecimal，建表语句中为numeric(28)
 - create_time字段不需要，因为雪花算法内含时间戳
 - update_time字段为NOT NULL
 - 如有del_flag字段，tenant_id字段，要添加索引
