@@ -2,7 +2,7 @@ package io.github.lionheartlattice.util;
 
 import org.springframework.beans.BeanUtils;
 import tools.jackson.databind.JavaType;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.List;
 
@@ -17,10 +17,12 @@ public class CopyUtil {
     }
 
     /**
-     * 延迟获取 Spring 管理的 ObjectMapper (Jackson 3)
+     * 延迟获取 Spring 管理的 JsonMapper (Jackson 3)
+     * <p>
+     * Jackson 3.x 中 ObjectMapper 已重命名为 JsonMapper
      */
-    private static ObjectMapper getObjectMapper() {
-        return SpringUtils.getBean(ObjectMapper.class);
+    private static JsonMapper getJsonMapper() {
+        return SpringUtils.getBean(JsonMapper.class);
     }
 
 
@@ -53,20 +55,20 @@ public class CopyUtil {
      * 批量深拷贝到指定类型的新实例列表（基于 Jackson 3）
      */
     public static <S, T> List<T> copyList(List<S> sourceList, Class<T> targetClass) {
-        ObjectMapper objectMapper = getObjectMapper();
-        JavaType listType = objectMapper.getTypeFactory()
-                .constructCollectionType(List.class, targetClass);
-        String json = objectMapper.writeValueAsString(sourceList);
-        return objectMapper.readValue(json, listType);
+        JsonMapper jsonMapper = getJsonMapper();
+        JavaType listType = jsonMapper.getTypeFactory()
+                                      .constructCollectionType(List.class, targetClass);
+        String json = jsonMapper.writeValueAsString(sourceList);
+        return jsonMapper.readValue(json, listType);
     }
 
     /**
      * 深拷贝到指定类型的新实例（基于 Jackson 3）
      */
     public static <T> T copyDeep(Object source, Class<T> targetClass) {
-        ObjectMapper objectMapper = getObjectMapper();
-        String json = objectMapper.writeValueAsString(source);
-        return objectMapper.readValue(json, targetClass);
+        JsonMapper jsonMapper = getJsonMapper();
+        String json = jsonMapper.writeValueAsString(source);
+        return jsonMapper.readValue(json, targetClass);
     }
 
     /**
