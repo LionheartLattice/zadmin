@@ -6,12 +6,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * 基于 BigInteger 的可读雪花算法主键生成器
+ * 基于 DECIMAL 的可读雪花算法主键生成器
  * 结构:yyyyMMddHHmmssSSS(17位时间戳) + 机器ID(5位) + 序列号(6位)
  * 示例:2025052914302512300001000001
  * - 时间戳:2025-05-29 14:30:25.123
@@ -71,8 +71,8 @@ public class SnowflakePrimaryKeyGenerator implements PrimaryKeyGenerator {
      * @param id 主键ID
      * @return 时间戳字符串
      */
-    public static String parseTimestamp(BigInteger id) {
-        String idStr = id.toString();
+    public static String parseTimestamp(BigDecimal id) {
+        String idStr = id.toPlainString();
         if (idStr.length() < 17) {
             throw new IllegalArgumentException("无效的ID格式");
         }
@@ -84,8 +84,8 @@ public class SnowflakePrimaryKeyGenerator implements PrimaryKeyGenerator {
     /**
      * 解析机器ID(用于调试)
      */
-    public static int parseWorkerId(BigInteger id) {
-        String idStr = id.toString();
+    public static int parseWorkerId(BigDecimal id) {
+        String idStr = id.toPlainString();
         if (idStr.length() < 22) {
             throw new IllegalArgumentException("无效的ID格式");
         }
@@ -95,8 +95,8 @@ public class SnowflakePrimaryKeyGenerator implements PrimaryKeyGenerator {
     /**
      * 解析序列号(用于调试)
      */
-    public static int parseSequence(BigInteger id) {
-        String idStr = id.toString();
+    public static int parseSequence(BigDecimal id) {
+        String idStr = id.toPlainString();
         if (idStr.length() < 28) {
             throw new IllegalArgumentException("无效的ID格式");
         }
@@ -106,9 +106,9 @@ public class SnowflakePrimaryKeyGenerator implements PrimaryKeyGenerator {
     /**
      * 生成下一个ID
      *
-     * @return BigInteger 主键值(28位)
+     * @return DECIMAL 主键值(28位)
      */
-    private synchronized BigInteger nextId() {
+    private synchronized BigDecimal nextId() {
         String timestamp = LocalDateTime.now()
                                         .format(TIMESTAMP_FORMATTER);
 
@@ -131,7 +131,7 @@ public class SnowflakePrimaryKeyGenerator implements PrimaryKeyGenerator {
 
         // 拼接: 时间戳(17位) + 机器ID(5位) + 序列号(6位)
         String id = String.format("%s%05d%06d", timestamp, workerId, sequence);
-        return new BigInteger(id);
+        return new BigDecimal(id);
     }
 
     /**

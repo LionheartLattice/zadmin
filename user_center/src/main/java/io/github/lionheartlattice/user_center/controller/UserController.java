@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Tag(name = "用户管理", description = "用户信息的增删改查、Excel 导入导出等操作")
@@ -35,7 +35,7 @@ public class UserController {
 
     @Operation(summary = "获取用户详情", description = "根据用户 ID 获取用户的详细信息")
     @PostMapping("detail")
-    public ApiResult<UserUpdateDTO> getById(@RequestParam BigInteger id) {
+    public ApiResult<UserUpdateDTO> getById(@RequestParam BigDecimal id) {
         return ApiResult.success(userService.getById(id));
     }
 
@@ -53,7 +53,7 @@ public class UserController {
 
     @Operation(summary = "批量删除用户", description = "根据用户 ID 列表批量删除用户（逻辑删除）")
     @PostMapping("delete")
-    public ApiResult<Boolean> delete(@RequestBody List<BigInteger> ids) {
+    public ApiResult<Boolean> delete(@RequestBody List<BigDecimal> ids) {
         return ApiResult.success(userService.delete(ids));
     }
 
@@ -77,7 +77,7 @@ public class UserController {
 
     @Operation(summary = "加密用户密码", description = "对指定用户的密码进行加盐加密（演示功能）")
     @PostMapping("encoderPwd")
-    public ApiResult<Boolean> encoderPwd(@RequestParam BigInteger id) {
+    public ApiResult<Boolean> encoderPwd(@RequestParam Long id) {
         return ApiResult.success(userService.encoderPwd(id));
     }
 }

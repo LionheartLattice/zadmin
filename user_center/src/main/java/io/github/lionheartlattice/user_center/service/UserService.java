@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -47,14 +47,14 @@ public class UserService {
         String encryptPwd = aes.encryptHex(dto.getPwd());
 
         long rows = new User().copyFrom(dto)
-                              .setUpdateId(BigInteger.ZERO)
+                              .setUpdateId(BigDecimal.ZERO)
                               .setPwd(encryptPwd)
                               .insertable()
                               .executeRows();
         return isNotNull(rows); //如果操作异常会直接抛异常，或者数据库影响行数为0，因此只需要判定非空非0即可，下列的也是类似
     }
 
-    public boolean encoderPwd(BigInteger id) {
+    public boolean encoderPwd(Long id) {
         User user = new User().queryable()
                               .whereById(id)
                               .singleNotNull();
@@ -113,7 +113,7 @@ public class UserService {
         return isNotNull(rows);
     }
 
-    public Boolean delete(List<BigInteger> ids) {
+    public Boolean delete(List<BigDecimal> ids) {
         long rows = new User().expressionDeletable()
                               .where(u -> u.id()
                                            .in(ids))
@@ -137,7 +137,7 @@ public class UserService {
         return isNotNull(row);
     }
 
-    public UserUpdateDTO getById(BigInteger id) {
+    public UserUpdateDTO getById(BigDecimal id) {
         return new User().queryable()
                          .whereById(id)
                          .select(u -> new ClassProxy<>(UserUpdateDTO.class).selectAll(u))

@@ -9,7 +9,7 @@ import io.github.lionheartlattice.entity.parent.ParentClientEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -31,7 +31,7 @@ public class Dept extends ParentClientEntity<Dept, DeptProxy> implements ProxyEn
      */
     @Schema(description = "部门ID", requiredMode = Schema.RequiredMode.REQUIRED)
     @Column(primaryKey = true, value = "id", primaryKeyGenerator = SnowflakePrimaryKeyGenerator.class)
-    private BigInteger id;
+    private BigDecimal id;
 
     /**
      * 部门名称
@@ -43,13 +43,13 @@ public class Dept extends ParentClientEntity<Dept, DeptProxy> implements ProxyEn
      * 父级ID
      */
     @Schema(description = "父级ID", requiredMode = Schema.RequiredMode.REQUIRED)
-    private BigInteger pid;
+    private BigDecimal pid;
 
     /**
      * 默认分配角色ID
      */
     @Schema(description = "默认分配角色ID")
-    private BigInteger defaultRoleId;
+    private BigDecimal defaultRoleId;
 
     /**
      * 层级
@@ -92,13 +92,13 @@ public class Dept extends ParentClientEntity<Dept, DeptProxy> implements ProxyEn
      * 创建人ID
      */
     @Schema(description = "创建人ID")
-    private BigInteger createId;
+    private BigDecimal createId;
 
     /**
      * 更新人ID
      */
     @Schema(description = "更新人ID")
-    private BigInteger updateId;
+    private BigDecimal updateId;
 
     /**
      * 更新时间
@@ -110,6 +110,6 @@ public class Dept extends ParentClientEntity<Dept, DeptProxy> implements ProxyEn
      * 租户ID
      */
     @Schema(description = "租户ID")
-    private BigInteger tenantId;
+    private BigDecimal tenantId;
 
 }
