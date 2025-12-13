@@ -34,7 +34,7 @@ public class UserController {
     }
 
     @Operation(summary = "获取用户详情", description = "根据用户 ID 获取用户的详细信息")
-    @PostMapping("detail")
+    @PostMapping("getbyid")
     public ApiResult<UserUpdateDTO> getById(@RequestParam BigDecimal id) {
         return ApiResult.success(userService.getById(id));
     }
