@@ -35,7 +35,7 @@ apply: 始终
 - 优先使用 封装好的 工具类以复用
 - 优先使用 Spring自带的 工具类
 - 优先使用 Hutool 工具类
-- C:\soft\apache-maven-3.9.9\repo 下可以看到第三方jar包和文档
+- D:\soft\apache-maven-3.9.9\repo 下可以看到第三方jar包和文档
 
 ## 模块依赖
 - core: 基础配置和第三方依赖

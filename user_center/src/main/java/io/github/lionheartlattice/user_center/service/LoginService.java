@@ -33,7 +33,7 @@ public class LoginService {
     @Value("${app.auth.token-key-prefix:Bearer_}")
     private String tokenKeyPrefix;
     @Value("${app.auth.token-ttl-seconds:604800}")
-    private long tokenTtlSeconds;
+    private Long tokenTtlSeconds;
 
     @Value("${app.auth.aes-key:LionHeartLattice}")
     private String aesKey;
