@@ -185,3 +185,36 @@ DROP INDEX IF EXISTS public.uk_z_user_username_not_deleted;
 
 -- 创建全局唯一索引
 CREATE UNIQUE INDEX uk_z_user_username ON public.z_user (username);
+
+
+
+
+
+-- 修改 z_user 表
+ALTER TABLE public.z_user ALTER COLUMN create_id SET DEFAULT 0;
+ALTER TABLE public.z_user ALTER COLUMN update_id SET DEFAULT 0;
+ALTER TABLE public.z_user ALTER COLUMN tenant_id SET DEFAULT 0;
+
+-- 修改 z_role 表
+ALTER TABLE public.z_role ALTER COLUMN create_id SET DEFAULT 0;
+ALTER TABLE public.z_role ALTER COLUMN update_id SET DEFAULT 0;
+ALTER TABLE public.z_role ALTER COLUMN tenant_id SET DEFAULT 0;
+
+-- 修改 z_menu 表
+ALTER TABLE public.z_menu ALTER COLUMN create_id SET DEFAULT 0;
+ALTER TABLE public.z_menu ALTER COLUMN update_id SET DEFAULT 0;
+ALTER TABLE public.z_menu ALTER COLUMN tenant_id SET DEFAULT 0;
+
+-- 修改 z_dept 表
+ALTER TABLE public.z_dept ALTER COLUMN create_id SET DEFAULT 0;
+ALTER TABLE public.z_dept ALTER COLUMN update_id SET DEFAULT 0;
+ALTER TABLE public.z_dept ALTER COLUMN tenant_id SET DEFAULT 0;
+
+-- 修改 z_user_role 表 (只有 create_id)
+ALTER TABLE public.z_user_role ALTER COLUMN create_id SET DEFAULT 0;
+
+-- 修改 z_role_menu 表 (只有 create_id)
+ALTER TABLE public.z_role_menu ALTER COLUMN create_id SET DEFAULT 0;
+
+-- 修改 z_user_dept 表 (只有 create_id)
+ALTER TABLE public.z_user_dept ALTER COLUMN create_id SET DEFAULT 0;

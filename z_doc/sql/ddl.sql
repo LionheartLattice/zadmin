@@ -13,9 +13,9 @@ create table public.z_user
     email       varchar(256) default ''::character varying,
     update_time timestamp    default now() not null,
     del_flag    boolean      default false,
-    create_id   numeric(28),
-    update_id   numeric(28),
-    tenant_id   numeric(28)
+    create_id   numeric(28)  default 0,
+    update_id   numeric(28)  default 0,
+    tenant_id   numeric(28)  default 0
 );
 
 comment on table public.z_user is '系统用户表';
@@ -72,10 +72,10 @@ create table public.z_role
     permissions varchar(64)  default ''::character varying not null
         unique,
     update_time timestamp    default now()                 not null,
-    create_id   numeric(28),
-    update_id   numeric(28),
+    create_id   numeric(28)  default 0,
+    update_id   numeric(28)  default 0,
     is_lock     boolean      default false                 not null,
-    tenant_id   numeric(28)
+    tenant_id   numeric(28)  default 0
 );
 
 comment on table public.z_role is '系统角色表';
@@ -124,10 +124,10 @@ create table public.z_menu
     is_full      boolean      default false,
     is_affix     boolean      default false,
     update_time  timestamp    default now()                 not null,
-    create_id    numeric(28),
-    update_id    numeric(28),
+    create_id    numeric(28)  default 0,
+    update_id    numeric(28)  default 0,
     del_flag     boolean      default false                 not null,
-    tenant_id    numeric(28)
+    tenant_id    numeric(28)  default 0
 );
 
 comment on table public.z_menu is '系统菜单表';
@@ -192,10 +192,10 @@ create table public.z_dept
     is_lock         boolean      default false not null,
     del_flag        boolean      default false not null,
     remark          varchar(128) default ''::character varying,
-    create_id       numeric(28),
-    update_id       numeric(28),
+    create_id       numeric(28)  default 0,
+    update_id       numeric(28)  default 0,
     update_time     timestamp    default now() not null,
-    tenant_id       numeric(28)
+    tenant_id       numeric(28)  default 0
 );
 
 comment on table public.z_dept is '部门表';
@@ -237,7 +237,7 @@ create table public.z_user_role
         primary key,
     user_id   numeric(28) not null,
     role_id   numeric(28) not null,
-    create_id numeric(28),
+    create_id numeric(28) default 0,
     constraint unique_user_role
         unique (user_id, role_id)
 );
@@ -267,7 +267,7 @@ create table public.z_role_menu
         primary key,
     role_id   numeric(28) not null,
     menu_id   numeric(28) not null,
-    create_id numeric(28),
+    create_id numeric(28) default 0,
     constraint unique_role_menu
         unique (role_id, menu_id)
 );
@@ -294,7 +294,7 @@ create table public.z_user_dept
         primary key,
     user_id   numeric(28) not null,
     dept_id   numeric(28) not null,
-    create_id numeric(28),
+    create_id numeric(28) default 0,
     constraint unique_user_dept
         unique (user_id, dept_id)
 );
