@@ -1,20 +1,18 @@
 package io.github.lionheartlattice.user_center.controller;
 
 import com.easy.query.core.api.pagination.EasyPageResult;
+import io.github.lionheartlattice.entity.parent.PageDTO;
 import io.github.lionheartlattice.entity.user_center.dto.UserCreatDTO;
 import io.github.lionheartlattice.entity.user_center.dto.UserUpdateDTO;
 import io.github.lionheartlattice.entity.user_center.po.User;
 import io.github.lionheartlattice.user_center.service.UserService;
 import io.github.lionheartlattice.util.ExcelExportUtil;
 import io.github.lionheartlattice.util.ExcelImportUtil;
-import io.github.lionheartlattice.entity.parent.PageDTO;
 import io.github.lionheartlattice.util.response.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.apache.poi.hpsf.Decimal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,16 +29,13 @@ public class UserController {
 
     @Operation(summary = "新增用户", description = "创建新用户，密码会自动加盐加密存储")
     @PostMapping("create")
-    public ApiResult<Boolean> create(
-            @RequestBody UserCreatDTO dto,
-            @Schema(description = "新用户信息，包含用户名、密码等") UserCreatDTO schema) {
+    public ApiResult<Boolean> create(@RequestBody UserCreatDTO dto) {
         return ApiResult.success(userService.create(dto));
     }
 
     @Operation(summary = "获取用户详情", description = "根据用户 ID 获取用户的详细信息")
     @PostMapping("detail")
-    public ApiResult<UserUpdateDTO> getById(
-            @RequestParam BigDecimal id) {
+    public ApiResult<UserUpdateDTO> getById(@RequestParam BigDecimal id) {
         return ApiResult.success(userService.getById(id));
     }
 
@@ -64,21 +59,19 @@ public class UserController {
 
     @Operation(summary = "Excel 导入用户", description = "上传 Excel 文件批量导入用户数据")
     @PostMapping("upload")
-    public ApiResult<Boolean> upload(
-            @RequestParam(value = "file") MultipartFile file) {
+    public ApiResult<Boolean> upload(@RequestParam(value = "file") MultipartFile file) {
         List<UserCreatDTO> dtos = ExcelImportUtil.importExcel(file, UserCreatDTO.class);
         return ApiResult.success(userService.saveBatch(dtos));
     }
 
     @Operation(summary = "Excel 导出用户", description = "根据查询条件导出用户数据为 Excel 文件")
     @PostMapping("export")
-    public void downLoad(
-            @RequestBody PageDTO dto,
-            HttpServletResponse response) {
+    public void downLoad(@RequestBody PageDTO dto, HttpServletResponse response) {
         if (dto.isDownloadEmptyExcel()) {
             ExcelExportUtil.downloadEmpty(response, UserCreatDTO.class);
         } else {
-            ExcelExportUtil.export(response, userService.page(dto).getData());
+            ExcelExportUtil.export(response, userService.page(dto)
+                                                        .getData());
         }
     }
 
