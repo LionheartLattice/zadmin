@@ -6,115 +6,143 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
- * 自定义雪花算法主键生成器
- * 结构：1位符号位 + 44位时间戳 + 6位机器ID + 13位序列号
- * 44位 时间戳（可用约557年）
- * 6位 机器ID（支持64个节点）
- * 13位 序列号（每毫秒8192个ID）
+ * 基于 DECIMAL 的可读雪花算法主键生成器
+ * 结构:yyyyMMddHHmmssSSS(17位时间戳) + 机器ID(4位) + 序列号(5位)
+ * 示例:20250529143025123000100001
+ * - 时间戳:2025-05-29 14:30:25.123
+ * - 机器ID:0001
+ * - 序列号:00001
+ * <p>
+ * 容量:支持9999个节点,每毫秒99999个ID
  */
 @Component
 public class SnowflakePrimaryKeyGenerator implements PrimaryKeyGenerator {
 
     /**
-     * 机器ID位数
+     * 日期时间格式(到毫秒)
      */
-    private static final long WORKER_ID_BITS = 6L;
+    private static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
 
     /**
-     * 序列号位数
+     * 机器ID最大值(9999)
      */
-    private static final long SEQUENCE_BITS = 13L;
+    private static final int MAX_WORKER_ID = 9999;
 
     /**
-     * 最大机器ID (63)
+     * 序列号最大值(99999)
      */
-    private static final long MAX_WORKER_ID = ~(-1L << WORKER_ID_BITS);
-
-    /**
-     * 最大序列号 (8191)
-     */
-    private static final long MAX_SEQUENCE = ~(-1L << SEQUENCE_BITS);
-
-    /**
-     * 机器ID左移位数
-     */
-    private static final long WORKER_ID_SHIFT = SEQUENCE_BITS;
-
-    /**
-     * 时间戳左移位数
-     */
-    private static final long TIMESTAMP_SHIFT = SEQUENCE_BITS + WORKER_ID_BITS;
-
-    /**
-     * 起始时间戳
-     */
-    private final long epoch;
+    private static final int MAX_SEQUENCE = 99999;
 
     /**
      * 机器ID
      */
-    private final long workerId;
+    private final int workerId;
 
     /**
      * 序列号
      */
-    private long sequence = 0L;
+    private int sequence = 0;
 
     /**
-     * 上次生成ID的时间戳
+     * 上次生成ID的时间戳字符串
      */
-    private long lastTimestamp = -1L;
+    private String lastTimestamp = "";
 
     /**
-     * 从配置文件读取参数构造
+     * 从配置文件读取机器ID
      *
-     * @param epoch    起始时间戳
-     * @param workerId 机器ID
+     * @param workerId 机器ID(1-9999)
      */
-    public SnowflakePrimaryKeyGenerator(
-            @Value("${app.snowflake.epoch:1704067200000}") long epoch,
-            @Value("${app.snowflake.worker-id:1}") long workerId) {
-        this.epoch = epoch;
-        if (workerId < 0 || workerId > MAX_WORKER_ID) {
-            throw new IllegalArgumentException("机器ID必须在0-" + MAX_WORKER_ID + "之间");
+    public SnowflakePrimaryKeyGenerator(@Value("${app.snowflake.worker-id:1}") int workerId) {
+        if (workerId < 1 || workerId > MAX_WORKER_ID) {
+            throw new IllegalArgumentException("机器ID必须在1-" + MAX_WORKER_ID + "之间");
         }
         this.workerId = workerId;
     }
 
     /**
+     * 解析时间戳(用于调试)
+     *
+     * @param id 主键ID
+     * @return 时间戳字符串
+     */
+    public static String parseTimestamp(BigDecimal id) {
+        String idStr = id.toPlainString();
+        if (idStr.length() < 17) {
+            throw new IllegalArgumentException("无效的ID格式");
+        }
+        String timestamp = idStr.substring(0, 17);
+        return LocalDateTime.parse(timestamp, TIMESTAMP_FORMATTER)
+                            .toString();
+    }
+
+    /**
+     * 解析机器ID(用于调试)
+     */
+    public static int parseWorkerId(BigDecimal id) {
+        String idStr = id.toPlainString();
+        if (idStr.length() < 21) {
+            throw new IllegalArgumentException("无效的ID格式");
+        }
+        return Integer.parseInt(idStr.substring(17, 21));
+    }
+
+    /**
+     * 解析序列号(用于调试)
+     */
+    public static int parseSequence(BigDecimal id) {
+        String idStr = id.toPlainString();
+        if (idStr.length() < 26) {
+            throw new IllegalArgumentException("无效的ID格式");
+        }
+        return Integer.parseInt(idStr.substring(21, 26));
+    }
+
+    /**
      * 生成下一个ID
      *
-     * @return 雪花ID
+     * @return DECIMAL 主键值(26位)
      */
-    private synchronized long nextId() {
-        long timestamp = System.currentTimeMillis();
+    private synchronized BigDecimal nextId() {
+        String timestamp = LocalDateTime.now()
+                                        .format(TIMESTAMP_FORMATTER);
 
-        if (timestamp < lastTimestamp) {
-            throw new RuntimeException("时钟回拨，拒绝生成ID");
+        // 时钟回拨检测
+        if (timestamp.compareTo(lastTimestamp) < 0) {
+            throw new RuntimeException("时钟回拨,拒绝生成ID");
         }
 
-        if (timestamp == lastTimestamp) {
-            sequence = (sequence + 1) & MAX_SEQUENCE;
+        if (timestamp.equals(lastTimestamp)) {
+            sequence = (sequence + 1) % (MAX_SEQUENCE + 1);
             if (sequence == 0) {
+                // 序列号用尽,等待下一毫秒
                 timestamp = waitNextMillis(lastTimestamp);
             }
         } else {
-            sequence = 0L;
+            sequence = 0;
         }
 
         lastTimestamp = timestamp;
-        return ((timestamp - epoch) << TIMESTAMP_SHIFT) | (workerId << WORKER_ID_SHIFT) | sequence;
+
+        // 拼接: 时间戳(17位) + 机器ID(4位) + 序列号(5位)
+        String id = String.format("%s%04d%05d", timestamp, workerId, sequence);
+        return new BigDecimal(id);
     }
 
     /**
      * 等待下一毫秒
      */
-    private long waitNextMillis(long lastTimestamp) {
-        long timestamp = System.currentTimeMillis();
-        while (timestamp <= lastTimestamp) {
-            timestamp = System.currentTimeMillis();
+    private String waitNextMillis(String lastTimestamp) {
+        String timestamp = LocalDateTime.now()
+                                        .format(TIMESTAMP_FORMATTER);
+        while (timestamp.compareTo(lastTimestamp) <= 0) {
+            timestamp = LocalDateTime.now()
+                                     .format(TIMESTAMP_FORMATTER);
         }
         return timestamp;
     }
@@ -126,7 +154,8 @@ public class SnowflakePrimaryKeyGenerator implements PrimaryKeyGenerator {
 
     @Override
     public void setPrimaryKey(Object entity, ColumnMetadata columnMetadata) {
-        Object oldValue = columnMetadata.getGetterCaller().apply(entity);
+        Object oldValue = columnMetadata.getGetterCaller()
+                                        .apply(entity);
         if (oldValue == null) {
             PrimaryKeyGenerator.super.setPrimaryKey(entity, columnMetadata);
         }

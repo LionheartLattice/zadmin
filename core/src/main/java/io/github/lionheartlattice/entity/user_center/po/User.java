@@ -10,6 +10,7 @@ import io.github.lionheartlattice.entity.parent.ParentClientEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,7 +34,7 @@ public class User extends ParentClientEntity<User, UserProxy> implements ProxyEn
      */
     @Schema(description = "用户ID", requiredMode = Schema.RequiredMode.REQUIRED)
     @Column(primaryKey = true, value = "id", primaryKeyGenerator = SnowflakePrimaryKeyGenerator.class)
-    private Long id;
+    private BigDecimal id;
 
     /**
      * 用户名
@@ -106,19 +107,19 @@ public class User extends ParentClientEntity<User, UserProxy> implements ProxyEn
      * 创建人ID
      */
     @Schema(description = "创建人ID")
-    private Long createId;
+    private BigDecimal createId;
 
     /**
      * 更新人ID
      */
     @Schema(description = "更新人ID")
-    private Long updateId;
+    private BigDecimal updateId;
 
     /**
      * 租户ID
      */
     @Schema(description = "租户ID")
-    private Long tenantId;
+    private BigDecimal tenantId;
 
     /**
      *

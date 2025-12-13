@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 /**
@@ -27,7 +28,7 @@ public class UserUpdateDTO {
     @Schema(description = "用户ID")
     @Column(value = "id")
     @NotNull
-    private Long id;
+    private BigDecimal id;
     /**
      * 用户名
      */

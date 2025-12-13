@@ -5,18 +5,19 @@ import com.easy.query.api.proxy.base.ClassProxy;
 import com.easy.query.core.api.pagination.EasyPageResult;
 import com.easy.query.core.enums.SQLExecuteStrategyEnum;
 import com.easy.query.core.expression.builder.core.NotNullOrEmptyValueFilter;
+import io.github.lionheartlattice.entity.parent.PageDTO;
 import io.github.lionheartlattice.entity.user_center.dto.UserCreatDTO;
 import io.github.lionheartlattice.entity.user_center.dto.UserUpdateDTO;
 import io.github.lionheartlattice.entity.user_center.po.User;
 import io.github.lionheartlattice.entity.user_center.po.proxy.UserProxy;
 import io.github.lionheartlattice.util.CopyUtil;
-import io.github.lionheartlattice.entity.parent.PageDTO;
 import io.github.lionheartlattice.util.response.ErrorEnum;
 import io.github.lionheartlattice.util.response.ExceptionWithEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -29,10 +30,9 @@ public class UserService {
 
     public boolean create(UserCreatDTO dto) {
         String hashpw = BCrypt.hashpw(dto.getPwd(), BCrypt.gensalt(12));
-//        解密：BCrypt.checkpw(rawPassword, hashedPassword)
 
         long rows = new User().copyFrom(dto)
-                              .setUpdateId(0L)
+                              .setUpdateId(BigDecimal.ZERO)
                               .setPwd(hashpw)
                               .insertable()
                               .executeRows();
@@ -44,7 +44,11 @@ public class UserService {
                               .whereById(id)
                               .singleNotNull();
         String hashpw = BCrypt.hashpw(user.getPwd(), BCrypt.gensalt(12));//加密密码并更新到数据库(这里只是为了演示，实际开发中应该在登录时加密密码)
-        new User().setId(user.getId()).setPwd(hashpw).updatable().setSQLStrategy(SQLExecuteStrategyEnum.ONLY_NOT_NULL_COLUMNS).executeRows();
+        new User().setId(user.getId())
+                  .setPwd(hashpw)
+                  .updatable()
+                  .setSQLStrategy(SQLExecuteStrategyEnum.ONLY_NOT_NULL_COLUMNS)
+                  .executeRows();
         return true;
     }
 
@@ -92,7 +96,7 @@ public class UserService {
         return isNotNull(rows);
     }
 
-    public Boolean delete(List<Long> ids) {
+    public Boolean delete(List<BigDecimal> ids) {
         long rows = new User().expressionDeletable()
                               .where(u -> u.id()
                                            .in(ids))

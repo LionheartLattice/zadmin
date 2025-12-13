@@ -14,9 +14,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.hpsf.Decimal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Tag(name = "用户管理", description = "用户信息的增删改查、Excel 导入导出等操作")
@@ -56,7 +58,7 @@ public class UserController {
 
     @Operation(summary = "批量删除用户", description = "根据用户 ID 列表批量删除用户（逻辑删除）")
     @PostMapping("delete")
-    public ApiResult<Boolean> delete(@RequestBody List<Long> ids) {
+    public ApiResult<Boolean> delete(@RequestBody List<BigDecimal> ids) {
         return ApiResult.success(userService.delete(ids));
     }
 
