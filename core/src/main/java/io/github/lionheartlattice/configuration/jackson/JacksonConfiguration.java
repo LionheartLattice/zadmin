@@ -1,8 +1,7 @@
-package io.github.lionheartlattice.configuration;
+package io.github.lionheartlattice.configuration.jackson;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import io.github.lionheartlattice.BigDecimalToStringSerializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
