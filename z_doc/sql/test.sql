@@ -101,3 +101,87 @@ ALTER TABLE public.z_user_dept ALTER COLUMN id TYPE numeric(28);
 ALTER TABLE public.z_user_dept ALTER COLUMN user_id TYPE numeric(28);
 ALTER TABLE public.z_user_dept ALTER COLUMN dept_id TYPE numeric(28);
 ALTER TABLE public.z_user_dept ALTER COLUMN create_id TYPE numeric(28);
+
+
+
+-- 修改 z_user 表
+ALTER TABLE public.z_user
+    ALTER COLUMN create_id DROP DEFAULT,
+    ALTER COLUMN update_id DROP DEFAULT,
+    ALTER COLUMN tenant_id DROP DEFAULT;
+
+-- 修改 z_role 表
+ALTER TABLE public.z_role
+    ALTER COLUMN create_id DROP DEFAULT,
+    ALTER COLUMN update_id DROP DEFAULT,
+    ALTER COLUMN tenant_id DROP DEFAULT;
+
+-- 修改 z_menu 表
+ALTER TABLE public.z_menu
+    ALTER COLUMN create_id DROP DEFAULT,
+    ALTER COLUMN update_id DROP DEFAULT,
+    ALTER COLUMN tenant_id DROP DEFAULT;
+
+-- 修改 z_dept 表
+ALTER TABLE public.z_dept
+    ALTER COLUMN default_role_id DROP DEFAULT,
+    ALTER COLUMN create_id DROP DEFAULT,
+    ALTER COLUMN update_id DROP DEFAULT,
+    ALTER COLUMN tenant_id DROP DEFAULT;
+
+-- 修改 z_user_role 表
+ALTER TABLE public.z_user_role
+    ALTER COLUMN create_id DROP DEFAULT;
+
+-- 修改 z_role_menu 表
+ALTER TABLE public.z_role_menu
+    ALTER COLUMN create_id DROP DEFAULT;
+
+-- 修改 z_user_dept 表
+ALTER TABLE public.z_user_dept
+    ALTER COLUMN create_id DROP DEFAULT;
+
+
+-- 修改 z_user 表
+ALTER TABLE public.z_user
+    ALTER COLUMN create_id DROP DEFAULT,
+    ALTER COLUMN update_id DROP DEFAULT,
+    ALTER COLUMN tenant_id DROP DEFAULT;
+
+-- 修改 z_role 表
+ALTER TABLE public.z_role
+    ALTER COLUMN create_id DROP DEFAULT,
+    ALTER COLUMN update_id DROP DEFAULT,
+    ALTER COLUMN tenant_id DROP DEFAULT;
+
+-- 修改 z_menu 表
+ALTER TABLE public.z_menu
+    ALTER COLUMN create_id DROP DEFAULT,
+    ALTER COLUMN update_id DROP DEFAULT,
+    ALTER COLUMN tenant_id DROP DEFAULT;
+
+-- 修改 z_dept 表
+ALTER TABLE public.z_dept
+    ALTER COLUMN default_role_id DROP DEFAULT,
+    ALTER COLUMN create_id DROP DEFAULT,
+    ALTER COLUMN update_id DROP DEFAULT,
+    ALTER COLUMN tenant_id DROP DEFAULT;
+
+-- 修改 z_user_role 表
+ALTER TABLE public.z_user_role
+    ALTER COLUMN create_id DROP DEFAULT;
+
+-- 修改 z_role_menu 表
+ALTER TABLE public.z_role_menu
+    ALTER COLUMN create_id DROP DEFAULT;
+
+-- 修改 z_user_dept 表
+ALTER TABLE public.z_user_dept
+    ALTER COLUMN create_id DROP DEFAULT;
+
+
+-- 删除原有的条件唯一索引
+DROP INDEX IF EXISTS public.uk_z_user_username_not_deleted;
+
+-- 创建全局唯一索引
+CREATE UNIQUE INDEX uk_z_user_username ON public.z_user (username);
