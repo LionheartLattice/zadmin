@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.LocalDate;
 
 /**
@@ -15,7 +15,7 @@ import java.time.LocalDate;
  * 当前文件是easy-query自动生成的 结构化dto 映射
  * {@link User }
  *
- * @author
+ * @author lionheart
  * @easy-query-dto schema: normal
  */
 @Data
@@ -28,7 +28,7 @@ public class UserUpdateDTO {
     @Schema(description = "用户ID")
     @Column(value = "id")
     @NotNull
-    private BigDecimal id;
+    private BigInteger id;
     /**
      * 用户名
      */

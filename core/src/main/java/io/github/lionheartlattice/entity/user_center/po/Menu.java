@@ -10,7 +10,7 @@ import io.github.lionheartlattice.entity.parent.ParentClientEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -33,13 +33,13 @@ public class Menu extends ParentClientEntity<Menu, MenuProxy> implements ProxyEn
      */
     @Schema(description = "菜单表id", requiredMode = Schema.RequiredMode.REQUIRED)
     @Column(primaryKey = true, value = "id", primaryKeyGenerator = SnowflakePrimaryKeyGenerator.class)
-    private BigDecimal id;
+    private BigInteger id;
 
     /**
      * 父级id
      */
     @Schema(description = "父级id", requiredMode = Schema.RequiredMode.REQUIRED)
-    private BigDecimal pid;
+    private BigInteger pid;
 
     /**
      * 路径
@@ -141,13 +141,13 @@ public class Menu extends ParentClientEntity<Menu, MenuProxy> implements ProxyEn
      * 创建人ID
      */
     @Schema(description = "创建人ID")
-    private BigDecimal createId;
+    private BigInteger createId;
 
     /**
      * 更新人ID
      */
     @Schema(description = "更新人ID")
-    private BigDecimal updateId;
+    private BigInteger updateId;
 
     /**
      * 是否删除
@@ -160,7 +160,7 @@ public class Menu extends ParentClientEntity<Menu, MenuProxy> implements ProxyEn
      * 租户ID
      */
     @Schema(description = "租户ID")
-    private BigDecimal tenantId;
+    private BigInteger tenantId;
 
     /**
      *

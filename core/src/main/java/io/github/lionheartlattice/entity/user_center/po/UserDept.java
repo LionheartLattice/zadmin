@@ -8,7 +8,7 @@ import io.github.lionheartlattice.entity.parent.ParentClientEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.math.BigDecimal;
+import java.math.BigInteger;
 
 /**
  * 用户部门关联表 实体类。
@@ -29,24 +29,24 @@ public class UserDept extends ParentClientEntity<UserDept, UserDeptProxy> implem
      */
     @Schema(description = "关联ID", requiredMode = Schema.RequiredMode.REQUIRED)
     @Column(primaryKey = true, value = "id", primaryKeyGenerator = SnowflakePrimaryKeyGenerator.class)
-    private BigDecimal id;
+    private BigInteger id;
 
     /**
      * 用户ID
      */
     @Schema(description = "用户ID", requiredMode = Schema.RequiredMode.REQUIRED)
-    private BigDecimal userId;
+    private BigInteger userId;
 
     /**
      * 部门ID
      */
     @Schema(description = "部门ID", requiredMode = Schema.RequiredMode.REQUIRED)
-    private BigDecimal deptId;
+    private BigInteger deptId;
 
     /**
      * 创建人ID
      */
     @Schema(description = "创建人ID")
-    private BigDecimal createId;
+    private BigInteger createId;
 
 }

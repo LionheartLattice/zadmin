@@ -11,7 +11,7 @@ import io.github.lionheartlattice.entity.parent.ParentClientEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.math.BigDecimal;
+import java.math.BigInteger;
 
 /**
  * 角色菜单关联表 实体类。
@@ -32,24 +32,24 @@ public class RoleMenu extends ParentClientEntity<RoleMenu, RoleMenuProxy> implem
      */
     @Schema(description = "关联ID", requiredMode = Schema.RequiredMode.REQUIRED)
     @Column(primaryKey = true, value = "id", primaryKeyGenerator = SnowflakePrimaryKeyGenerator.class)
-    private BigDecimal id;
+    private BigInteger id;
 
     /**
      * 角色ID
      */
     @Schema(description = "角色ID", requiredMode = Schema.RequiredMode.REQUIRED)
-    private BigDecimal roleId;
+    private BigInteger roleId;
 
     /**
      * 菜单ID
      */
     @Schema(description = "菜单ID", requiredMode = Schema.RequiredMode.REQUIRED)
-    private BigDecimal menuId;
+    private BigInteger menuId;
 
     /**
      * 创建人ID
      */
     @Schema(description = "创建人ID")
-    private BigDecimal createId;
+    private BigInteger createId;
 
 }

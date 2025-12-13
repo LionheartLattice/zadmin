@@ -21,7 +21,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
@@ -46,7 +46,7 @@ public class LoginService {
         this.aes = SecureUtil.aes(aesKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    public User detailWithInclude(BigDecimal id) {
+    public User detailWithInclude(BigInteger id) {
         return new User().queryable()
                          .include(UserProxy::deptList)
                          .include(UserProxy::roleList, r -> r.include(RoleProxy::menuList))
@@ -57,7 +57,7 @@ public class LoginService {
     public String login(LoginDTO dto) {
         // 查询用户ID和加密后的密码
         // 使用 singleOrNull 避免用户不存在时抛出特定异常，统一处理为用户名或密码错误
-        Draft2<BigDecimal, String> draft2 = new User().queryable()
+        Draft2<BigInteger, String> draft2 = new User().queryable()
                                                       .where(u -> u.username()
                                                                    .eq(dto.getUsername()))
                                                       .select(u -> Select.DRAFT.of(u.id(), u.pwd()))
@@ -83,7 +83,7 @@ public class LoginService {
      * @param userId 用户ID
      * @return token 字符串
      */
-    public String createToken(BigDecimal userId) {
+    public String createToken(BigInteger userId) {
         // Hutool：fastUUID() 无 '-'，更短更适合当 token
         String token = IdUtil.fastUUID();
         String key = tokenKeyPrefix + token;

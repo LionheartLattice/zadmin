@@ -10,7 +10,7 @@ import io.github.lionheartlattice.entity.parent.ParentClientEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -33,7 +33,7 @@ public class Role extends ParentClientEntity<Role, RoleProxy> implements ProxyEn
      */
     @Schema(description = "角色ID", requiredMode = Schema.RequiredMode.REQUIRED)
     @Column(primaryKey = true, value = "id", primaryKeyGenerator = SnowflakePrimaryKeyGenerator.class)
-    private BigDecimal id;
+    private BigInteger id;
 
     /**
      * 角色名称
@@ -70,13 +70,13 @@ public class Role extends ParentClientEntity<Role, RoleProxy> implements ProxyEn
      * 创建人ID
      */
     @Schema(description = "创建人ID")
-    private BigDecimal createId;
+    private BigInteger createId;
 
     /**
      * 更新人ID
      */
     @Schema(description = "更新人ID")
-    private BigDecimal updateId;
+    private BigInteger updateId;
 
     /**
      * 是否锁定
@@ -88,7 +88,7 @@ public class Role extends ParentClientEntity<Role, RoleProxy> implements ProxyEn
      * 租户ID
      */
     @Schema(description = "租户ID")
-    private BigDecimal tenantId;
+    private BigInteger tenantId;
 
     /**
      *
