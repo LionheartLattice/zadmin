@@ -113,7 +113,7 @@ public class UserService {
         return isNotNull(row);
     }
 
-    public UserUpdateDTO getById(Long id) {
+    public UserUpdateDTO getById(BigDecimal id) {
         return new User().queryable()
                          .whereById(id)
                          .select(u -> new ClassProxy<>(UserUpdateDTO.class).selectAll(u))
