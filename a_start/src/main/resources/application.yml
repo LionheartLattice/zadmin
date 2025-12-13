@@ -93,5 +93,6 @@ app:
   request-cache:
     max-size: 100MB
   auth:
+    enabled: false  # 是否启用安全校验,开发环境可设置为false
     token-ttl-seconds: 604800
     token-key-prefix: "token:"
