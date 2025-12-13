@@ -24,23 +24,26 @@ import java.io.OutputStream;
 import java.time.Duration;
 
 /**
- * Redisson 手动配置（不依赖 redisson-spring-boot-starter）
+ * Redisson 手动配置
  * <p>
- * 说明：
- * 1) 直接复用 application.yml 的 spring.data.redis 配置
- * 2) 使用自定义 Jackson3Codec 适配 Jackson 3.x (JsonMapper)
- * 3) 直接注入 Spring 管理的 JsonMapper，避免手动构建时的模块缺失问题
+ * 1. 适配 Jackson 3.x (tools.jackson.*)
+ * 2. 注入 Spring 管理的 JsonMapper，复用全局配置（如时间模块、序列化策略）
  */
 @Slf4j
 @Configuration
 public class RedissonConfig {
 
     @Bean(destroyMethod = "shutdown")
-    public RedissonClient redissonClient(@Value("${spring.data.redis.host:localhost}") String host, @Value("${spring.data.redis.port:6379}") int port, @Value("${spring.data.redis.database:0}") int database, @Value("${spring.data.redis.password:}") String password, @Value("${spring.data.redis.timeout:5s}") Duration timeout, JsonMapper jsonMapper) { // 注入 Spring 上下文中的 JsonMapper
+    public RedissonClient redissonClient(@Value("${spring.data.redis.host:localhost}") String host,
+                                         @Value("${spring.data.redis.port:6379}") int port,
+                                         @Value("${spring.data.redis.database:0}") int database,
+                                         @Value("${spring.data.redis.password:}") String password,
+                                         @Value("${spring.data.redis.timeout:5s}") Duration timeout,
+                                         JsonMapper jsonMapper) { // 核心修改：直接注入 Spring 容器中的 JsonMapper
         Config config = new Config();
 
-        // 使用注入的 JsonMapper (已包含 Spring Boot 的默认配置和模块)
-        // 解决了手动 Builder 缺少 findAndRegisterModules 方法的问题
+        // 使用注入的 JsonMapper 初始化自定义 Codec
+        // 这样无需手动处理 findAndRegisterModules，也能保证与 Spring MVC 的序列化行为一致
         config.setCodec(new Jackson3Codec(jsonMapper));
 
         SingleServerConfig single = config.useSingleServer()
@@ -55,13 +58,13 @@ public class RedissonConfig {
         single.setTimeout(timeoutMs);
         single.setConnectTimeout(timeoutMs);
 
-        log.info("RedissonClient initialized (manual). redis://{}:{}, db={}", host, port, database);
+        log.info("RedissonClient initialized. redis://{}:{}, db={}", host, port, database);
         return Redisson.create(config);
     }
 
     /**
      * 自定义 Redisson Codec 以支持 Jackson 3 (JsonMapper)
-     * Redisson 原生 JsonJacksonCodec 仅支持 Jackson 2 (ObjectMapper)
+     * 修复了变量初始化顺序问题
      */
     public static class Jackson3Codec extends BaseCodec {
         private final JsonMapper mapper;
@@ -71,7 +74,8 @@ public class RedissonConfig {
         public Jackson3Codec(JsonMapper mapper) {
             this.mapper = mapper;
 
-            // 将初始化逻辑移入构造函数，确保 this.mapper 已赋值，解决"变量可能尚未初始化"的问题
+            // 将 Encoder/Decoder 的初始化移入构造函数
+            // 确保此时 this.mapper 已经被赋值，避免 NullPointerException 或未初始化错误
             this.encoder = in -> {
                 ByteBuf out = ByteBufAllocator.DEFAULT.buffer();
                 try {
