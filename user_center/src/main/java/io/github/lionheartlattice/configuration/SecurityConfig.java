@@ -49,7 +49,8 @@ public class SecurityConfig {
         if (authEnabled) {
             http.authorizeHttpRequests(auth -> auth.requestMatchers("/z_login/login")
                                                    .permitAll()
-                                                   .requestMatchers("/doc.html", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/v3/api-docs.json", "/webjars/**")
+                                                   .requestMatchers("/doc.html", "/swagger-ui/**", "/swagger-ui.html",
+                                                           "/v3/api-docs/**", "/v3/api-docs.json", "/webjars/**")
                                                    .permitAll()
                                                    .anyRequest()
                                                    .authenticated())

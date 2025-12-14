@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,36 +29,42 @@ public class TenantController {
 
     @Operation(summary = "新增租户", description = "创建新租户")
     @PostMapping("/create")
+    @PreAuthorize("hasAuthority('z_tenant:create')") // 权限校验
     public ApiResult<Boolean> create(@RequestBody TenantCreateDTO dto) {
         return ApiResult.success(tenantService.create(dto));
     }
 
     @Operation(summary = "获取租户详情", description = "根据租户 ID 获取租户的详细信息")
     @PostMapping("/getbyid")
+    @PreAuthorize("hasAuthority('z_tenant:getbyid')") // 权限校验
     public ApiResult<TenantUpdateDTO> getById(@RequestParam BigDecimal id) {
         return ApiResult.success(tenantService.getById(id));
     }
 
     @Operation(summary = "编辑租户", description = "修改租户信息")
     @PostMapping("/update")
+    @PreAuthorize("hasAuthority('z_tenant:update')") // 权限校验
     public ApiResult<Boolean> update(@RequestBody TenantUpdateDTO dto) {
         return ApiResult.success(tenantService.update(dto));
     }
 
     @Operation(summary = "分页查询租户", description = "支持多条件搜索、排序、分页查询租户列表")
     @PostMapping("/page")
+    @PreAuthorize("hasAuthority('z_tenant:page')") // 权限校验
     public ApiResult<EasyPageResult<Tenant>> page(@RequestBody PageDTO dto) {
         return ApiResult.success(tenantService.page(dto));
     }
 
-    @Operation(summary = "批量���除租户", description = "根据租户 ID 列表批量删除租户")
+    @Operation(summary = "批量删除租户", description = "根据租户 ID 列表批量删除租户")
     @PostMapping("delete")
+    @PreAuthorize("hasAuthority('z_tenant:delete')") // 权限校验
     public ApiResult<Boolean> delete(@RequestBody List<BigDecimal> ids) {
         return ApiResult.success(tenantService.delete(ids));
     }
 
     @Operation(summary = "Excel 导入租户", description = "上传 Excel 文件批量导入租户数据")
     @PostMapping("upload")
+    @PreAuthorize("hasAuthority('z_tenant:upload')") // 权限校验
     public ApiResult<Boolean> upload(@RequestParam(value = "file") MultipartFile file) {
         List<TenantCreateDTO> dtos = ExcelImportUtil.importExcel(file, TenantCreateDTO.class);
         return ApiResult.success(tenantService.saveBatch(dtos));
@@ -65,12 +72,13 @@ public class TenantController {
 
     @Operation(summary = "Excel 导出租户", description = "根据查询条件导出租户数据为 Excel 文件")
     @PostMapping("export")
+    @PreAuthorize("hasAuthority('z_tenant:export')") // 权限校验
     public void downLoad(@RequestBody PageDTO dto, HttpServletResponse response) {
         if (dto.isDownloadEmptyExcel()) {
             ExcelExportUtil.downloadEmpty(response, TenantCreateDTO.class);
         } else {
-            ExcelExportUtil.export(response, tenantService.page(dto).getData());
+            ExcelExportUtil.export(response, tenantService.page(dto)
+                                                          .getData());
         }
     }
 }
-
