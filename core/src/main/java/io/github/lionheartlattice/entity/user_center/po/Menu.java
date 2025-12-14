@@ -162,10 +162,10 @@ public class Menu extends ParentClientEntity<Menu, MenuProxy> implements ProxyEn
     @Schema(description = "租户ID")
     private BigDecimal tenantId;
 
-    /**
-     *
-     **/
-    @Navigate(value = RelationTypeEnum.OneToMany, selfProperty = {MenuProxy.Fields.pid}, targetProperty = {MenuProxy.Fields.id})
-    private List<Menu> menuList;
+//    /**
+//     *
+//     **/
+//    @Navigate(value = RelationTypeEnum.OneToMany, selfProperty = {MenuProxy.Fields.pid}, targetProperty = {MenuProxy.Fields.id})
+//    private List<Menu> menuList;
 
 }
