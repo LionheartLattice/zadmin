@@ -83,14 +83,9 @@ public class LoginService {
                                                       .where(u -> u.username()
                                                                    .eq(dto.getUsername()))
                                                       .select(u -> Select.DRAFT.of(u.id(), u.pwd()))
-                                                      .singleOrNull();
-
-        if (draft2 == null) {
-            throw new ExceptionWithEnum(ErrorEnum.BAD_USERNAME_OR_PASSWORD);
-        }
+                                                      .singleNotNull();
 
         // 使用配置的AES密钥加密输入的密码，然后与数据库中的密文比对
-        // 修正：前端传递的字段为 pwd，对应 DTO 的 getPwd() 方法，原 getPassword() 因字段不匹配导致为 null
         String inputPwdEncrypted = aes.encryptHex(dto.getPwd());
 
         if (!inputPwdEncrypted.equals(draft2.getValue2())) {
