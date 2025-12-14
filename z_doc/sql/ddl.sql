@@ -317,18 +317,18 @@ create index dept_id_index
 
 create table public.z_tenant
 (
-    id             numeric(28)                                not null
+    id                 numeric(28)                                not null
         primary key,
-    name           varchar(64)                                not null,
-    contact_person varchar(32)  default ''::character varying not null,
-    contact_phone  varchar(20)  default ''::character varying not null,
-    is_lock        boolean      default false                 not null,
-    expire_time    timestamp,
-    remark         varchar(255) default ''::character varying not null,
-    update_time    timestamp    default now()                 not null,
-    del_flag       boolean      default false                 not null,
-    create_id      numeric(28)  default 0,
-    update_id      numeric(28)  default 0
+    name               varchar(64)                                not null,
+    manager_user_id    varchar(32)  default ''::character varying not null,
+    manager_user_phone varchar(20)  default ''::character varying not null,
+    is_lock            boolean      default false                 not null,
+    expire_time        timestamp,
+    remark             varchar(255) default ''::character varying not null,
+    update_time        timestamp    default now()                 not null,
+    del_flag           boolean      default false                 not null,
+    create_id          numeric(28)  default 0,
+    update_id          numeric(28)  default 0
 );
 
 comment on table public.z_tenant is '租户表';
