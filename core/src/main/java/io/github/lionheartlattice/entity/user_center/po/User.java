@@ -5,8 +5,8 @@ import com.easy.query.core.basic.extension.logicdel.LogicDeleteStrategyEnum;
 import com.easy.query.core.enums.RelationTypeEnum;
 import com.easy.query.core.proxy.ProxyEntityAvailable;
 import io.github.lionheartlattice.configuration.easyquery.SnowflakePrimaryKeyGenerator;
-import io.github.lionheartlattice.entity.user_center.po.proxy.*;
 import io.github.lionheartlattice.entity.parent.ParentClientEntity;
+import io.github.lionheartlattice.entity.user_center.po.proxy.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -124,15 +124,25 @@ public class User extends ParentClientEntity<User, UserProxy> implements ProxyEn
     /**
      *
      **/
-    @Navigate(value = RelationTypeEnum.ManyToMany, selfProperty = {UserProxy.Fields.id}, selfMappingProperty = {UserDeptProxy.Fields.userId}, mappingClass = UserDept.class, targetProperty = {DeptProxy.Fields.id}, targetMappingProperty = {UserDeptProxy.Fields.deptId})
+    @Navigate(value = RelationTypeEnum.ManyToMany, selfProperty = {UserProxy.Fields.id}, selfMappingProperty = {
+            UserDeptProxy.Fields.userId}, mappingClass = UserDept.class, targetProperty = {
+            DeptProxy.Fields.id}, targetMappingProperty = {UserDeptProxy.Fields.deptId})
     private List<Dept> deptList;
 
     /**
      *
      **/
-    @Navigate(value = RelationTypeEnum.ManyToMany, selfProperty = {UserProxy.Fields.id}, selfMappingProperty = {UserRoleProxy.Fields.userId}, mappingClass = UserRole.class, targetProperty = {RoleProxy.Fields.id}, targetMappingProperty = {UserRoleProxy.Fields.roleId})
+    @Navigate(value = RelationTypeEnum.ManyToMany, selfProperty = {UserProxy.Fields.id}, selfMappingProperty = {
+            UserRoleProxy.Fields.userId}, mappingClass = UserRole.class, targetProperty = {
+            RoleProxy.Fields.id}, targetMappingProperty = {UserRoleProxy.Fields.roleId})
     private List<Role> roleList;
 
+    /**
+     *
+     **/
+    @Navigate(value = RelationTypeEnum.ManyToOne, selfProperty = {UserProxy.Fields.tenantId}, targetProperty = {
+            TenantProxy.Fields.id})
+    private Tenant tenant;
 
 
 }
