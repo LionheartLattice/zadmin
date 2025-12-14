@@ -1,6 +1,6 @@
 package io.github.lionheartlattice.configuration;
 
-import io.github.lionheartlattice.entity.user_center.po.User;
+import io.github.lionheartlattice.entity.user_center.vo.UserWithMenu;
 import io.github.lionheartlattice.user_center.service.LoginService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -30,15 +30,17 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     private final String tokenKeyPrefix;
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
 
         String token = resolveToken(request);
 
         if (StringUtils.hasText(token) && SecurityContextHolder.getContext()
                                                                .getAuthentication() == null) {
-            User user = loginService.getUserByToken(token);
-            if (user != null) {
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, token, AuthorityUtils.NO_AUTHORITIES);
+            UserWithMenu userWithMenu = loginService.getUserByToken(token);
+            if (userWithMenu != null) {
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(userWithMenu, token, AuthorityUtils.NO_AUTHORITIES);
                 SecurityContextHolder.getContext()
                                      .setAuthentication(authentication);
             }

@@ -6,9 +6,12 @@ import cn.hutool.crypto.symmetric.AES;
 import com.easy.query.core.proxy.core.draft.Draft2;
 import com.easy.query.core.proxy.sql.Select;
 import io.github.lionheartlattice.entity.user_center.dto.LoginDTO;
+import io.github.lionheartlattice.entity.user_center.po.Menu;
 import io.github.lionheartlattice.entity.user_center.po.User;
 import io.github.lionheartlattice.entity.user_center.po.proxy.RoleProxy;
 import io.github.lionheartlattice.entity.user_center.po.proxy.UserProxy;
+import io.github.lionheartlattice.entity.user_center.vo.UserWithMenu;
+import io.github.lionheartlattice.util.CopyUtil;
 import io.github.lionheartlattice.util.response.ErrorEnum;
 import io.github.lionheartlattice.util.response.ExceptionWithEnum;
 import jakarta.annotation.PostConstruct;
@@ -23,7 +26,10 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -46,12 +52,26 @@ public class LoginService {
         this.aes = SecureUtil.aes(aesKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    public User detailWithInclude(BigDecimal id) {
-        return new User().queryable()
-                         .include(UserProxy::deptList)
-                         .include(UserProxy::roleList, r -> r.include(RoleProxy::menuList))
-                         .whereById(id)
-                         .singleNotNull();
+    public UserWithMenu detailWithInclude(BigDecimal id) {
+        User user = new User().queryable()
+                              .include(UserProxy::deptList)
+                              .include(UserProxy::roleList, r -> r.include(RoleProxy::menuList))
+                              .whereById(id)
+                              .singleNotNull();
+        //收集菜单
+        List<Menu> collectMenu = user.getRoleList()
+                                     .stream()
+                                     .filter(role -> role.getMenuList() != null)
+                                     .flatMap(role -> role.getMenuList()
+                                                          .stream())
+                                     .distinct()
+                                     .sorted(Comparator.comparing(Menu::getId))
+                                     .collect(Collectors.toList());
+
+        UserWithMenu userWithMenu = CopyUtil.copy(user, new UserWithMenu());
+
+        return userWithMenu.setMenuList(collectMenu);
+
     }
 
     public String login(LoginDTO dto) {
@@ -97,10 +117,10 @@ public class LoginService {
     /**
      * 根据 token 获取 User（用于鉴权）
      */
-    public User getUserByToken(String token) {
+    public UserWithMenu getUserByToken(String token) {
         Object value = redissonClient.getBucket(tokenKeyPrefix + token)
                                      .get();
-        return (User) value;
+        return (UserWithMenu) value;
     }
 
     /**
