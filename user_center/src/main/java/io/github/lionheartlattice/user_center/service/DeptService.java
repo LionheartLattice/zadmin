@@ -1,0 +1,87 @@
+package io.github.lionheartlattice.user_center.service;
+
+import com.easy.query.api.proxy.base.ClassProxy;
+import com.easy.query.core.api.pagination.EasyPageResult;
+import com.easy.query.core.enums.SQLExecuteStrategyEnum;
+import com.easy.query.core.expression.builder.core.NotNullOrEmptyValueFilter;
+import io.github.lionheartlattice.entity.parent.PageDTO;
+import io.github.lionheartlattice.entity.user_center.dto.DeptCreateDTO;
+import io.github.lionheartlattice.entity.user_center.dto.DeptUpdateDTO;
+import io.github.lionheartlattice.entity.user_center.po.Dept;
+import io.github.lionheartlattice.util.response.ErrorEnum;
+import io.github.lionheartlattice.util.response.ExceptionWithEnum;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static io.github.lionheartlattice.util.NullUtil.isNotNull;
+
+@Service
+public class DeptService {
+    public Boolean create(DeptCreateDTO dto) {
+        long rows = new Dept().copyFrom(dto)
+                              .insertable()
+                              .executeRows();
+        return isNotNull(rows);
+    }
+
+    public Boolean update(DeptUpdateDTO dto) {
+        long rows = new Dept().copyFrom(dto)
+                              .updatable()
+                              .setSQLStrategy(SQLExecuteStrategyEnum.ONLY_NOT_NULL_COLUMNS)
+                              .executeRows();
+        return isNotNull(rows);
+    }
+
+    public DeptUpdateDTO getById(BigDecimal id) {
+        return new Dept().queryable()
+                         .whereById(id)
+                         .select(d -> new ClassProxy<>(DeptUpdateDTO.class).selectAll(d))
+                         .singleNotNull();
+    }
+
+    public EasyPageResult<Dept> page(PageDTO dto) {
+        return new Dept().queryable()
+                         .filterConfigure(NotNullOrEmptyValueFilter.DEFAULT_PROPAGATION_SUPPORTS)
+                         .where(isNotNull(dto.getSearches()), u -> {
+                             for (PageDTO.InternalSearch search : dto.getSearches()) {
+                                 switch (search.getQueryType()) {
+                                     case 1 -> u.anyColumn(search.getProperty())
+                                                .eq(search.getValue());
+                                     case 2 -> u.anyColumn(search.getProperty())
+                                                .like(search.getValue());
+                                     case 3 -> {
+                                         // 解析日期范围
+                                         LocalDateTime[] dateRange = PageDTO.parseDateRange(search.getValue());
+                                         if (isNotNull(dateRange[0])) {
+                                             u.anyColumn(search.getProperty())
+                                              .ge(dateRange[0]);
+                                         }
+                                         if (isNotNull(dateRange[1])) {
+                                             u.anyColumn(search.getProperty())
+                                              .le(dateRange[1]);
+                                         }
+                                     }
+                                     default -> throw new ExceptionWithEnum(ErrorEnum.VALID_ERROR);
+                                 }
+                             }
+                         })
+                         .orderBy(isNotNull(dto.getOrders()), u -> {
+                             for (PageDTO.InternalOrder order : dto.getOrders()) {
+                                 u.anyColumn(order.getProperty())
+                                  .orderBy(order.isAsc());
+                             }
+                         })
+                         .toPageResult(dto.getPageIndex(), dto.getPageSize());
+    }
+
+    public Boolean delete(List<BigDecimal> ids) {
+        return null;
+    }
+
+    public Boolean saveBatch(List<DeptCreateDTO> dtos) {
+        return null;
+    }
+}

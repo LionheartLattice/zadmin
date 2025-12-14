@@ -109,6 +109,7 @@ public class UserService {
     public Boolean update(UserUpdateDTO dto) {
         long rows = new User().copyFrom(dto)
                               .updatable()
+                              .setSQLStrategy(SQLExecuteStrategyEnum.ONLY_NOT_NULL_COLUMNS)
                               .executeRows();
         return isNotNull(rows);
     }
