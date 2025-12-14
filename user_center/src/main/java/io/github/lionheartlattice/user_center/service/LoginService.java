@@ -54,6 +54,7 @@ public class LoginService {
 
     public UserWithMenu detailWithInclude(BigDecimal id) {
         User user = new User().queryable()
+                              .include(UserProxy::tenant)
                               .include(UserProxy::deptList)
                               .include(UserProxy::roleList, r -> r.include(RoleProxy::menuList))
                               .whereById(id)

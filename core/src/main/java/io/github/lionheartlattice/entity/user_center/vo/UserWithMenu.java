@@ -5,6 +5,7 @@ import com.easy.query.core.basic.extension.logicdel.LogicDeleteStrategyEnum;
 import io.github.lionheartlattice.entity.user_center.po.Dept;
 import io.github.lionheartlattice.entity.user_center.po.Menu;
 import io.github.lionheartlattice.entity.user_center.po.Role;
+import io.github.lionheartlattice.entity.user_center.po.Tenant;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -121,6 +122,8 @@ public class UserWithMenu {
     private List<Role> roleList;
 
     private List<Menu> menuList;
+
+    private Tenant tenant;
 
 
 }
