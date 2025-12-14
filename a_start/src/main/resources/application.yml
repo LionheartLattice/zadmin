@@ -96,3 +96,4 @@ app:
     token-ttl-seconds: 604800
     token-key-prefix: "token:"
     aes-key: "LionHeartLattice" # AES加密密钥，16位字符
+    ignored-urls: /z_login/login,/doc.html,/swagger-ui/**,/swagger-ui.html,/v3/api-docs/**,/v3/api-docs.json,/webjars/**,/favicon.ico

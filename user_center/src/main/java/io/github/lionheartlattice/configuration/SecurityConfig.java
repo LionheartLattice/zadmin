@@ -31,6 +31,14 @@ public class SecurityConfig {
     @Value("${app.auth.token-key-prefix:token:}")
     private String tokenKeyPrefix;
 
+    /**
+     * 放行白名单
+     * 使用 @Value 注入数组，配置文件中需使用逗号分隔，例如：url1,url2,url3
+     * 这里提供了默认值，包含登录接口和 Swagger 文档相关路径
+     */
+    @Value("${app.auth.ignored-urls:/z_login/login,/doc.html,/swagger-ui/**,/swagger-ui.html,/v3/api-docs/**,/v3/api-docs.json,/webjars/**,/favicon.ico}")
+    private String[] ignoredUrls;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         TokenAuthenticationFilter tokenFilter = new TokenAuthenticationFilter(loginService, tokenKeyPrefix);
@@ -47,13 +55,13 @@ public class SecurityConfig {
 
         // 根据配置决定是否启用安全校验
         if (authEnabled) {
-            http.authorizeHttpRequests(auth -> auth.requestMatchers("/z_login/login")
-                                                   .permitAll()
-                                                   .requestMatchers("/doc.html", "/swagger-ui/**", "/swagger-ui.html",
-                                                           "/v3/api-docs/**", "/v3/api-docs.json", "/webjars/**")
-                                                   .permitAll()
-                                                   .anyRequest()
-                                                   .authenticated())
+            http.authorizeHttpRequests(auth -> auth
+                        // 动态配置放行地址
+                        .requestMatchers(ignoredUrls)
+                        .permitAll()
+                        // 其他所有接口需要认证
+                        .anyRequest()
+                        .authenticated())
                 .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
         } else {
             // 开发环境:全部放开
