@@ -8,9 +8,12 @@ import io.github.lionheartlattice.entity.parent.PageDTO;
 import io.github.lionheartlattice.entity.user_center.dto.DeptCreateDTO;
 import io.github.lionheartlattice.entity.user_center.dto.DeptUpdateDTO;
 import io.github.lionheartlattice.entity.user_center.po.Dept;
+import io.github.lionheartlattice.util.CopyUtil;
 import io.github.lionheartlattice.util.response.ErrorEnum;
 import io.github.lionheartlattice.util.response.ExceptionWithEnum;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -19,7 +22,10 @@ import java.util.List;
 import static io.github.lionheartlattice.util.NullUtil.isNotNull;
 
 @Service
+@RequiredArgsConstructor
 public class DeptService {
+    private final TransactionTemplate transactionTemplate;
+
     public Boolean create(DeptCreateDTO dto) {
         long rows = new Dept().copyFrom(dto)
                               .insertable()
@@ -78,10 +84,18 @@ public class DeptService {
     }
 
     public Boolean delete(List<BigDecimal> ids) {
-        return null;
+        long rows = new Dept().expressionDeletable()
+                              .where(u -> u.id()
+                                           .in(ids))
+                              .executeRows();
+        return isNotNull(rows);
     }
 
     public Boolean saveBatch(List<DeptCreateDTO> dtos) {
-        return null;
+        List<Dept> depts = CopyUtil.copyList(dtos, Dept.class);
+        Long row = transactionTemplate.execute(status -> new Dept().insertable(depts)
+                                                                   .batch(true)
+                                                                   .executeRows());
+        return isNotNull(row);
     }
 }
