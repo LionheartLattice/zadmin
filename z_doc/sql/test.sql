@@ -23,85 +23,138 @@ VALUES (100000000000000001, 'zhangsan', 'e10adc3949ba59abbe56e057f20f883e', '138
         NULL, '110101199706120053', 'chenery@example.com', NOW(), FALSE, NULL, NULL);
 
 
-
-
-
 -- 修改所有表的主键类型为 DECIMAL(26,0)
-ALTER TABLE z_user ALTER COLUMN id TYPE DECIMAL(26,0);
-ALTER TABLE z_role ALTER COLUMN id TYPE DECIMAL(26,0);
-ALTER TABLE z_menu ALTER COLUMN id TYPE DECIMAL(26,0);
-ALTER TABLE z_dept ALTER COLUMN id TYPE DECIMAL(26,0);
-ALTER TABLE z_user_role ALTER COLUMN id TYPE DECIMAL(26,0);
-ALTER TABLE z_role_menu ALTER COLUMN id TYPE DECIMAL(26,0);
-ALTER TABLE z_user_dept ALTER COLUMN id TYPE DECIMAL(26,0);
+ALTER TABLE z_user
+    ALTER COLUMN id TYPE DECIMAL(26, 0);
+ALTER TABLE z_role
+    ALTER COLUMN id TYPE DECIMAL(26, 0);
+ALTER TABLE z_menu
+    ALTER COLUMN id TYPE DECIMAL(26, 0);
+ALTER TABLE z_dept
+    ALTER COLUMN id TYPE DECIMAL(26, 0);
+ALTER TABLE z_user_role
+    ALTER COLUMN id TYPE DECIMAL(26, 0);
+ALTER TABLE z_role_menu
+    ALTER COLUMN id TYPE DECIMAL(26, 0);
+ALTER TABLE z_user_dept
+    ALTER COLUMN id TYPE DECIMAL(26, 0);
 
 -- 修改外键关联字段
-ALTER TABLE z_user_role ALTER COLUMN user_id TYPE DECIMAL(26,0);
-ALTER TABLE z_user_role ALTER COLUMN role_id TYPE DECIMAL(26,0);
-ALTER TABLE z_role_menu ALTER COLUMN role_id TYPE DECIMAL(26,0);
-ALTER TABLE z_role_menu ALTER COLUMN menu_id TYPE DECIMAL(26,0);
-ALTER TABLE z_user_dept ALTER COLUMN user_id TYPE DECIMAL(26,0);
-ALTER TABLE z_user_dept ALTER COLUMN dept_id TYPE DECIMAL(26,0);
+ALTER TABLE z_user_role
+    ALTER COLUMN user_id TYPE DECIMAL(26, 0);
+ALTER TABLE z_user_role
+    ALTER COLUMN role_id TYPE DECIMAL(26, 0);
+ALTER TABLE z_role_menu
+    ALTER COLUMN role_id TYPE DECIMAL(26, 0);
+ALTER TABLE z_role_menu
+    ALTER COLUMN menu_id TYPE DECIMAL(26, 0);
+ALTER TABLE z_user_dept
+    ALTER COLUMN user_id TYPE DECIMAL(26, 0);
+ALTER TABLE z_user_dept
+    ALTER COLUMN dept_id TYPE DECIMAL(26, 0);
 
 -- 修改 create_id、update_id 字段类型
-ALTER TABLE z_user ALTER COLUMN create_id TYPE DECIMAL(26,0);
-ALTER TABLE z_user ALTER COLUMN update_id TYPE DECIMAL(26,0);
-ALTER TABLE z_role ALTER COLUMN create_id TYPE DECIMAL(26,0);
-ALTER TABLE z_role ALTER COLUMN update_id TYPE DECIMAL(26,0);
-ALTER TABLE z_menu ALTER COLUMN create_id TYPE DECIMAL(26,0);
-ALTER TABLE z_menu ALTER COLUMN update_id TYPE DECIMAL(26,0);
-ALTER TABLE z_dept ALTER COLUMN create_id TYPE DECIMAL(26,0);
-ALTER TABLE z_dept ALTER COLUMN update_id TYPE DECIMAL(26,0);
-ALTER TABLE z_dept ALTER COLUMN default_role_id TYPE DECIMAL(26,0);
-ALTER TABLE z_user_role ALTER COLUMN create_id TYPE DECIMAL(26,0);
-ALTER TABLE z_role_menu ALTER COLUMN create_id TYPE DECIMAL(26,0);
-ALTER TABLE z_user_dept ALTER COLUMN create_id TYPE DECIMAL(26,0);
+ALTER TABLE z_user
+    ALTER COLUMN create_id TYPE DECIMAL(26, 0);
+ALTER TABLE z_user
+    ALTER COLUMN update_id TYPE DECIMAL(26, 0);
+ALTER TABLE z_role
+    ALTER COLUMN create_id TYPE DECIMAL(26, 0);
+ALTER TABLE z_role
+    ALTER COLUMN update_id TYPE DECIMAL(26, 0);
+ALTER TABLE z_menu
+    ALTER COLUMN create_id TYPE DECIMAL(26, 0);
+ALTER TABLE z_menu
+    ALTER COLUMN update_id TYPE DECIMAL(26, 0);
+ALTER TABLE z_dept
+    ALTER COLUMN create_id TYPE DECIMAL(26, 0);
+ALTER TABLE z_dept
+    ALTER COLUMN update_id TYPE DECIMAL(26, 0);
+ALTER TABLE z_dept
+    ALTER COLUMN default_role_id TYPE DECIMAL(26, 0);
+ALTER TABLE z_user_role
+    ALTER COLUMN create_id TYPE DECIMAL(26, 0);
+ALTER TABLE z_role_menu
+    ALTER COLUMN create_id TYPE DECIMAL(26, 0);
+ALTER TABLE z_user_dept
+    ALTER COLUMN create_id TYPE DECIMAL(26, 0);
 
 -- 修改 tenant_id 字段类型
-ALTER TABLE z_user ALTER COLUMN tenant_id TYPE DECIMAL(26,0);
-ALTER TABLE z_role ALTER COLUMN tenant_id TYPE DECIMAL(26,0);
-ALTER TABLE z_menu ALTER COLUMN tenant_id TYPE DECIMAL(26,0);
-ALTER TABLE z_dept ALTER COLUMN tenant_id TYPE DECIMAL(26,0);
-
+ALTER TABLE z_user
+    ALTER COLUMN tenant_id TYPE DECIMAL(26, 0);
+ALTER TABLE z_role
+    ALTER COLUMN tenant_id TYPE DECIMAL(26, 0);
+ALTER TABLE z_menu
+    ALTER COLUMN tenant_id TYPE DECIMAL(26, 0);
+ALTER TABLE z_dept
+    ALTER COLUMN tenant_id TYPE DECIMAL(26, 0);
 
 
 -- 修改所有主键字段为 numeric(28)
-ALTER TABLE public.z_user ALTER COLUMN id TYPE numeric(28);
-ALTER TABLE public.z_user ALTER COLUMN create_id TYPE numeric(28);
-ALTER TABLE public.z_user ALTER COLUMN update_id TYPE numeric(28);
-ALTER TABLE public.z_user ALTER COLUMN tenant_id TYPE numeric(28);
+ALTER TABLE public.z_user
+    ALTER COLUMN id TYPE numeric(28);
+ALTER TABLE public.z_user
+    ALTER COLUMN create_id TYPE numeric(28);
+ALTER TABLE public.z_user
+    ALTER COLUMN update_id TYPE numeric(28);
+ALTER TABLE public.z_user
+    ALTER COLUMN tenant_id TYPE numeric(28);
 
-ALTER TABLE public.z_role ALTER COLUMN id TYPE numeric(28);
-ALTER TABLE public.z_role ALTER COLUMN create_id TYPE numeric(28);
-ALTER TABLE public.z_role ALTER COLUMN update_id TYPE numeric(28);
-ALTER TABLE public.z_role ALTER COLUMN tenant_id TYPE numeric(28);
+ALTER TABLE public.z_role
+    ALTER COLUMN id TYPE numeric(28);
+ALTER TABLE public.z_role
+    ALTER COLUMN create_id TYPE numeric(28);
+ALTER TABLE public.z_role
+    ALTER COLUMN update_id TYPE numeric(28);
+ALTER TABLE public.z_role
+    ALTER COLUMN tenant_id TYPE numeric(28);
 
-ALTER TABLE public.z_menu ALTER COLUMN id TYPE numeric(28);
-ALTER TABLE public.z_menu ALTER COLUMN create_id TYPE numeric(28);
-ALTER TABLE public.z_menu ALTER COLUMN update_id TYPE numeric(28);
-ALTER TABLE public.z_menu ALTER COLUMN tenant_id TYPE numeric(28);
+ALTER TABLE public.z_menu
+    ALTER COLUMN id TYPE numeric(28);
+ALTER TABLE public.z_menu
+    ALTER COLUMN create_id TYPE numeric(28);
+ALTER TABLE public.z_menu
+    ALTER COLUMN update_id TYPE numeric(28);
+ALTER TABLE public.z_menu
+    ALTER COLUMN tenant_id TYPE numeric(28);
 
-ALTER TABLE public.z_dept ALTER COLUMN id TYPE numeric(28);
-ALTER TABLE public.z_dept ALTER COLUMN default_role_id TYPE numeric(28);
-ALTER TABLE public.z_dept ALTER COLUMN create_id TYPE numeric(28);
-ALTER TABLE public.z_dept ALTER COLUMN update_id TYPE numeric(28);
-ALTER TABLE public.z_dept ALTER COLUMN tenant_id TYPE numeric(28);
+ALTER TABLE public.z_dept
+    ALTER COLUMN id TYPE numeric(28);
+ALTER TABLE public.z_dept
+    ALTER COLUMN default_role_id TYPE numeric(28);
+ALTER TABLE public.z_dept
+    ALTER COLUMN create_id TYPE numeric(28);
+ALTER TABLE public.z_dept
+    ALTER COLUMN update_id TYPE numeric(28);
+ALTER TABLE public.z_dept
+    ALTER COLUMN tenant_id TYPE numeric(28);
 
-ALTER TABLE public.z_user_role ALTER COLUMN id TYPE numeric(28);
-ALTER TABLE public.z_user_role ALTER COLUMN user_id TYPE numeric(28);
-ALTER TABLE public.z_user_role ALTER COLUMN role_id TYPE numeric(28);
-ALTER TABLE public.z_user_role ALTER COLUMN create_id TYPE numeric(28);
+ALTER TABLE public.z_user_role
+    ALTER COLUMN id TYPE numeric(28);
+ALTER TABLE public.z_user_role
+    ALTER COLUMN user_id TYPE numeric(28);
+ALTER TABLE public.z_user_role
+    ALTER COLUMN role_id TYPE numeric(28);
+ALTER TABLE public.z_user_role
+    ALTER COLUMN create_id TYPE numeric(28);
 
-ALTER TABLE public.z_role_menu ALTER COLUMN id TYPE numeric(28);
-ALTER TABLE public.z_role_menu ALTER COLUMN role_id TYPE numeric(28);
-ALTER TABLE public.z_role_menu ALTER COLUMN menu_id TYPE numeric(28);
-ALTER TABLE public.z_role_menu ALTER COLUMN create_id TYPE numeric(28);
+ALTER TABLE public.z_role_menu
+    ALTER COLUMN id TYPE numeric(28);
+ALTER TABLE public.z_role_menu
+    ALTER COLUMN role_id TYPE numeric(28);
+ALTER TABLE public.z_role_menu
+    ALTER COLUMN menu_id TYPE numeric(28);
+ALTER TABLE public.z_role_menu
+    ALTER COLUMN create_id TYPE numeric(28);
 
-ALTER TABLE public.z_user_dept ALTER COLUMN id TYPE numeric(28);
-ALTER TABLE public.z_user_dept ALTER COLUMN user_id TYPE numeric(28);
-ALTER TABLE public.z_user_dept ALTER COLUMN dept_id TYPE numeric(28);
-ALTER TABLE public.z_user_dept ALTER COLUMN create_id TYPE numeric(28);
-
+ALTER TABLE public.z_user_dept
+    ALTER COLUMN id TYPE numeric(28);
+ALTER TABLE public.z_user_dept
+    ALTER COLUMN user_id TYPE numeric(28);
+ALTER TABLE public.z_user_dept
+    ALTER COLUMN dept_id TYPE numeric(28);
+ALTER TABLE public.z_user_dept
+    ALTER COLUMN create_id TYPE numeric(28);
 
 
 -- 修改 z_user 表
@@ -187,34 +240,94 @@ DROP INDEX IF EXISTS public.uk_z_user_username_not_deleted;
 CREATE UNIQUE INDEX uk_z_user_username ON public.z_user (username);
 
 
-
-
-
 -- 修改 z_user 表
-ALTER TABLE public.z_user ALTER COLUMN create_id SET DEFAULT 0;
-ALTER TABLE public.z_user ALTER COLUMN update_id SET DEFAULT 0;
-ALTER TABLE public.z_user ALTER COLUMN tenant_id SET DEFAULT 0;
+ALTER TABLE public.z_user
+    ALTER COLUMN create_id SET DEFAULT 0;
+ALTER TABLE public.z_user
+    ALTER COLUMN update_id SET DEFAULT 0;
+ALTER TABLE public.z_user
+    ALTER COLUMN tenant_id SET DEFAULT 0;
 
 -- 修改 z_role 表
-ALTER TABLE public.z_role ALTER COLUMN create_id SET DEFAULT 0;
-ALTER TABLE public.z_role ALTER COLUMN update_id SET DEFAULT 0;
-ALTER TABLE public.z_role ALTER COLUMN tenant_id SET DEFAULT 0;
+ALTER TABLE public.z_role
+    ALTER COLUMN create_id SET DEFAULT 0;
+ALTER TABLE public.z_role
+    ALTER COLUMN update_id SET DEFAULT 0;
+ALTER TABLE public.z_role
+    ALTER COLUMN tenant_id SET DEFAULT 0;
 
 -- 修改 z_menu 表
-ALTER TABLE public.z_menu ALTER COLUMN create_id SET DEFAULT 0;
-ALTER TABLE public.z_menu ALTER COLUMN update_id SET DEFAULT 0;
-ALTER TABLE public.z_menu ALTER COLUMN tenant_id SET DEFAULT 0;
+ALTER TABLE public.z_menu
+    ALTER COLUMN create_id SET DEFAULT 0;
+ALTER TABLE public.z_menu
+    ALTER COLUMN update_id SET DEFAULT 0;
+ALTER TABLE public.z_menu
+    ALTER COLUMN tenant_id SET DEFAULT 0;
 
 -- 修改 z_dept 表
-ALTER TABLE public.z_dept ALTER COLUMN create_id SET DEFAULT 0;
-ALTER TABLE public.z_dept ALTER COLUMN update_id SET DEFAULT 0;
-ALTER TABLE public.z_dept ALTER COLUMN tenant_id SET DEFAULT 0;
+ALTER TABLE public.z_dept
+    ALTER COLUMN create_id SET DEFAULT 0;
+ALTER TABLE public.z_dept
+    ALTER COLUMN update_id SET DEFAULT 0;
+ALTER TABLE public.z_dept
+    ALTER COLUMN tenant_id SET DEFAULT 0;
 
 -- 修改 z_user_role 表 (只有 create_id)
-ALTER TABLE public.z_user_role ALTER COLUMN create_id SET DEFAULT 0;
+ALTER TABLE public.z_user_role
+    ALTER COLUMN create_id SET DEFAULT 0;
 
 -- 修改 z_role_menu 表 (只有 create_id)
-ALTER TABLE public.z_role_menu ALTER COLUMN create_id SET DEFAULT 0;
+ALTER TABLE public.z_role_menu
+    ALTER COLUMN create_id SET DEFAULT 0;
 
 -- 修改 z_user_dept 表 (只有 create_id)
-ALTER TABLE public.z_user_dept ALTER COLUMN create_id SET DEFAULT 0;
+ALTER TABLE public.z_user_dept
+    ALTER COLUMN create_id SET DEFAULT 0;
+
+
+
+create table public.z_tenant
+(
+    id             numeric(28)                                not null
+        primary key,
+    name           varchar(64)                                not null,
+    contact_person varchar(32)  default ''::character varying not null,
+    contact_phone  varchar(20)  default ''::character varying not null,
+    is_lock        boolean      default false                 not null,
+    expire_time    timestamp,
+    remark         varchar(255) default ''::character varying not null,
+    update_time    timestamp    default now()                 not null,
+    del_flag       boolean      default false                 not null,
+    create_id      numeric(28)  default 0,
+    update_id      numeric(28)  default 0
+);
+
+comment on table public.z_tenant is '租户表';
+
+comment on column public.z_tenant.id is '租户ID';
+
+comment on column public.z_tenant.name is '租户名称';
+
+comment on column public.z_tenant.contact_person is '联系人';
+
+comment on column public.z_tenant.contact_phone is '联系电话';
+
+comment on column public.z_tenant.is_lock is '锁定';
+
+comment on column public.z_tenant.expire_time is '过期时间';
+
+comment on column public.z_tenant.remark is '备注';
+
+comment on column public.z_tenant.update_time is '更新时间';
+
+comment on column public.z_tenant.del_flag is '是否删除';
+
+comment on column public.z_tenant.create_id is '创建人ID';
+
+comment on column public.z_tenant.update_id is '更新人ID';
+
+alter table public.z_tenant
+    owner to postgres;
+
+create index idx_z_tenant_del_flag
+    on public.z_tenant (del_flag);

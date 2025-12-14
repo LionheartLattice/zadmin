@@ -315,3 +315,49 @@ alter table public.z_user_dept
 create index dept_id_index
     on public.z_user_dept (dept_id);
 
+create table public.z_tenant
+(
+    id             numeric(28)                                not null
+        primary key,
+    name           varchar(64)                                not null,
+    contact_person varchar(32)  default ''::character varying not null,
+    contact_phone  varchar(20)  default ''::character varying not null,
+    is_lock        boolean      default false                 not null,
+    expire_time    timestamp,
+    remark         varchar(255) default ''::character varying not null,
+    update_time    timestamp    default now()                 not null,
+    del_flag       boolean      default false                 not null,
+    create_id      numeric(28)  default 0,
+    update_id      numeric(28)  default 0
+);
+
+comment on table public.z_tenant is '租户表';
+
+comment on column public.z_tenant.id is '租户ID';
+
+comment on column public.z_tenant.name is '租户名称';
+
+comment on column public.z_tenant.contact_person is '联系人';
+
+comment on column public.z_tenant.contact_phone is '联系电话';
+
+comment on column public.z_tenant.is_lock is '锁定';
+
+comment on column public.z_tenant.expire_time is '过期时间';
+
+comment on column public.z_tenant.remark is '备注';
+
+comment on column public.z_tenant.update_time is '更新时间';
+
+comment on column public.z_tenant.del_flag is '是否删除';
+
+comment on column public.z_tenant.create_id is '创建人ID';
+
+comment on column public.z_tenant.update_id is '更新人ID';
+
+alter table public.z_tenant
+    owner to postgres;
+
+create index idx_z_tenant_del_flag
+    on public.z_tenant (del_flag);
+
