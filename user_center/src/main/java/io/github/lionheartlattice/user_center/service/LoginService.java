@@ -58,7 +58,8 @@ public class LoginService {
                               .include(UserProxy::deptList)
                               .include(UserProxy::roleList, r -> r.include(RoleProxy::menuList))
                               .whereById(id)
-                              .singleNotNull();
+                              .singleNotNull()
+                              .setPwd(null);
         //收集菜单
         List<Menu> collectMenu = user.getRoleList()
                                      .stream()
