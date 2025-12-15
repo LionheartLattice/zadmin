@@ -30,9 +30,17 @@ public class CaptchaImageUtil {
 
     public static CaptchaImage generate(InputStream imageStream) throws IOException {
         BufferedImage originalImage = ImageIO.read(imageStream);
-        // Resize if too big? Or assume reasonable size.
-        // Let's resize to a standard width if needed, e.g., 300px width.
-        // But for now, let's use original.
+
+        // Resize image to 310px width if needed, maintaining aspect ratio
+        int targetWidth = 310;
+        if (originalImage.getWidth() != targetWidth) {
+            int targetHeight = (int) ((double) originalImage.getHeight() / originalImage.getWidth() * targetWidth);
+            BufferedImage resizedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
+            Graphics2D g = resizedImage.createGraphics();
+            g.drawImage(originalImage, 0, 0, targetWidth, targetHeight, null);
+            g.dispose();
+            originalImage = resizedImage;
+        }
 
         int width = originalImage.getWidth();
         int height = originalImage.getHeight();

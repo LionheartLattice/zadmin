@@ -2,6 +2,7 @@ package io.github.lionheartlattice.user_center.controller;
 
 import io.github.lionheartlattice.entity.user_center.dto.LoginDTO;
 import io.github.lionheartlattice.entity.user_center.vo.ChallengeInfo;
+import io.github.lionheartlattice.entity.user_center.vo.LoginResultVO;
 import io.github.lionheartlattice.entity.user_center.vo.UserWithMenu;
 import io.github.lionheartlattice.user_center.service.LoginService;
 import io.github.lionheartlattice.util.response.ApiResult;
@@ -25,11 +26,10 @@ public class LoginController {
         return ApiResult.success(loginService.createChallenge(clientId));
     }
 
-    @Operation(summary = "用户登录", description = "使用用户名和密码登录，返回 token")
+    @Operation(summary = "用户登录", description = "使用用户名和密码登录，返回 token 和用户信息")
     @PostMapping("/login")
-    public ApiResult<String> login(@RequestBody LoginDTO dto) {
-        String token = loginService.login(dto);
-        return ApiResult.success(token);
+    public ApiResult<LoginResultVO> login(@RequestBody LoginDTO dto) {
+        return ApiResult.success(loginService.login(dto));
     }
 
     @Operation(summary = "用户登出", description = "删除 token，使用户下线")

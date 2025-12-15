@@ -13,6 +13,7 @@ import io.github.lionheartlattice.entity.user_center.po.User;
 import io.github.lionheartlattice.entity.user_center.po.proxy.RoleProxy;
 import io.github.lionheartlattice.entity.user_center.po.proxy.UserProxy;
 import io.github.lionheartlattice.entity.user_center.vo.ChallengeInfo;
+import io.github.lionheartlattice.entity.user_center.vo.LoginResultVO;
 import io.github.lionheartlattice.entity.user_center.vo.UserWithMenu;
 import io.github.lionheartlattice.util.CaptchaImageUtil;
 import io.github.lionheartlattice.util.CopyUtil;
@@ -25,6 +26,9 @@ import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.URI;
@@ -32,6 +36,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -116,38 +121,77 @@ public class LoginService {
         return userWithMenu.setMenuList(treeMenus);
     }
 
-    public String login(LoginDTO dto) {
+    public LoginResultVO login(LoginDTO dto) {
         // 0. 校验验证码
         String captchaKey = "captcha:" + dto.getRequestId();
-        Object storedXObj = redissonClient.getBucket(captchaKey)
-                                          .get();
+        Object storedXObj = redissonClient.getBucket(captchaKey).get();
         if (storedXObj == null) {
             throw new RuntimeException("验证码已过期或无效");
         }
         int storedX = (Integer) storedXObj;
-        if (dto.getMoveX() == null || Math.abs(storedX - dto.getMoveX()) > 5) {
+
+        // 增加容错值到 10
+        if (dto.getMoveX() == null || Math.abs(storedX - dto.getMoveX()) > 10) {
+            log.error("验证码验证失败: storedX={}, moveX={}", storedX, dto.getMoveX());
             throw new RuntimeException("验证码验证失败");
         }
         // 验证通过后删除key，防止重放
-        redissonClient.getBucket(captchaKey)
-                      .delete();
+        redissonClient.getBucket(captchaKey).delete();
 
-        // 查询用户ID和加密后的密码
-        // 使用 singleOrNull 避免用户不存在时抛出特定异常，统一处理为用户名或密码错误
+        // 1. 解密前端传来的密码
+        // 获取临时密钥
+        String challengeKey = "challenge:" + dto.getRequestId();
+        Object secretKeyObj = redissonClient.getBucket(challengeKey).get();
+        if (secretKeyObj == null) {
+            throw new RuntimeException("登录请求已过期，请刷新重试");
+        }
+        String secretKey = (String) secretKeyObj;
+
+        String rawPassword;
+        try {
+            if (dto.getIv() != null) {
+                // 前端使用 AES-GCM 模式加密，需要使用 Java 标准库解密
+                rawPassword = decryptAesGcm(dto.getPassword(), secretKey, dto.getIv());
+            } else {
+                // 兼容旧版本，使用默认模式
+                AES tempAes = SecureUtil.aes(secretKey.getBytes(StandardCharsets.UTF_8));
+                rawPassword = tempAes.decryptStr(dto.getPassword());
+            }
+        } catch (Exception e) {
+            log.error("密码解密失败", e);
+            throw new RuntimeException("密码解密失败");
+        }
+
+        // 2. 数据库查询
         Draft2<BigDecimal, String> draft2 = new User().queryable()
                                                       .where(u -> u.username()
                                                                    .eq(dto.getUsername()))
                                                       .select(u -> Select.DRAFT.of(u.id(), u.pwd()))
-                                                      .singleNotNull();
+                                                      .singleOrNull();
 
-        // 使用配置的AES密钥加密输入的密码，然后与数据库中的密文比对
-        String inputPwdEncrypted = aes.encryptHex(dto.getPwd());
+        if (draft2 == null) {
+            throw new ExceptionWithEnum(ErrorEnum.BAD_USERNAME_OR_PASSWORD);
+        }
+
+        // 3. 使用配置的AES密钥加密解密后的原始密码，然后与数据库中的密文比对
+        String inputPwdEncrypted = aes.encryptHex(rawPassword);
 
         if (!inputPwdEncrypted.equals(draft2.getValue2())) {
             throw new ExceptionWithEnum(ErrorEnum.BAD_USERNAME_OR_PASSWORD);
         }
 
-        return createToken(draft2.getValue1());
+        // 4. 生成 Token 并构建返回结果
+        String token = createToken(draft2.getValue1());
+        UserWithMenu userWithMenu = detailWithInclude(draft2.getValue1());
+
+        return new LoginResultVO()
+                .setAccessToken(token)
+                .setUserInfo(userWithMenu)
+                .setName(userWithMenu.getNickname())
+                .setAvatar(userWithMenu.getLogo())
+                .setIntroduction("Welcome")
+                .setRoles(new ArrayList<>())
+                .setPermissions(new ArrayList<>());
     }
 
     /**
@@ -274,5 +318,46 @@ public class LoginService {
 
 
         return zFileService.getUrlByIdAndExtension(idAndExtension.getValue1(), idAndExtension.getValue2());
+    }
+
+    /**
+     * 使用 AES-GCM 模式解密数据
+     *
+     * @param encryptedDataBase64 加密后的数据(Base64编码，包含密文和tag)
+     * @param secretKey           密钥
+     * @param ivBase64            初始化向量(Base64编码)
+     * @return 解密后的明文
+     */
+    private String decryptAesGcm(String encryptedDataBase64, String secretKey, String ivBase64) throws Exception {
+        // 解码 Base64
+        byte[] encryptedDataWithTag = Base64.getDecoder().decode(encryptedDataBase64);
+        byte[] iv = Base64.getDecoder().decode(ivBase64);
+
+        // GCM 模式的 tag 长度是 16 字节 (128 位)
+        int tagLength = 16;
+        int ciphertextLength = encryptedDataWithTag.length - tagLength;
+
+        // 分离密文和 tag
+        byte[] ciphertext = new byte[ciphertextLength];
+        byte[] tag = new byte[tagLength];
+        System.arraycopy(encryptedDataWithTag, 0, ciphertext, 0, ciphertextLength);
+        System.arraycopy(encryptedDataWithTag, ciphertextLength, tag, 0, tagLength);
+
+        // 重新组合：GCM 解密需要密文+tag
+        byte[] combined = new byte[encryptedDataWithTag.length];
+        System.arraycopy(ciphertext, 0, combined, 0, ciphertextLength);
+        System.arraycopy(tag, 0, combined, ciphertextLength, tagLength);
+
+        // 创建密钥
+        SecretKeySpec keySpec = new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8), "AES");
+
+        // 创建 Cipher
+        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+        GCMParameterSpec gcmSpec = new GCMParameterSpec(128, iv);
+        cipher.init(Cipher.DECRYPT_MODE, keySpec, gcmSpec);
+
+        // 解密
+        byte[] decrypted = cipher.doFinal(combined);
+        return new String(decrypted, StandardCharsets.UTF_8);
     }
 }
