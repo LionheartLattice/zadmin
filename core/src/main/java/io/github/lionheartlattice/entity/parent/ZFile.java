@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 @EasyAssertMessage("未找到对应的文件信息")
 public class ZFile extends ParentClientEntity<ZFile, ZFileProxy> implements ProxyEntityAvailable<ZFile, ZFileProxy> {
 
+    @Column(primaryKey = true, primaryKeyGenerator = SnowflakePrimaryKeyGenerator.class)
     @Schema(description = "文件ID(雪花算法，作为文件名)")
     private BigDecimal id;
 
