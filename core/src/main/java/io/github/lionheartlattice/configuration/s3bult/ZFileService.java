@@ -34,7 +34,8 @@ public class ZFileService {
         // 2. 构造文件名 (ID.后缀)
         String originalFilename = file.getOriginalFilename();
         String suffix = FileUtil.getSuffix(originalFilename);
-        // 动态构建 OSS Key
+
+        // 动态构建 OSS Key (包含按月分文件夹逻辑)
         String fileKey = getFileKey(id, suffix);
 
         // 3. 上传到 OSS
@@ -93,12 +94,18 @@ public class ZFileService {
 
     /**
      * 根据 ID 和后缀拼接 OSS Key
-     * 格式: ID.后缀 (如果后缀为空则仅 ID)
+     * 策略: 提取 ID 前6位(yyyyMM)作为文件夹，实现按月分片存储
+     * 格式: yyyyMM/ID.后缀
      */
     private String getFileKey(BigDecimal id, String extension) {
+        String idStr = id.toPlainString();
+        // 雪花算法ID结构: yyyyMMddHHmmssSSS... (前17位为时间戳)
+        // 截取前6位 (yyyyMM) 作为目录，例如: 202505/2025052914302512300001000001.png
+        String monthFolder = idStr.substring(0, 6);
+
         if (StrUtil.isBlank(extension)) {
-            return id.toPlainString();
+            return monthFolder + "/" + idStr;
         }
-        return id.toPlainString() + "." + extension;
+        return monthFolder + "/" + idStr + "." + extension;
     }
 }
