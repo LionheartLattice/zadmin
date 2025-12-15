@@ -187,9 +187,6 @@ public class LoginService {
      * @return 删除是否成功
      */
     public boolean logout(String token) {
-        if (!StringUtils.hasText(token)) {
-            return false;
-        }
         boolean deleted = redissonClient.getBucket(tokenKeyPrefix + token)
                                         .delete();
         if (deleted) {

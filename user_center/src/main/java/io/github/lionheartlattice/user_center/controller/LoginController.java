@@ -8,7 +8,6 @@ import io.github.lionheartlattice.util.response.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,14 +34,12 @@ public class LoginController {
 
     @Operation(summary = "用户登出", description = "删除 token，使用户下线")
     @PostMapping("/logout")
-    public ApiResult<Boolean> logout(@RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String auth) {
-        String token = null;
-        if (auth != null && auth.startsWith("Bearer ")) {
-            token = auth.substring("Bearer ".length())
-                        .trim();
-        }
-        boolean success = loginService.logout(token);
-        return ApiResult.success(success);
+    public ApiResult<Boolean> logout() {
+        String token = SecurityContextHolder.getContext()
+                                            .getAuthentication()
+                                            .getCredentials()
+                                            .toString();
+        return ApiResult.success(loginService.logout(token));
     }
 
     @Operation(summary = "获取当前登录用户", description = "从 Security Context 获取当前认证用户的完整信息（包含角色、部门、菜单）")
