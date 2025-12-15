@@ -134,7 +134,7 @@ public class LoginService {
      */
     public String createToken(BigDecimal userId) {
         // 生成更长的 token 以降低碰撞概率 (双重UUID拼接，128字符)
-        String token = IdUtil.simpleUUID() + IdUtil.simpleUUID() + IdUtil.simpleUUID() + IdUtil.simpleUUID();
+        String token = IdUtil.fastSimpleUUID() + IdUtil.fastSimpleUUID() + IdUtil.fastSimpleUUID() + IdUtil.fastSimpleUUID();
         String key = tokenKeyPrefix + token;
 
         // 使用 Duration 替代过期的 TimeUnit 参数
