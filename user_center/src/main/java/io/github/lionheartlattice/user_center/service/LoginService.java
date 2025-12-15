@@ -1,7 +1,6 @@
 package io.github.lionheartlattice.user_center.service;
 
 import cn.hutool.core.util.IdUtil;
-import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.symmetric.AES;
 import com.easy.query.core.proxy.core.draft.Draft1;
@@ -227,17 +226,18 @@ public class LoginService {
      * @return 背景图 URL
      */
     public String getBackgroundForCaptcha() {
-        // 1. 查询所有用途为 backgroundForCaptcha 的文件ID
-        List<Draft1<BigDecimal>> list = new ZFile().queryable()
-                                                   .where(z -> z.usage()
-                                                                .eq("backgroundForCaptcha"))
-                                                   .select(z -> Select.DRAFT.of(z.id()))
-                                                   .toList();
+        // 优化：直接在数据库中使用 RANDOM() 进行排序并取第一条
+        // 避免将所有符合条件的 ID 加载到内存中
+        Draft1<BigDecimal> randomDraft = new ZFile().queryable()
+                                                    .where(z -> z.usage()
+                                                                 .eq("backgroundForCaptcha"))
+                                                    .orderBy(z -> z.expression()
+                                                                   .rawSQLStatement("RANDOM()")
+                                                                   .asc())
+                                                    .select(z -> Select.DRAFT.of(z.id()))
+                                                    .firstNotNull();
 
-        // 2. 随机取出一个主键id
-        Draft1<BigDecimal> randomDraft = RandomUtil.randomEle(list);
 
-        // 3. 调用zFileService.getUrlById(id)
         return zFileService.getUrlById(randomDraft.getValue1());
     }
 
