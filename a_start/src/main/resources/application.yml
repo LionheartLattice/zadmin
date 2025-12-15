@@ -88,6 +88,13 @@ logging:
     org.redisson.command: debug
     io.netty: info
 
+oss:
+  endpoint: 192.168.56.101:9000 # MinIO 地址，如果是 AWS S3 可不填
+  access-key: wDYVrJSe4QZjKRFkqLEd
+  secret-key: CsG9FdYloUuvb3hwWnM8fVqBzLKajOArJ17xEgkT
+  bucket-name: mybult
+  region: us-east-1
+  path-style-access: true # MinIO 必须为 true
 
 app:
   snowflake:
