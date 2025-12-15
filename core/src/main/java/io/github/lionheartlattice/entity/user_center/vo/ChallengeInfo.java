@@ -9,4 +9,10 @@ public class ChallengeInfo {
     private String requestId;
     @Schema(description = "秘钥")
     private String secretKey;
+    @Schema(description = "背景图片Base64")
+    private String backgroundImage;
+    @Schema(description = "滑块图片Base64")
+    private String sliderImage;
+    @Schema(description = "滑块Y轴坐标")
+    private Integer y;
 }

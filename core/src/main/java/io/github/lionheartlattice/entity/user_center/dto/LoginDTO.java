@@ -7,4 +7,6 @@ public class LoginDTO {
     private String username;
     private String pwd;
     private String clientId;
+    private String requestId;
+    private Integer moveX;
 }

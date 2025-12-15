@@ -14,20 +14,21 @@ import io.github.lionheartlattice.entity.user_center.po.proxy.RoleProxy;
 import io.github.lionheartlattice.entity.user_center.po.proxy.UserProxy;
 import io.github.lionheartlattice.entity.user_center.vo.ChallengeInfo;
 import io.github.lionheartlattice.entity.user_center.vo.UserWithMenu;
+import io.github.lionheartlattice.util.CaptchaImageUtil;
 import io.github.lionheartlattice.util.CopyUtil;
 import io.github.lionheartlattice.util.response.ErrorEnum;
 import io.github.lionheartlattice.util.response.ExceptionWithEnum;
 import jakarta.annotation.PostConstruct;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
+import java.io.InputStream;
 import java.math.BigDecimal;
+import java.net.URI;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -80,7 +81,7 @@ public class LoginService {
                                   .distinct()
                                   .sorted(Comparator.comparing(Menu::getSort, Comparator.nullsLast(Integer::compareTo))
                                                     .thenComparing(Menu::getId))
-                                  .collect(Collectors.toList());
+                                  .toList();
 
         // 2. 组装树形结构
         List<Menu> treeMenus = new ArrayList<>();
@@ -116,6 +117,21 @@ public class LoginService {
     }
 
     public String login(LoginDTO dto) {
+        // 0. 校验验证码
+        String captchaKey = "captcha:" + dto.getRequestId();
+        Object storedXObj = redissonClient.getBucket(captchaKey)
+                                          .get();
+        if (storedXObj == null) {
+            throw new RuntimeException("验证码已过期或无效");
+        }
+        int storedX = (Integer) storedXObj;
+        if (dto.getMoveX() == null || Math.abs(storedX - dto.getMoveX()) > 5) {
+            throw new RuntimeException("验证码验证失败");
+        }
+        // 验证通过后删除key，防止重放
+        redissonClient.getBucket(captchaKey)
+                      .delete();
+
         // 查询用户ID和加密后的密码
         // 使用 singleOrNull 避免用户不存在时抛出特定异常，统一处理为用户名或密码错误
         Draft2<BigDecimal, String> draft2 = new User().queryable()
@@ -162,26 +178,6 @@ public class LoginService {
         return (UserWithMenu) value;
     }
 
-    /**
-     * 退出登录：删除 token
-     */
-    public boolean revokeToken(String token) {
-        if (token == null || token.isBlank()) {
-            return false;
-        }
-        return redissonClient.getBucket(tokenKeyPrefix + token)
-                             .delete();
-    }
-
-    private String resolveToken(HttpServletRequest request) {
-        String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (StringUtils.hasText(auth) && auth.startsWith(tokenKeyPrefix)) {
-            return auth.substring(tokenKeyPrefix.length())
-                       .trim();
-        } else {
-            throw new ExceptionWithEnum(ErrorEnum.BAD_USERNAME_OR_PASSWORD);
-        }
-    }
 
     /**
      * 登出：删除 token
@@ -212,14 +208,51 @@ public class LoginService {
         // 2. 生成16位随机字符串作为临时AES密钥 (使用nanoId替代randomString)
         String secretKey = IdUtil.nanoId(16);
 
-        // 3. 存入 Redis，设置过期时间为5分钟
+        // 3. 生成验证码
+        String imageUrl = getBackgroundForCaptcha();
+        if (imageUrl == null) {
+            throw new RuntimeException("未找到验证码背景图片");
+        }
+
+        CaptchaImageUtil.CaptchaImage captchaImage;
+        try {
+            URL url = URI.create(imageUrl)
+                         .toURL();
+            try (InputStream in = url.openStream()) {
+                captchaImage = CaptchaImageUtil.generate(in);
+            }
+        } catch (Exception e) {
+            log.error("生成验证码失败", e);
+            throw new RuntimeException("生成验证码失败");
+        }
+
+        // 4. 存入 Redis，设置过期时间为5分钟
         String key = "challenge:" + requestId;
         redissonClient.getBucket(key)
                       .set(secretKey, Duration.ofMinutes(5));
 
-        // 4. 使用链式调用构建对象
+        // 存入验证码坐标
+        String captchaKey = "captcha:" + requestId;
+        redissonClient.getBucket(captchaKey)
+                      .set(captchaImage.getX(), Duration.ofMinutes(5));
+
+        // 5. 使用链式调用构建对象
+        // 前端组件会自动拼接 data:image/png;base64, 前缀，所以这里需要移除后端生成的完整 Data URI 前缀
         return new ChallengeInfo().setRequestId(requestId)
-                                  .setSecretKey(secretKey);
+                                  .setSecretKey(secretKey)
+                                  .setBackgroundImage(removeBase64Prefix(captchaImage.getBackgroundImage()))
+                                  .setSliderImage(removeBase64Prefix(captchaImage.getSliderImage()))
+                                  .setY(captchaImage.getY());
+    }
+
+    /**
+     * 去除 Base64 字符串的前缀 (data:image/xxx;base64,)
+     */
+    private String removeBase64Prefix(String base64) {
+        if (base64 != null && base64.contains(",")) {
+            return base64.substring(base64.indexOf(",") + 1);
+        }
+        return base64;
     }
 
     /**
@@ -242,5 +275,4 @@ public class LoginService {
 
         return zFileService.getUrlByIdAndExtension(idAndExtension.getValue1(), idAndExtension.getValue2());
     }
-
 }

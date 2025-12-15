@@ -96,6 +96,35 @@ public class ZFileService {
     }
 
     /**
+     * 获取随机图片文件的访问链接
+     *
+     * @return 图片URL
+     */
+    public String getRandomImageUrl() {
+        long count = easyEntityQuery.queryable(ZFile.class)
+                .where(f -> f.contentType().likeMatchLeft("image/"))
+                .count();
+
+        if (count == 0) {
+            return null;
+        }
+
+        long offset = (long) (Math.random() * count);
+
+        ZFile zFile = easyEntityQuery.queryable(ZFile.class)
+                .where(f -> f.contentType().likeMatchLeft("image/"))
+                .limit(offset, 1)
+                .firstOrNull();
+
+        if (zFile == null) {
+            return null;
+        }
+
+        String fileKey = getFileKey(zFile.getId(), zFile.getExtension());
+        return ossService.getPublicUrl(fileKey);
+    }
+
+    /**
      * 根据 ID 和后缀拼接 OSS Key
      * 策略: 提取 ID 前6位(yyyyMM)作为文件夹，实现按月分片存储
      * 格式: yyyyMM/ID.后缀
