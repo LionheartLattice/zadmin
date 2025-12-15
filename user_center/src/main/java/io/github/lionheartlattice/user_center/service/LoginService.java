@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -134,12 +133,13 @@ public class LoginService {
      * @return token 字符串
      */
     public String createToken(BigDecimal userId) {
-        // Hutool：fastUUID() 无 '-'，更短更适合当 token
-        String token = IdUtil.fastUUID();
+        // 生成更长的 token 以降低碰撞概率 (双重UUID拼接，128字符)
+        String token = IdUtil.simpleUUID() + IdUtil.simpleUUID() + IdUtil.simpleUUID() + IdUtil.simpleUUID();
         String key = tokenKeyPrefix + token;
 
+        // 使用 Duration 替代过期的 TimeUnit 参数
         redissonClient.getBucket(key)
-                      .set(detailWithInclude(userId), tokenTtlSeconds, TimeUnit.SECONDS);
+                      .set(detailWithInclude(userId), java.time.Duration.ofSeconds(tokenTtlSeconds));
 
         return token;
     }
