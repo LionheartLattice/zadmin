@@ -369,7 +369,8 @@ create table public.z_file
     extension     varchar(32)  default ''::character varying not null,
     file_size     bigint       default 0                     not null,
     content_type  varchar(128) default ''::character varying not null,
-    create_id     numeric(28)  default 0
+    create_id     numeric(28)  default 0,
+    usage         varchar(255) default ''::character varying
 );
 
 comment on table public.z_file is '文件存储表';
@@ -386,8 +387,18 @@ comment on column public.z_file.content_type is 'MIME类型';
 
 comment on column public.z_file.create_id is '创建人ID';
 
+comment on column public.z_file.usage is '用途';
+
 alter table public.z_file
     owner to postgres;
+
+create index z_file_usage_index
+    on public.z_file (usage);
+
+
+
+
+
 
 
 

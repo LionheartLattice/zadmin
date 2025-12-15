@@ -37,4 +37,7 @@ public class ZFile extends ParentClientEntity<ZFile, ZFileProxy> implements Prox
 
     @Schema(description = "MIME类型")
     private String contentType;
+
+    @Schema(description = "用途")
+    private String usage;
 }

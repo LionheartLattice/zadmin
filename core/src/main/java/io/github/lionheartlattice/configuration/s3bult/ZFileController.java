@@ -24,18 +24,6 @@ public class ZFileController {
     private final ZFileService zFileService;
 
     /**
-     * 上传文件
-     *
-     * @param file 文件对象
-     * @return 文件实体详情
-     */
-    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "上传文件", description = "上传文件并返回文件详情信息")
-    public ZFile upload(@Parameter(description = "文件", required = true) @RequestPart("file") MultipartFile file) {
-        return zFileService.upload(file);
-    }
-
-    /**
      * 上传文件并返回URL
      *
      * @param file 文件对象
@@ -45,7 +33,7 @@ public class ZFileController {
     @Operation(summary = "上传文件返回URL", description = "上传文件并直接返回可访问的HTTP链接")
     public String uploadReturnUrl(
             @Parameter(description = "文件", required = true) @RequestPart("file") MultipartFile file) {
-        return zFileService.uploadReturnUrl(file);
+        return zFileService.uploadReturnUrl(file,usage);
     }
 
     /**

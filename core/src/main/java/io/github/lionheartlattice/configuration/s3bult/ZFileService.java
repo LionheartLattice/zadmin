@@ -29,7 +29,7 @@ public class ZFileService {
     private final SnowflakePrimaryKeyGenerator snowflakePrimaryKeyGenerator;
 
     @Transactional(rollbackFor = Exception.class)
-    public ZFile upload(MultipartFile file) {
+    public ZFile upload(MultipartFile file, String usage) {
         // 1. 预先生成雪花算法 ID
         BigDecimal id = (BigDecimal) snowflakePrimaryKeyGenerator.getPrimaryKey();
 
@@ -45,6 +45,7 @@ public class ZFileService {
 
         // 4. 构建实体并保存到数据库 (不存储 fileKey)
         ZFile zFile = new ZFile().setId(id) // 手动设置ID
+                                 .setUsage(usage)
                                  .setOriginalName(putRet.getOriginalName())
                                  .setExtension(putRet.getExtension())
                                  .setFileSize(putRet.getFileSize())
@@ -64,8 +65,8 @@ public class ZFileService {
      * @return 文件访问链接
      */
     @Transactional(rollbackFor = Exception.class)
-    public String uploadReturnUrl(MultipartFile file) {
-        ZFile zFile = upload(file);
+    public String uploadReturnUrl(MultipartFile file, String usage) {
+        ZFile zFile = upload(file, usage);
         // 动态还原 Key 以获取 URL
         String fileKey = getFileKey(zFile.getId(), zFile.getExtension());
         return ossService.getPublicUrl(fileKey);
