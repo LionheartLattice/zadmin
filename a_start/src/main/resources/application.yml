@@ -100,3 +100,4 @@ app:
     token-key-prefix: "token:"
     aes-key: "LionHeartLattice" # AES加密密钥，16位字符
     ignored-urls: /z_login/login,/doc.html,/swagger-ui/**,/swagger-ui.html,/v3/api-docs/**,/v3/api-docs.json,/webjars/**,/favicon.ico
+    vite_app_client-id: vite_zadmin1_3247561ad97c11f0804400163e0228ba #允许登录的前端，登录接口必须传入此参数
