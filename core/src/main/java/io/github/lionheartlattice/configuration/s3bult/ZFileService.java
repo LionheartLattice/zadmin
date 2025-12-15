@@ -131,4 +131,9 @@ public class ZFileService {
         // 3. 生成访问链接
         return ossService.getPublicUrl(fileKey);
     }
+
+    public String getUrlByIdAndExtension(BigDecimal id, String extension) {
+        String fileKey = getFileKey(id, extension);
+        return ossService.getPublicUrl(fileKey);
+    }
 }

@@ -3,7 +3,6 @@ package io.github.lionheartlattice.user_center.service;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.symmetric.AES;
-import com.easy.query.core.proxy.core.draft.Draft1;
 import com.easy.query.core.proxy.core.draft.Draft2;
 import com.easy.query.core.proxy.sql.Select;
 import io.github.lionheartlattice.configuration.s3bult.ZFileService;
@@ -228,17 +227,17 @@ public class LoginService {
     public String getBackgroundForCaptcha() {
         // 优化：直接在数据库中使用 RANDOM() 进行排序并取第一条
         // 避免将所有符合条件的 ID 加载到内存中
-        Draft1<BigDecimal> randomDraft = new ZFile().queryable()
-                                                    .where(z -> z.usage()
-                                                                 .eq("backgroundForCaptcha"))
-                                                    .orderBy(z -> z.expression()
-                                                                   .rawSQLStatement("RANDOM()")
-                                                                   .asc())
-                                                    .select(z -> Select.DRAFT.of(z.id()))
-                                                    .firstNotNull();
+        Draft2<BigDecimal, String> idAndExtension = new ZFile().queryable()
+                                                               .where(z -> z.usage()
+                                                                            .eq("backgroundForCaptcha"))
+                                                               .orderBy(z -> z.expression()
+                                                                              .rawSQLStatement("RANDOM()")
+                                                                              .asc())
+                                                               .select(z -> Select.DRAFT.of(z.id(), z.extension()))
+                                                               .firstNotNull();
 
 
-        return zFileService.getUrlById(randomDraft.getValue1());
+        return zFileService.getUrlByIdAndExtension(idAndExtension.getValue1(), idAndExtension.getValue2());
     }
 
 }
