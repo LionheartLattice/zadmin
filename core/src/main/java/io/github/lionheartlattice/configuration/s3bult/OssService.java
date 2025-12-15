@@ -6,17 +6,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.transfer.s3.S3TransferManager;
-import software.amazon.awssdk.transfer.s3.model.CompletedFileUpload;
-import software.amazon.awssdk.transfer.s3.model.FileUpload;
-import software.amazon.awssdk.transfer.s3.model.UploadFileRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.InputStream;
 
 /**
  * 对象存储底层服务 (S3 Wrapper)
@@ -27,7 +23,6 @@ import java.nio.file.Path;
 @Slf4j
 public class OssService {
 
-    private final S3TransferManager s3TransferManager;
     private final S3Client s3Client;
     private final S3Properties s3Properties;
 
@@ -39,39 +34,28 @@ public class OssService {
      * @return 上传结果
      */
     public OssPutRet upload(MultipartFile file, String key) {
-        File tempFile = null;
         try {
             String originalFilename = file.getOriginalFilename();
             String suffix = FileUtil.getSuffix(originalFilename);
             String contentType = file.getContentType();
             long size = file.getSize();
 
-            // 1. 创建临时文件
-            Path tempPath = Files.createTempFile("oss_upload_", "." + suffix);
-            tempFile = tempPath.toFile();
+            // 1. 构建 PutObjectRequest
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                                                                .bucket(s3Properties.getBucketName())
+                                                                .key(key)
+                                                                .contentType(contentType)
+                                                                .build();
 
-            // 2. 将 MultipartFile 写入临时文件
-            file.transferTo(tempFile);
+            // 2. 直接使用 InputStream 上传，避免临时文件
+            // 注意：S3Client 是同步阻塞的，但在 Spring Boot 虚拟线程环境下性能损耗极低
+            try (InputStream inputStream = file.getInputStream()) {
+                s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(inputStream, size));
+            }
 
-            // 3. 构建文件上传请求
-            UploadFileRequest uploadFileRequest = UploadFileRequest.builder()
-                                                                   .putObjectRequest(
-                                                                           b -> b.bucket(s3Properties.getBucketName())
-                                                                                 .key(key)
-                                                                                 .contentType(contentType))
-                                                                   .source(tempFile)
-                                                                   .build();
+            log.info("S3上传成功 Key: {}", key);
 
-            // 4. 执行异步上传
-            FileUpload upload = s3TransferManager.uploadFile(uploadFileRequest);
-
-            // 5. 等待上传完成
-            CompletedFileUpload completedUpload = upload.completionFuture()
-                                                        .join();
-            log.info("S3上传成功 ETag: {}, Key: {}", completedUpload.response()
-                                                                    .eTag(), key);
-
-            // 6. 返回详细结果
+            // 3. 返回详细结果
             return new OssPutRet().setOriginalName(originalFilename)
                                   .setExtension(suffix)
                                   .setFileSize(size)
@@ -79,16 +63,11 @@ public class OssService {
                                   .setUrl(getPublicUrl(key));
 
         } catch (IOException e) {
-            log.error("文件转存临时文件失败", e);
-            throw new RuntimeException("文件上传失败: 临时文件处理错误");
+            log.error("读取文件流失败", e);
+            throw new RuntimeException("文件上传失败: 读取文件流错误");
         } catch (Exception e) {
             log.error("S3上传失败", e);
             throw new RuntimeException("文件上传失败: " + e.getMessage());
-        } finally {
-            // 7. 清理临时文件
-            if (tempFile != null) {
-                FileUtil.del(tempFile);
-            }
         }
     }
 
