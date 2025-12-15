@@ -49,6 +49,18 @@ public class ZFileController {
     }
 
     /**
+     * 获取文件URL
+     *
+     * @param id 文件ID
+     * @return 文件访问链接
+     */
+    @GetMapping("/url/{id}")
+    @Operation(summary = "获取文件URL", description = "根据ID查询数据库并返回文件访问链接")
+    public String getUrl(@Parameter(description = "文件ID", required = true) @PathVariable BigDecimal id) {
+        return zFileService.getUrlById(id);
+    }
+
+    /**
      * 删除文件
      *
      * @param id 文件ID

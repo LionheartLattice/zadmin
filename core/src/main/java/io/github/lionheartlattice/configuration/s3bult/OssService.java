@@ -100,9 +100,6 @@ public class OssService {
      * 获取文件的公开访问 URL
      */
     public String getPublicUrl(String key) {
-        if (key == null || key.isBlank()) {
-            return null;
-        }
         if (key.startsWith("http://") || key.startsWith("https://")) {
             return key;
         }

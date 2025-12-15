@@ -3,6 +3,8 @@ package io.github.lionheartlattice.configuration.s3bult;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import com.easy.query.api.proxy.client.EasyEntityQuery;
+import com.easy.query.core.proxy.core.draft.Draft1;
+import com.easy.query.core.proxy.sql.Select;
 import io.github.lionheartlattice.configuration.easyquery.SnowflakePrimaryKeyGenerator;
 import io.github.lionheartlattice.entity.parent.OssPutRet;
 import io.github.lionheartlattice.entity.parent.ZFile;
@@ -107,5 +109,25 @@ public class ZFileService {
             return monthFolder + "/" + idStr;
         }
         return monthFolder + "/" + idStr + "." + extension;
+    }
+
+    /**
+     * 根据ID获取文件访问链接
+     * 需查询数据库获取文件后缀名，确保Key正确
+     *
+     * @param id 文件ID
+     * @return 文件访问URL
+     */
+    public String getUrlById(BigDecimal id) {
+        // 1. 查询数据库获取文件信息(主要是后缀名)
+        Draft1<String> draft1 = easyEntityQuery.queryable(ZFile.class)
+                                               .whereById(id)
+                                               .select(z -> Select.DRAFT.of(z.extension()))
+                                               .singleNotNull();
+        // 2. 动态构建 OSS Key
+        String fileKey = getFileKey(id, draft1.getValue1());
+
+        // 3. 生成访问链接
+        return ossService.getPublicUrl(fileKey);
     }
 }
