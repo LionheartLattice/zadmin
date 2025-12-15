@@ -12,6 +12,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -162,10 +163,11 @@ public class Menu extends ParentClientEntity<Menu, MenuProxy> implements ProxyEn
     @Schema(description = "租户ID")
     private BigDecimal tenantId;
 
-//    /**
-//     *
-//     **/
-//    @Navigate(value = RelationTypeEnum.OneToMany, selfProperty = {MenuProxy.Fields.pid}, targetProperty = {MenuProxy.Fields.id})
-//    private List<Menu> menuList;
+    /**
+     * 子菜单列表 (非数据库字段)
+     */
+    @Schema(description = "子菜单列表")
+    @Column(autoSelect = false)
+    private List<Menu> children = new ArrayList<>();
 
 }

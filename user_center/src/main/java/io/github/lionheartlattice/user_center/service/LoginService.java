@@ -26,12 +26,12 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-
-import static io.github.lionheartlattice.util.ThrowUtil.*;
 
 @Service
 @RequiredArgsConstructor
@@ -54,6 +54,7 @@ public class LoginService {
         this.aes = SecureUtil.aes(aesKey.getBytes(StandardCharsets.UTF_8));
     }
 
+
     public UserWithMenu detailWithInclude(BigDecimal id) {
         User user = new User().queryable()
                               .include(UserProxy::tenant)
@@ -62,20 +63,49 @@ public class LoginService {
                               .whereById(id)
                               .singleNotNull()
                               .setPwd(null);
-        //收集菜单
-        List<Menu> collectMenu = user.getRoleList()
-                                     .stream()
-                                     .filter(role -> role.getMenuList() != null)
-                                     .flatMap(role -> role.getMenuList()
-                                                          .stream())
-                                     .distinct()
-                                     .sorted(Comparator.comparing(Menu::getId))
-                                     .collect(Collectors.toList());
+
+        // 1. 收集所有菜单，去重并按 sort 排序
+        List<Menu> allMenus = user.getRoleList()
+                                  .stream()
+                                  .filter(role -> role.getMenuList() != null)
+                                  .flatMap(role -> role.getMenuList()
+                                                       .stream())
+                                  .distinct()
+                                  .sorted(Comparator.comparing(Menu::getSort, Comparator.nullsLast(Integer::compareTo))
+                                                    .thenComparing(Menu::getId))
+                                  .collect(Collectors.toList());
+
+        // 2. 组装树形结构
+        List<Menu> treeMenus = new ArrayList<>();
+        // 将菜单放入 Map 中以便快速查找
+        Map<BigDecimal, Menu> menuMap = allMenus.stream()
+                                                .collect(Collectors.toMap(Menu::getId, menu -> menu, (k1, k2) -> k1));
+
+        for (Menu menu : allMenus) {
+            // 确保 children 列表已初始化
+            if (menu.getChildren() == null) {
+                menu.setChildren(new ArrayList<>());
+            }
+
+            BigDecimal pid = menu.getPid();
+            // 如果是顶级节点（pid为null或0），或者父节点不在当前权限列表中，则作为根节点
+            if (pid == null || BigDecimal.ZERO.equals(pid) || !menuMap.containsKey(pid)) {
+                treeMenus.add(menu);
+            } else {
+                // 如果有父节点，添加到父节点的 children 中
+                Menu parent = menuMap.get(pid);
+                if (parent != null) {
+                    if (parent.getChildren() == null) {
+                        parent.setChildren(new ArrayList<>());
+                    }
+                    parent.getChildren()
+                          .add(menu);
+                }
+            }
+        }
 
         UserWithMenu userWithMenu = CopyUtil.copy(user, new UserWithMenu());
-
-        return userWithMenu.setMenuList(collectMenu);
-
+        return userWithMenu.setMenuList(treeMenus);
     }
 
     public String login(LoginDTO dto) {
