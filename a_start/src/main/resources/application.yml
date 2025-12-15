@@ -8,13 +8,13 @@ spring:
     dynamic:
       primary:
         type: com.zaxxer.hikari.HikariDataSource
-        url: jdbc:postgresql://192.168.9.105:25432/postgres?currentSchema=public&reWriteBatchedInserts=true&socketTimeout=60&connectTimeout=60&tcpKeepAlive=true
+        url: jdbc:postgresql://100.95.188.10:25432/postgres?currentSchema=public&reWriteBatchedInserts=true&socketTimeout=60&connectTimeout=60&tcpKeepAlive=true
         username: postgres
         password: Zs2806478963
         driver-class-name: org.postgresql.Driver
       ds2:
         type: com.zaxxer.hikari.HikariDataSource
-        url: jdbc:mysql://192.168.9.105:43306/z-ds1?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=GMT%2B8&characterEncoding=utf-8&allowMultiQueries=true&rewriteBatchedStatements=true
+        url: jdbc:mysql://100.95.188.10:43306/z-ds1?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=GMT%2B8&characterEncoding=utf-8&allowMultiQueries=true&rewriteBatchedStatements=true
         username: z-ds1
         password: Zs2806478963
         driver-class-name: com.mysql.cj.jdbc.Driver
@@ -30,7 +30,7 @@ spring:
       max-request-size: 100MB
   data:
     redis:
-      host: 192.168.9.105
+      host: 100.95.188.10
       port: 46379
       password: Zs2806478963
       database: 0
@@ -55,6 +55,7 @@ spring:
       SORT_CREATOR_PROPERTIES_FIRST: true # 构造参数属性优先排序
       SORT_PROPERTIES_ALPHABETICALLY: false # 不按字母序排序属性
 server:
+  port: 19991 # 设置启动端口
   servlet:
     context-path: /api/admin # 设置后端公共基础路径
   tomcat:

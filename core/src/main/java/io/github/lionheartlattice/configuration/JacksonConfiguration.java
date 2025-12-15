@@ -1,5 +1,6 @@
 package io.github.lionheartlattice.configuration;
 
+import org.springdoc.core.utils.SpringDocUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
@@ -19,6 +20,19 @@ import java.math.BigInteger;
  */
 @Configuration
 public class JacksonConfiguration {
+
+    static {
+        // 解决 Knife4j/Swagger 文档中大数字类型显示为 number 的问题
+        // 强制将其映射为 String 类型，以便前端生成的 TS 类型为 string
+        SpringDocUtils.getConfig()
+                      .replaceWithClass(BigDecimal.class, String.class);
+        SpringDocUtils.getConfig()
+                      .replaceWithClass(BigInteger.class, String.class);
+        SpringDocUtils.getConfig()
+                      .replaceWithClass(Long.class, String.class);
+        SpringDocUtils.getConfig()
+                      .replaceWithClass(Long.TYPE, String.class);
+    }
 
     /**
      * 配置 JacksonJsonHttpMessageConverter
