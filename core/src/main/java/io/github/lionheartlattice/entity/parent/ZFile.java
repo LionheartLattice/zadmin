@@ -28,9 +28,6 @@ public class ZFile extends ParentClientEntity<ZFile, ZFileProxy> implements Prox
     @Schema(description = "原始文件名")
     private String originalName;
 
-    @Schema(description = "对象存储Key(ID.后缀)")
-    private String fileKey;
-
     @Schema(description = "文件后缀")
     private String extension;
 

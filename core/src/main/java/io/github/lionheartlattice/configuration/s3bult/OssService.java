@@ -1,7 +1,7 @@
 package io.github.lionheartlattice.configuration.s3bult;
 
 import cn.hutool.core.io.FileUtil;
-import io.github.lionheartlattice.entity.user_center.vo.OssPutRet;
+import io.github.lionheartlattice.entity.parent.OssPutRet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -73,7 +73,6 @@ public class OssService {
 
             // 6. 返回详细结果
             return new OssPutRet().setOriginalName(originalFilename)
-                                  .setFileKey(key)
                                   .setExtension(suffix)
                                   .setFileSize(size)
                                   .setContentType(contentType)

@@ -1,10 +1,11 @@
 package io.github.lionheartlattice.configuration.s3bult;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.StrUtil;
 import com.easy.query.api.proxy.client.EasyEntityQuery;
 import io.github.lionheartlattice.configuration.easyquery.SnowflakePrimaryKeyGenerator;
+import io.github.lionheartlattice.entity.parent.OssPutRet;
 import io.github.lionheartlattice.entity.parent.ZFile;
-import io.github.lionheartlattice.entity.user_center.vo.OssPutRet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -33,19 +34,18 @@ public class ZFileService {
         // 2. 构造文件名 (ID.后缀)
         String originalFilename = file.getOriginalFilename();
         String suffix = FileUtil.getSuffix(originalFilename);
-        String fileKey = id.toPlainString() + (suffix.isEmpty() ? "" : "." + suffix);
+        // 动态构建 OSS Key
+        String fileKey = getFileKey(id, suffix);
 
         // 3. 上传到 OSS
         OssPutRet putRet = ossService.upload(file, fileKey);
 
-        // 4. 构建实体并保存到数据库
-        ZFile zFile = new ZFile();
-        zFile.setId(id); // 手动设置ID
-        zFile.setOriginalName(putRet.getOriginalName());
-        zFile.setFileKey(putRet.getFileKey());
-        zFile.setExtension(putRet.getExtension());
-        zFile.setFileSize(putRet.getFileSize());
-        zFile.setContentType(putRet.getContentType());
+        // 4. 构建实体并保存到数据库 (不存储 fileKey)
+        ZFile zFile = new ZFile().setId(id) // 手动设置ID
+                                 .setOriginalName(putRet.getOriginalName())
+                                 .setExtension(putRet.getExtension())
+                                 .setFileSize(putRet.getFileSize())
+                                 .setContentType(putRet.getContentType());
 
         // 插入数据库
         easyEntityQuery.insertable(zFile)
@@ -63,7 +63,9 @@ public class ZFileService {
     @Transactional(rollbackFor = Exception.class)
     public String uploadReturnUrl(MultipartFile file) {
         ZFile zFile = upload(file);
-        return ossService.getPublicUrl(zFile.getFileKey());
+        // 动态还原 Key 以获取 URL
+        String fileKey = getFileKey(zFile.getId(), zFile.getExtension());
+        return ossService.getPublicUrl(fileKey);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -84,7 +86,19 @@ public class ZFileService {
                                     .eq(id))
                        .executeRows();
 
-        // 3. 删除 OSS 文件
-        ossService.delete(zFile.getFileKey());
+        // 3. 删除 OSS 文件 (动态还原 Key)
+        String fileKey = getFileKey(zFile.getId(), zFile.getExtension());
+        ossService.delete(fileKey);
+    }
+
+    /**
+     * 根据 ID 和后缀拼接 OSS Key
+     * 格式: ID.后缀 (如果后缀为空则仅 ID)
+     */
+    private String getFileKey(BigDecimal id, String extension) {
+        if (StrUtil.isBlank(extension)) {
+            return id.toPlainString();
+        }
+        return id.toPlainString() + "." + extension;
     }
 }

@@ -1,4 +1,4 @@
-package io.github.lionheartlattice.entity.user_center.vo;
+package io.github.lionheartlattice.entity.parent;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -11,9 +11,6 @@ import lombok.Data;
 public class OssPutRet {
     @Schema(description = "原始文件名")
     private String originalName;
-
-    @Schema(description = "对象存储 Key")
-    private String fileKey;
 
     @Schema(description = "文件后缀")
     private String extension;
