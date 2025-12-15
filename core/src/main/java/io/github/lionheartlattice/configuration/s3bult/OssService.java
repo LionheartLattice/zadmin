@@ -9,12 +9,14 @@ import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.transfer.s3.S3TransferManager;
-import software.amazon.awssdk.transfer.s3.model.CompletedUpload;
-import software.amazon.awssdk.transfer.s3.model.Upload;
-import software.amazon.awssdk.transfer.s3.model.UploadRequest;
+import software.amazon.awssdk.transfer.s3.model.CompletedFileUpload;
+import software.amazon.awssdk.transfer.s3.model.FileUpload;
+import software.amazon.awssdk.transfer.s3.model.UploadFileRequest;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * 对象存储服务 (针对公开存储桶优化)
@@ -30,6 +32,11 @@ public class OssService {
 
     /**
      * 上传文件并返回公开访问链接
+     * <p>
+     * 优化策略：
+     * 1. 将 MultipartFile 转存为本地临时文件 (避免内存缓冲)
+     * 2. 使用 S3TransferManager.uploadFile (支持零拷贝、自动分片、多线程并发)
+     * 3. finally 块中强制删除临时文件
      *
      * @param file 前端上传的文件
      * @return 完整的 HTTP 访问链接
@@ -37,41 +44,57 @@ public class OssService {
     public String upload(MultipartFile file) {
         String originalFilename = file.getOriginalFilename();
         String suffix = FileUtil.getSuffix(originalFilename);
-        // 生成唯一文件名: 2024/01/uuid.png (建议按日期分目录，避免单目录下文件过多)
+        // 生成唯一文件名: uuid.png
         String key = IdUtil.fastSimpleUUID() + "." + suffix;
 
-        try (InputStream inputStream = file.getInputStream()) {
-            // 1. 构建上传请求
-            UploadRequest uploadRequest = UploadRequest.builder()
-                                                       .putObjectRequest(b -> b.bucket(s3Properties.getBucketName())
-                                                                               .key(key)
-                                                                               .contentType(file.getContentType()))
-                                                       .requestBody(
-                                                               software.amazon.awssdk.core.async.AsyncRequestBody.fromInputStream(
-                                                                       inputStream, file.getSize(),
-                                                                       java.util.concurrent.Executors.newSingleThreadExecutor()))
-                                                       // 注意：fromInputStream 需要指定 executor，或者使用 fromFile (如果先存临时文件)
-                                                       // 这里为了简化直接用流，但在极高并发下建议先转临时文件再用 fromFile
-                                                       .build();
+        File tempFile = null;
+        try {
+            // 1. 创建临时文件
+            // 使用 java.nio.file.Files 创建临时文件，前缀 oss_upload_
+            Path tempPath = Files.createTempFile("oss_upload_", "." + suffix);
+            tempFile = tempPath.toFile();
 
-            // 2. 开始异步上传
-            Upload upload = s3TransferManager.upload(uploadRequest);
+            // 2. 将 MultipartFile 写入临时文件
+            // 这一步 SpringMVC 会高效处理，如果是大文件会直接在磁盘间移动
+            file.transferTo(tempFile);
 
-            // 3. 等待上传完成 (阻塞等待结果，因为 Controller 需要返回 URL)
-            CompletedUpload completedUpload = upload.completionFuture()
-                                                    .join();
-            log.info("文件上传成功 ETag: {}", completedUpload.response()
-                                                             .eTag());
+            // 3. 构建文件上传请求 (UploadFileRequest 优于 UploadRequest+fromInputStream)
+            UploadFileRequest uploadFileRequest = UploadFileRequest.builder()
+                                                                   .putObjectRequest(
+                                                                           b -> b.bucket(s3Properties.getBucketName())
+                                                                                 .key(key)
+                                                                                 .contentType(file.getContentType()))
+                                                                   .source(tempFile) // 直接指定文件源，SDK会自动处理分片和并发
+                                                                   .build();
 
-            // 4. 返回固定公开链接
+            // 4. 执行异步上传
+            // uploadFile 返回 FileUpload 对象，它是 Upload 的子类，专门用于文件
+            FileUpload upload = s3TransferManager.uploadFile(uploadFileRequest);
+
+            // 5. 等待上传完成 (阻塞当前线程等待结果)
+            CompletedFileUpload completedUpload = upload.completionFuture()
+                                                        .join();
+            log.info("文件上传成功 ETag: {}, Key: {}", completedUpload.response()
+                                                                      .eTag(), key);
+
+            // 6. 返回固定公开链接
             return getPublicUrl(key);
 
         } catch (IOException e) {
-            log.error("文件流读取失败", e);
-            throw new RuntimeException("文件上传失败");
+            log.error("文件转存临时文件失败", e);
+            throw new RuntimeException("文件上传失败: 临时文件处理错误");
         } catch (Exception e) {
             log.error("S3上传失败", e);
             throw new RuntimeException("文件上传失败: " + e.getMessage());
+        } finally {
+            // 7. 清理临时文件
+            if (tempFile != null) {
+                // 使用 Hutool 删除文件，如果删除失败会尝试多次或忽略
+                boolean deleted = FileUtil.del(tempFile);
+                if (!deleted) {
+                    log.warn("临时文件删除失败，请检查权限或磁盘占用: {}", tempFile.getAbsolutePath());
+                }
+            }
         }
     }
 
