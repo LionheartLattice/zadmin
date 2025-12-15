@@ -6,14 +6,16 @@ apply: 始终
 
 - 使用 Java 25
 - 基于 Spring Boot 4.0.0
-- 使用 easy-query 作为ORM框架 文档地址zadmin\z_doc\easy-query-doc-main\src  在线文档地址https://www.easy-query.com/easy-query-doc/feature-map.html
+- 使用 easy-query 作为ORM框架 文档地址zadmin\z_doc\easy-query-doc-main\src
+  在线文档地址https://www.easy-query.com/easy-query-doc/feature-map.html
 - 使用 postgres18 redis8作为依赖
 - 使用 Maven 多模块项目结构
-- 编写代码要注重简洁高效，但是最好返回完整文件
 
 ## 代码风格
 
 - 使用 Lombok 简化代码
+- 尽量少进行校验，特别是非空校验
+- 编写代码要注重简洁高效，但是最好返回完整文件
 - 复杂的类、方法、字段中需要添加中文注释
 
 ## 实体类规范
@@ -37,18 +39,21 @@ apply: 始终
 - 使用 @Operation 和 @Schema 注解描述接口
 
 ## 工具类
+
 - 优先使用 封装好的 工具类以复用
 - 优先使用 Spring自带的 工具类
 - 优先使用 Hutool 工具类
 - D:\soft\apache-maven-3.9.9\repo 下可以看到第三方jar包和文档
 
 ## 模块依赖
+
 - core: 基础配置和第三方依赖
 - user_center: 用户中心模块
 - generator: 代码生成器
 - a_start: 启动模块
 
 ## 数据库
+
 - 我之前使用mysql，现在要迁移到pgsql，现在完全使用pgsql
 - 主键改为雪花算法由java程序维护bigdecimal，建表语句中为numeric(28)
 - create_time字段不需要，因为雪花算法内含时间戳

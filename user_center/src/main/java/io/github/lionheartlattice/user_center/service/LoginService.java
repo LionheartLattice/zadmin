@@ -1,10 +1,14 @@
 package io.github.lionheartlattice.user_center.service;
 
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.symmetric.AES;
+import com.easy.query.core.proxy.core.draft.Draft1;
 import com.easy.query.core.proxy.core.draft.Draft2;
 import com.easy.query.core.proxy.sql.Select;
+import io.github.lionheartlattice.configuration.s3bult.ZFileService;
+import io.github.lionheartlattice.entity.parent.ZFile;
 import io.github.lionheartlattice.entity.user_center.dto.LoginDTO;
 import io.github.lionheartlattice.entity.user_center.po.Menu;
 import io.github.lionheartlattice.entity.user_center.po.User;
@@ -39,6 +43,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class LoginService {
     private final RedissonClient redissonClient;
+    private final ZFileService zFileService;
     @Value("${app.auth.token-key-prefix:Bearer_}")
     private String tokenKeyPrefix;
     @Value("${app.auth.token-ttl-seconds:604800}")
@@ -214,6 +219,26 @@ public class LoginService {
         // 4. 使用链式调用构建对象
         return new ChallengeInfo().setRequestId(requestId)
                                   .setSecretKey(secretKey);
+    }
+
+    /**
+     * 获取验证码背景图 URL
+     *
+     * @return 背景图 URL
+     */
+    public String getBackgroundForCaptcha() {
+        // 1. 查询所有用途为 backgroundForCaptcha 的文件ID
+        List<Draft1<BigDecimal>> list = new ZFile().queryable()
+                                                   .where(z -> z.usage()
+                                                                .eq("backgroundForCaptcha"))
+                                                   .select(z -> Select.DRAFT.of(z.id()))
+                                                   .toList();
+
+        // 2. 随机取出一个主键id
+        Draft1<BigDecimal> randomDraft = RandomUtil.randomEle(list);
+
+        // 3. 调用zFileService.getUrlById(id)
+        return zFileService.getUrlById(randomDraft.getValue1());
     }
 
 }
