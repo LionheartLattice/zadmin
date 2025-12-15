@@ -1,6 +1,7 @@
 package io.github.lionheartlattice.user_center.controller;
 
 import io.github.lionheartlattice.entity.user_center.dto.LoginDTO;
+import io.github.lionheartlattice.entity.user_center.vo.ChallengeInfo;
 import io.github.lionheartlattice.entity.user_center.vo.UserWithMenu;
 import io.github.lionheartlattice.user_center.service.LoginService;
 import io.github.lionheartlattice.util.response.ApiResult;
@@ -18,6 +19,12 @@ import org.springframework.web.bind.annotation.*;
 public class LoginController {
 
     private final LoginService loginService;
+
+    @Operation(summary = "获取认证挑战参数", description = "获取一次性requestId和临时AES密钥，用于前端加密密码")
+    @GetMapping("/challenge")
+    public ApiResult<ChallengeInfo> getChallenge() {
+        return ApiResult.success(loginService.createChallenge());
+    }
 
     @Operation(summary = "用户登录", description = "使用用户名和密码登录，返回 token")
     @PostMapping("/login")

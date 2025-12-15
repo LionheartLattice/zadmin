@@ -10,6 +10,7 @@ import io.github.lionheartlattice.entity.user_center.po.Menu;
 import io.github.lionheartlattice.entity.user_center.po.User;
 import io.github.lionheartlattice.entity.user_center.po.proxy.RoleProxy;
 import io.github.lionheartlattice.entity.user_center.po.proxy.UserProxy;
+import io.github.lionheartlattice.entity.user_center.vo.ChallengeInfo;
 import io.github.lionheartlattice.entity.user_center.vo.UserWithMenu;
 import io.github.lionheartlattice.util.CopyUtil;
 import io.github.lionheartlattice.util.response.ErrorEnum;
@@ -26,6 +27,7 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -134,7 +136,8 @@ public class LoginService {
      */
     public String createToken(BigDecimal userId) {
         // 生成更长的 token 以降低碰撞概率 (双重UUID拼接，128字符)
-        String token = IdUtil.fastSimpleUUID() + IdUtil.fastSimpleUUID() + IdUtil.fastSimpleUUID() + IdUtil.fastSimpleUUID();
+        String token =
+                IdUtil.fastSimpleUUID() + IdUtil.fastSimpleUUID() + IdUtil.fastSimpleUUID() + IdUtil.fastSimpleUUID();
         String key = tokenKeyPrefix + token;
 
         // 使用 Duration 替代过期的 TimeUnit 参数
@@ -191,4 +194,26 @@ public class LoginService {
         }
         return deleted;
     }
+
+    /**
+     * 生成登录认证挑战信息（一次性RequestId和临时密钥）
+     *
+     * @return ChallengeInfo
+     */
+    public ChallengeInfo createChallenge() {
+        // 1. 生成唯一请求ID
+        String requestId = IdUtil.fastSimpleUUID();
+        // 2. 生成16位随机字符串作为临时AES密钥 (使用nanoId替代randomString)
+        String secretKey = IdUtil.nanoId(16);
+
+        // 3. 存入 Redis，设置过期时间为5分钟
+        String key = "challenge:" + requestId;
+        redissonClient.getBucket(key)
+                      .set(secretKey, Duration.ofMinutes(5));
+
+        // 4. 使用链式调用构建对象
+        return new ChallengeInfo().setRequestId(requestId)
+                                  .setSecretKey(secretKey);
+    }
+
 }
