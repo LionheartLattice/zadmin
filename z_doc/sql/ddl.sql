@@ -361,7 +361,8 @@ alter table public.z_tenant
 create index idx_z_tenant_del_flag
     on public.z_tenant (del_flag);
 
-create table public.z_file
+-- auto-generated definition
+create table z_file
 (
     id            numeric(28)                                not null
         primary key,
@@ -370,40 +371,29 @@ create table public.z_file
     extension     varchar(32)  default ''::character varying not null,
     file_size     bigint       default 0                     not null,
     content_type  varchar(128) default ''::character varying not null,
-    update_time   timestamp    default now()                 not null,
-    create_id     numeric(28)  default 0,
-    update_id     numeric(28)  default 0,
-    del_flag      boolean      default false                 not null
+    create_id     numeric(28)  default 0
 );
 
-comment on table public.z_file is '文件存储表';
+comment on table z_file is '文件存储表';
 
-comment on column public.z_file.id is '文件ID(雪花算法，作为文件名主体)';
+comment on column z_file.id is '文件ID(雪花算法，作为文件名主体)';
 
-comment on column public.z_file.original_name is '原始文件名';
+comment on column z_file.original_name is '原始文件名';
 
-comment on column public.z_file.file_key is '对象存储Key(ID.后缀)';
+comment on column z_file.file_key is '对象存储Key(ID.后缀)';
 
-comment on column public.z_file.extension is '文件后缀';
+comment on column z_file.extension is '文件后缀';
 
-comment on column public.z_file.file_size is '文件大小(字节)';
+comment on column z_file.file_size is '文件大小(字节)';
 
-comment on column public.z_file.content_type is 'MIME类型';
+comment on column z_file.content_type is 'MIME类型';
 
-comment on column public.z_file.update_time is '更新时间';
+comment on column z_file.create_id is '创建人ID';
 
-comment on column public.z_file.create_id is '创建人ID';
-
-comment on column public.z_file.update_id is '更新人ID';
-
-comment on column public.z_file.del_flag is '是否删除';
-
-alter table public.z_file
+alter table z_file
     owner to postgres;
 
-create index idx_z_file_del_flag
-    on public.z_file (del_flag);
-
 create index idx_z_file_file_key
-    on public.z_file (file_key);
+    on z_file (file_key);
+
 

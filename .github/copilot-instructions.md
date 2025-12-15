@@ -17,9 +17,14 @@
 - 使用 EasyQuery 框架，实体类添加 @EntityProxy 和 @Table 注解
 - 主键使用 @Column(primaryKey = true, primaryKeyGenerator = SnowflakePrimaryKeyGenerator.class)
 - 添加 @EasyAssertMessage 用于断言提示
-- 实体类继承 BaseEntity 并实现 ProxyEntityAvailable 接口
+- 需要存储数据库的实体类继承 BaseEntity 并实现 ProxyEntityAvailable 接口
 - 使用 @Schema 注解添加 Swagger 文档描述
 - 日期字段使用 LocalDate 或 Date 类型
+- lombok已配置下列配置，不必添加相同注解！非落库实体类添加@Data和@Schema即可
+  config.stopBubbling = false
+  lombok.equalsAndHashCode.callSuper = call
+  lombok.toString.callSuper = call
+  lombok.accessors.chain = true
 
 ## API 规范
 
