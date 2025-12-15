@@ -3,6 +3,7 @@ package io.github.lionheartlattice.entity.parent;
 import cn.hutool.core.clone.CloneSupport;
 import cn.hutool.core.clone.Cloneable;
 import io.github.lionheartlattice.util.CopyUtil;
+import org.springframework.beans.BeanUtils;
 import org.springframework.core.ResolvableType;
 
 import java.io.Serial;
@@ -86,6 +87,15 @@ public abstract class ParentCloneable<T> extends CloneSupport<T> implements Clon
     public Class<T> entityClass() {
         return (Class<T>) ResolvableType.forClass(getClass()).as(ParentCloneable.class)
                 .getGeneric(0).resolve();
+    }
+
+    /**
+     * 使用 Spring BeanUtils 创建当前实体类型的新实例
+     *
+     * @return 新实例
+     */
+    public T newInstance() {
+        return BeanUtils.instantiateClass(entityClass());
     }
 
 
