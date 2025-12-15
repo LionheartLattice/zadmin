@@ -1,0 +1,61 @@
+package io.github.lionheartlattice.configuration.s3bult;
+
+import io.github.lionheartlattice.entity.parent.ZFile;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.math.BigDecimal;
+
+/**
+ * 文件管理控制器
+ * 提供文件的上传和删除接口
+ */
+@RestController
+@RequestMapping("/z_file")
+@RequiredArgsConstructor
+@Tag(name = "文件管理")
+public class ZFileController {
+
+    private final ZFileService zFileService;
+
+    /**
+     * 上传文件
+     *
+     * @param file 文件对象
+     * @return 文件实体详情
+     */
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "上传文件", description = "上传文件并返回文件详情信息")
+    public ZFile upload(@Parameter(description = "文件", required = true) @RequestPart("file") MultipartFile file) {
+        return zFileService.upload(file);
+    }
+
+    /**
+     * 上传文件并返回URL
+     *
+     * @param file 文件对象
+     * @return 文件访问链接
+     */
+    @PostMapping(value = "/upload-url", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "上传文件返回URL", description = "上传文件并直接返回可访问的HTTP链接")
+    public String uploadReturnUrl(
+            @Parameter(description = "文件", required = true) @RequestPart("file") MultipartFile file) {
+        return zFileService.uploadReturnUrl(file);
+    }
+
+    /**
+     * 删除文件
+     *
+     * @param id 文件ID
+     */
+    @DeleteMapping("/{id}")
+    @Operation(summary = "删除文件", description = "根据ID删除数据库记录及OSS中的物理文件")
+    public void delete(@Parameter(description = "文件ID", required = true) @PathVariable BigDecimal id) {
+        zFileService.delete(id);
+    }
+}

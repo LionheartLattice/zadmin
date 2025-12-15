@@ -12,7 +12,6 @@ import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * 对象存储底层服务 (S3 Wrapper)
@@ -47,11 +46,18 @@ public class OssService {
                                                                 .contentType(contentType)
                                                                 .build();
 
-            // 2. 直接使用 InputStream 上传，避免临时文件
-            // 注意：S3Client 是同步阻塞的，但在 Spring Boot 虚拟线程环境下性能损耗极低
-            try (InputStream inputStream = file.getInputStream()) {
-                s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(inputStream, size));
-            }
+            // 2. 使用 ContentProvider 方式上传
+            // 解决 "Content input stream does not support mark/reset" 问题
+            // 允许 SDK 在签名或重试时重新获取流，而不是依赖流的 reset 功能
+            RequestBody requestBody = RequestBody.fromContentProvider(() -> {
+                try {
+                    return file.getInputStream();
+                } catch (IOException e) {
+                    throw new RuntimeException("无法获取文件流", e);
+                }
+            }, size, contentType);
+
+            s3Client.putObject(putObjectRequest, requestBody);
 
             log.info("S3上传成功 Key: {}", key);
 
@@ -62,9 +68,6 @@ public class OssService {
                                   .setContentType(contentType)
                                   .setUrl(getPublicUrl(key));
 
-        } catch (IOException e) {
-            log.error("读取文件流失败", e);
-            throw new RuntimeException("文件上传失败: 读取文件流错误");
         } catch (Exception e) {
             log.error("S3上传失败", e);
             throw new RuntimeException("文件上传失败: " + e.getMessage());

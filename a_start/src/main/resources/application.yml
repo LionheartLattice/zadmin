@@ -89,7 +89,7 @@ logging:
     io.netty: info
 
 oss:
-  endpoint: 192.168.56.101:9000 # MinIO 地址，如果是 AWS S3 可不填
+  endpoint: 100.95.188.10:9000 # MinIO 地址，如果是 AWS S3 可不填
   access-key: wDYVrJSe4QZjKRFkqLEd
   secret-key: CsG9FdYloUuvb3hwWnM8fVqBzLKajOArJ17xEgkT
   bucket-name: mybult
