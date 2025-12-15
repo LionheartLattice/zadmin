@@ -45,10 +45,9 @@ public class LoginController {
     @Operation(summary = "获取当前登录用户", description = "从 Security Context 获取当前认证用户的完整信息（包含角色、部门、菜单）")
     @GetMapping("/current-user")
     public ApiResult<UserWithMenu> getCurrentUser() {
-        Object principal = SecurityContextHolder.getContext()
-                                                .getAuthentication()
-                                                .getPrincipal();
-        UserWithMenu user = (UserWithMenu) principal;
+        UserWithMenu user = (UserWithMenu) SecurityContextHolder.getContext()
+                                                                .getAuthentication()
+                                                                .getPrincipal();
         return ApiResult.success(user);
     }
 }
