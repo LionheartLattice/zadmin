@@ -50,6 +50,9 @@ public class LoginService {
     @Value("${app.auth.aes-key:LionHeartLattice}")
     private String aesKey;
 
+    @Value("${app.auth.vite_app_client-id}")
+    private List<String> viteAppClientId;
+
     private AES aes;
 
     @PostConstruct
@@ -200,7 +203,10 @@ public class LoginService {
      *
      * @return ChallengeInfo
      */
-    public ChallengeInfo createChallenge() {
+    public ChallengeInfo createChallenge(String clientId) {
+        if (!viteAppClientId.contains(clientId)) {
+            throw new RuntimeException("客户端未授信");
+        }
         // 1. 生成唯一请求ID
         String requestId = IdUtil.fastSimpleUUID();
         // 2. 生成16位随机字符串作为临时AES密钥 (使用nanoId替代randomString)

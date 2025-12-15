@@ -21,8 +21,8 @@ public class LoginController {
 
     @Operation(summary = "获取认证挑战参数", description = "获取一次性requestId和临时AES密钥，用于前端加密密码")
     @GetMapping("/challenge")
-    public ApiResult<ChallengeInfo> getChallenge() {
-        return ApiResult.success(loginService.createChallenge());
+    public ApiResult<ChallengeInfo> getChallenge(@RequestBody String clientId) {
+        return ApiResult.success(loginService.createChallenge(clientId));
     }
 
     @Operation(summary = "用户登录", description = "使用用户名和密码登录，返回 token")
