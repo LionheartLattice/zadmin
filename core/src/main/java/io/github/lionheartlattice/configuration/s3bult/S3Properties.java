@@ -1,4 +1,4 @@
-package io.github.lionheartlattice.configuration;
+package io.github.lionheartlattice.configuration.s3bult;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -19,7 +19,7 @@ public class S3Properties {
     /**
      * 区域 (例如 us-east-1, cn-north-1)
      */
-    private String region = "us-east-1";
+    private String region;
 
     /**
      * 访问密钥 ID
