@@ -4,6 +4,9 @@
     <modelVersion>4.1.0</modelVersion>
 
     <parent/>
+    <properties>
+        <java.version>${java.sdk.version}</java.version>
+    </properties>
 
     <artifactId>a_start</artifactId>
     <name>a_start</name>
