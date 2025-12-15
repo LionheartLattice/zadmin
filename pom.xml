@@ -147,13 +147,6 @@
                 <version>${aws.sdk.version}</version>
             </dependency>
 
-            <!-- AWS CRT Client: 基于C语言的高性能异步HTTP客户端 (Transfer Manager 推荐使用) -->
-            <dependency>
-                <groupId>software.amazon.awssdk.crt</groupId>
-                <artifactId>aws-crt</artifactId>
-                <version>0.39.4</version>
-            </dependency>
-
         </dependencies>
     </dependencyManagement>
     <build>
