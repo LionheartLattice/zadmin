@@ -54,6 +54,18 @@ public class ZFileService {
         return zFile;
     }
 
+    /**
+     * 上传文件并返回访问链接
+     *
+     * @param file 文件
+     * @return 文件访问链接
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public String uploadReturnUrl(MultipartFile file) {
+        ZFile zFile = upload(file);
+        return ossService.getPublicUrl(zFile.getFileKey());
+    }
+
     @Transactional(rollbackFor = Exception.class)
     public void delete(BigDecimal id) {
         // 1. 查询文件信息
