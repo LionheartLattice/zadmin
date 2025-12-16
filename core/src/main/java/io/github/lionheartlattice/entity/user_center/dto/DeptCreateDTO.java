@@ -29,6 +29,7 @@ public class DeptCreateDTO {
     /**
      * 父级ID
      */
+    @NotNull
     @Schema(description = "父级ID", requiredMode = Schema.RequiredMode.REQUIRED)
     private BigDecimal pid;
     /**

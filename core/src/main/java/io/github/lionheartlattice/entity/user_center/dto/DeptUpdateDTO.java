@@ -23,14 +23,15 @@ public class DeptUpdateDTO {
      */
     @Schema(description = "唯一标识")
     @Column(value = "id")
-    @NotNull
     private BigDecimal id;
 
+    @NotNull
     @Schema(description = "部门名称", requiredMode = Schema.RequiredMode.REQUIRED)
     private String name;
     /**
      * 父级ID
      */
+    @NotNull
     @Schema(description = "父级ID", requiredMode = Schema.RequiredMode.REQUIRED)
     private BigDecimal pid;
     /**
