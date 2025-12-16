@@ -5,19 +5,25 @@ import lombok.experimental.Accessors;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.geom.GeneralPath;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.SecureRandom;
 import java.util.Base64;
-import java.util.Random;
 
+/**
+ * 滑块验证码图片生成工具类
+ * 基于拼图模板算法生成滑块和背景图
+ */
 public class CaptchaImageUtil {
+
+    private static final SecureRandom RANDOM = new SecureRandom();
 
     private static final int SLIDER_WIDTH = 50;
     private static final int SLIDER_HEIGHT = 50;
-    private static final int CIRCLE_R = 5;
+    private static final int SMALL_CIRCLE = 10;
+    private static final int SMALL_CIRCLE_R_1 = 2;
 
     @Data
     @Accessors(chain = true)
@@ -31,101 +37,267 @@ public class CaptchaImageUtil {
     public static CaptchaImage generate(InputStream imageStream) throws IOException {
         BufferedImage originalImage = ImageIO.read(imageStream);
 
-        // Resize image to 310px width if needed, maintaining aspect ratio
+        // Resize image to 310px width, maintaining aspect ratio
         int targetWidth = 310;
-        if (originalImage.getWidth() != targetWidth) {
-            int targetHeight = (int) ((double) originalImage.getHeight() / originalImage.getWidth() * targetWidth);
-            BufferedImage resizedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
-            Graphics2D g = resizedImage.createGraphics();
-            g.drawImage(originalImage, 0, 0, targetWidth, targetHeight, null);
-            g.dispose();
-            originalImage = resizedImage;
-        }
+        BufferedImage bigImage = resizeImage(originalImage, targetWidth);
 
-        int width = originalImage.getWidth();
-        int height = originalImage.getHeight();
+        int width = bigImage.getWidth();
+        int height = bigImage.getHeight();
 
-        // Random position
-        Random random = new Random();
-        int x = random.nextInt(width - SLIDER_WIDTH - 20) + 10; // Margin
-        int y = random.nextInt(height - SLIDER_HEIGHT - 20) + 10;
+        // Generate random position with margin
+        int x = generateRandomX(width, SLIDER_WIDTH);
+        int y = generateRandomY(height, SLIDER_HEIGHT);
 
-        // Create slider image (transparent)
-        BufferedImage sliderImage = new BufferedImage(SLIDER_WIDTH, SLIDER_HEIGHT, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D sliderG = sliderImage.createGraphics();
-        sliderG.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        // Generate slider template data
+        int[][] slideTemplateData = getSlideTemplateData();
 
-        // Create background image copy to draw hole
-        BufferedImage backgroundImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        Graphics2D backgroundG = backgroundImage.createGraphics();
-        backgroundG.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        backgroundG.drawImage(originalImage, 0, 0, null);
+        // Create slider image (transparent background)
+        BufferedImage sliderImage = new BufferedImage(SLIDER_WIDTH, SLIDER_HEIGHT, BufferedImage.TYPE_4BYTE_ABGR);
 
-        // Define the jigsaw shape
-        GeneralPath path = getPath();
-
-        // 1. Draw the part of original image into slider
-        // We need to clip the slider graphics to the path
-        sliderG.setClip(path);
-        // Draw the original image at offset -x, -y
-        sliderG.drawImage(originalImage, -x, -y, null);
-
-        // Draw border on slider
-        sliderG.setColor(Color.WHITE);
-        sliderG.setStroke(new BasicStroke(2));
-        sliderG.draw(path);
-
-        // 2. Draw the hole on the background
-        // We want to make the hole semi-transparent or blurred.
-        // Simple way: fill with semi-transparent gray
-        backgroundG.translate(x, y); // Move to position
-        backgroundG.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.6f));
-        backgroundG.setColor(Color.GRAY);
-        backgroundG.fill(path);
-
-        // Draw border on hole
-        backgroundG.setColor(Color.WHITE);
-        backgroundG.setStroke(new BasicStroke(2));
-        backgroundG.draw(path);
-
-        sliderG.dispose();
-        backgroundG.dispose();
+        // Cut by template
+        cutByTemplate(bigImage, sliderImage, slideTemplateData, x, y);
 
         return new CaptchaImage()
-                .setBackgroundImage(toBase64(backgroundImage, "jpg"))
+                .setBackgroundImage(toBase64(bigImage, "jpg"))
                 .setSliderImage(toBase64(sliderImage, "png"))
                 .setX(x)
                 .setY(y);
     }
 
-    private static GeneralPath getPath() {
-        GeneralPath path = new GeneralPath();
-        float w = SLIDER_WIDTH;
-        float h = SLIDER_HEIGHT;
-        float r = CIRCLE_R;
+    /**
+     * 生成随机 X 坐标
+     */
+    private static int generateRandomX(int width, int sliderWidth) {
+        int widthDifference = width - sliderWidth;
+        if (widthDifference <= 0) {
+            return 5;
+        }
+        return RANDOM.nextInt(widthDifference - 100) + 100 + RANDOM.nextInt(20) - 10;
+    }
 
-        path.moveTo(0, 0);
+    /**
+     * 生成随机 Y 坐标
+     */
+    private static int generateRandomY(int height, int sliderHeight) {
+        int heightDifference = height - sliderHeight;
+        if (heightDifference <= 0) {
+            return 5;
+        }
+        return RANDOM.nextInt(heightDifference) + 5 + RANDOM.nextInt(20) - 10;
+    }
 
-        // Top: bump out
-        path.lineTo(w / 2 - r, 0);
-        path.quadTo(w / 2, -r * 2, w / 2 + r, 0);
-        path.lineTo(w, 0);
+    /**
+     * 生成滑块模板数据（1表示需要裁剪的区域，0表示透明区域）
+     */
+    private static int[][] getSlideTemplateData() {
+        int[][] data = new int[SLIDER_WIDTH][SLIDER_HEIGHT];
 
-        // Right: bump in
-        path.lineTo(w, h / 2 - r);
-        path.quadTo(w - r * 2, h / 2, w, h / 2 + r);
-        path.lineTo(w, h);
+        // 计算常量
+        double xBlank = (double) SLIDER_WIDTH - SMALL_CIRCLE - SMALL_CIRCLE_R_1;
+        double yBlank = (double) SLIDER_HEIGHT - SMALL_CIRCLE - SMALL_CIRCLE_R_1;
+        double rxa = xBlank / 2.0;
+        double ryb = (double) SLIDER_HEIGHT - SMALL_CIRCLE;
+        double rPow = Math.pow(SMALL_CIRCLE, 2);
 
-        // Bottom: bump out
-        path.lineTo(w / 2 + r, h);
-        path.quadTo(w / 2, h + r * 2, w / 2 - r, h);
-        path.lineTo(0, h);
+        for (int i = 0; i < SLIDER_WIDTH; i++) {
+            for (int j = 0; j < SLIDER_HEIGHT; j++) {
+                // 计算三个圆形区域
+                double topR = Math.pow(i - rxa, 2) + Math.pow(j - 2.0, 2);
+                double downR = Math.pow(i - rxa, 2) + Math.pow(j - ryb, 2);
+                double rightR = Math.pow(i - ryb, 2) + Math.pow(j - rxa, 2);
 
-        // Left: straight (or bump in)
-        path.lineTo(0, 0);
+                // 上方凸出，下方凹入，右侧凹入
+                if ((j <= yBlank && topR <= rPow) ||
+                    (j >= yBlank && downR >= rPow) ||
+                    (i >= xBlank && rightR >= rPow)) {
+                    data[i][j] = 0; // 透明区域
+                } else {
+                    data[i][j] = 1; // 裁剪区域
+                }
+            }
+        }
+        return data;
+    }
 
-        path.closePath();
-        return path;
+    /**
+     * 按模板裁剪图片
+     */
+    private static void cutByTemplate(BufferedImage bigImage, BufferedImage smallImage,
+                                     int[][] slideTemplateData, int x, int y) {
+        int[][] matrix = new int[3][3];
+        int[] values = new int[9];
+        int yBlank = SLIDER_HEIGHT - SMALL_CIRCLE - SMALL_CIRCLE_R_1;
+
+        Graphics2D g2dBig = bigImage.createGraphics();
+        Graphics2D g2dSmall = smallImage.createGraphics();
+        g2dBig.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2dSmall.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        // 第一遍：裁剪图片并填充背景
+        for (int i = 0; i < SLIDER_WIDTH; i++) {
+            for (int j = 0; j < SLIDER_HEIGHT; j++) {
+                int bgX = x + i;
+                int bgY = y + j;
+
+                // 边界检查
+                if (bgX >= bigImage.getWidth() || bgY >= bigImage.getHeight() || bgX < 0 || bgY < 0) {
+                    continue;
+                }
+
+                int rgbOri = bigImage.getRGB(bgX, bgY);
+                int rgb = slideTemplateData[i][j];
+
+                if (rgb == 1) {
+                    // 裁剪到滑块图片
+                    smallImage.setRGB(i, j, rgbOri);
+
+                    // 使用周围像素平均值填充背景（更自然的镂空效果）
+                    readPixel(bigImage, bgX, bgY, values);
+                    fillMatrix(matrix, values);
+                    bigImage.setRGB(bgX, bgY, avgMatrix(matrix));
+
+                    // 左边缘白色描边
+                    if (j < yBlank) {
+                        bigImage.setRGB(x, bgY, Color.WHITE.getRGB());
+                        smallImage.setRGB(0, j, Color.WHITE.getRGB());
+                    }
+                } else {
+                    // 透明区域
+                    smallImage.setRGB(i, j, rgbOri & 0x00ffffff);
+                }
+            }
+        }
+
+        // 第二遍：增强轮廓（白色边框）
+        for (int i = 0; i < SLIDER_WIDTH; i++) {
+            for (int j = 0; j < SLIDER_HEIGHT; j++) {
+                int bgX = x + i;
+                int bgY = y + j;
+
+                if (bgX >= bigImage.getWidth() || bgY >= bigImage.getHeight() || bgX < 0 || bgY < 0) {
+                    continue;
+                }
+
+                if (slideTemplateData[i][j] == 0) {
+                    // 检查相邻像素，如果是裁剪区域则绘制白色边框
+                    if (isNearCutArea(slideTemplateData, i, j)) {
+                        bigImage.setRGB(bgX, bgY, Color.WHITE.getRGB());
+                        smallImage.setRGB(i, j, Color.WHITE.getRGB());
+                    }
+                }
+            }
+        }
+
+        g2dBig.dispose();
+        g2dSmall.dispose();
+    }
+
+    /**
+     * 检查是否靠近裁剪区域（用于绘制边框）
+     */
+    private static boolean isNearCutArea(int[][] template, int i, int j) {
+        // 检查上下左右及对角线8个方向
+        int[][] directions = {
+            {-1, 0}, {1, 0}, {0, -1}, {0, 1},  // 上下左右
+            {-1, -1}, {-1, 1}, {1, -1}, {1, 1} // 对角线
+        };
+
+        for (int[] dir : directions) {
+            int ni = i + dir[0];
+            int nj = j + dir[1];
+            if (ni >= 0 && ni < SLIDER_WIDTH && nj >= 0 && nj < SLIDER_HEIGHT) {
+                if (template[ni][nj] == 1) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 读取像素周围3x3区域的像素值
+     */
+    private static void readPixel(BufferedImage img, int x, int y, int[] pixels) {
+        int xStart = x - 1;
+        int yStart = y - 1;
+        int current = 0;
+
+        for (int i = xStart; i < 3 + xStart; i++) {
+            for (int j = yStart; j < 3 + yStart; j++) {
+                int tx = i;
+                if (tx < 0) {
+                    tx = -tx;
+                } else if (tx >= img.getWidth()) {
+                    tx = x;
+                }
+
+                int ty = j;
+                if (ty < 0) {
+                    ty = -ty;
+                } else if (ty >= img.getHeight()) {
+                    ty = y;
+                }
+
+                pixels[current++] = img.getRGB(tx, ty);
+            }
+        }
+    }
+
+    /**
+     * 填充矩阵
+     */
+    private static void fillMatrix(int[][] matrix, int[] values) {
+        int filled = 0;
+        for (int[] row : matrix) {
+            for (int j = 0; j < row.length; j++) {
+                row[j] = values[filled++];
+            }
+        }
+    }
+
+    /**
+     * 计算矩阵平均值（用于生成自然的镂空效果）
+     */
+    private static int avgMatrix(int[][] matrix) {
+        int r = 0;
+        int g = 0;
+        int b = 0;
+
+        for (int i = 0; i < matrix.length; i++) {
+            int[] row = matrix[i];
+            for (int j = 0; j < row.length; j++) {
+                if (j == 1) {
+                    continue; // 跳过中心点
+                }
+                Color c = new Color(row[j]);
+                r += c.getRed();
+                g += c.getGreen();
+                b += c.getBlue();
+            }
+        }
+
+        return new Color(r / 8, g / 8, b / 8).getRGB();
+    }
+
+    /**
+     * 调整图片大小
+     */
+    private static BufferedImage resizeImage(BufferedImage originalImage, int targetWidth) {
+        if (originalImage.getWidth() == targetWidth) {
+            return originalImage;
+        }
+
+        int targetHeight = (int) ((double) originalImage.getHeight() / originalImage.getWidth() * targetWidth);
+        BufferedImage resizedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
+
+        Graphics2D g = resizedImage.createGraphics();
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.drawImage(originalImage, 0, 0, targetWidth, targetHeight, null);
+        g.dispose();
+
+        return resizedImage;
     }
 
     private static String toBase64(BufferedImage image, String format) throws IOException {
