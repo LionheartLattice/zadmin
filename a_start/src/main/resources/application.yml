@@ -108,7 +108,7 @@ app:
     # 滑块位置容错值（像素）
     tolerance: 10
   auth:
-    enabled: false  # 是否启用安全校验,开发环境可设置为false
+    enabled: true  # 是否启用安全校验,开发环境可设置为false
     token-ttl-seconds: 604800
     token-key-prefix: "token:"
     aes-key: "LionHeartLattice" # AES加密密钥，16位字符
