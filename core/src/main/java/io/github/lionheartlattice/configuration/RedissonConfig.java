@@ -1,15 +1,18 @@
 package io.github.lionheartlattice.configuration;
 
-import com.esotericsoftware.kryo.kryo5.Kryo;
-import com.esotericsoftware.kryo.kryo5.io.Input;
-import com.esotericsoftware.kryo.kryo5.io.Output;
-import com.esotericsoftware.kryo.kryo5.objenesis.strategy.StdInstantiatorStrategy;
-import com.esotericsoftware.kryo.kryo5.serializers.CompatibleFieldSerializer;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
+import io.github.lionheartlattice.entity.user_center.po.*;
+import io.github.lionheartlattice.entity.user_center.vo.UserWithMenu;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
 import lombok.extern.slf4j.Slf4j;
+import org.objenesis.strategy.SerializingInstantiatorStrategy;
+import org.objenesis.strategy.StdInstantiatorStrategy;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.client.codec.BaseCodec;
@@ -30,7 +33,7 @@ import java.util.*;
 
 /**
  * Redisson 配置
- * 使用 Kryo 5 自定义序列化器,注册项目中的实体类
+ * 自定义 Kryo 序列化器,注册项目中的实体类
  */
 @Slf4j
 @Configuration
@@ -44,7 +47,7 @@ public class RedissonConfig {
                                          @Value("${spring.data.redis.timeout:5s}") Duration timeout) {
         Config config = new Config();
 
-        // 使用自定义的 Kryo 5 编解码器
+        // 使用自定义的 Kryo 编解码器
         config.setCodec(new CustomKryoCodec());
 
         SingleServerConfig single = config.useSingleServer()
@@ -59,29 +62,29 @@ public class RedissonConfig {
         single.setTimeout(timeoutMs);
         single.setConnectTimeout(timeoutMs);
 
-        log.info("RedissonClient initialized with Kryo 5 CustomKryoCodec. redis://{}:{}, db={}", host, port, database);
+        log.info("RedissonClient initialized with CustomKryoCodec. redis://{}:{}, db={}", host, port, database);
         return Redisson.create(config);
     }
 
     /**
-     * 自定义 Kryo 5 Codec,注册所有需要序列化的类
+     * 自定义 Kryo Codec,注册所有需要序列化的类
      */
     public static class CustomKryoCodec extends BaseCodec {
 
         private final ThreadLocal<Kryo> kryoThreadLocal = ThreadLocal.withInitial(() -> {
             Kryo kryo = new Kryo();
 
-            // 启用循环引用处理
+            // 设置为 false 避免循环引用问题
             kryo.setReferences(true);
 
-            // 允许未注册的类进行序列化
+            // 设置类注册行为(允许未注册的类)
             kryo.setRegistrationRequired(false);
 
             // 使用兼容的字段序列化器
             kryo.setDefaultSerializer(CompatibleFieldSerializer.class);
 
-            // 设置实例化策略(Kryo 5 内置)
-            kryo.setInstantiatorStrategy(new StdInstantiatorStrategy());
+            // 设置实例化策略 - 修改这里
+            kryo.setInstantiatorStrategy(new SerializingInstantiatorStrategy());
 
             // 注册 Java 基础类型
             kryo.register(BigDecimal.class);
@@ -96,11 +99,19 @@ public class RedissonConfig {
             kryo.register(HashMap.class);
             kryo.register(LinkedHashMap.class);
 
+            // 注册项目实体类
+//            kryo.register(UserWithMenu.class);
+//            kryo.register(User.class);
+//            kryo.register(Role.class);
+//            kryo.register(Menu.class);
+//            kryo.register(Dept.class);
+//            kryo.register(Tenant.class);
+
             // 注册数组类型
             kryo.register(Object[].class);
             kryo.register(BigDecimal[].class);
 
-            log.debug("Kryo 5 instance initialized with custom class registrations");
+            log.debug("Kryo instance initialized with custom class registrations");
             return kryo;
         });
 
