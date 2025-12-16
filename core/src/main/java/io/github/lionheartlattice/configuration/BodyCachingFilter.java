@@ -1,4 +1,4 @@
-package io.github.lionheartlattice.configuration.filter;
+package io.github.lionheartlattice.configuration;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

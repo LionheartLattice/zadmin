@@ -1,4 +1,4 @@
-package io.github.lionheartlattice.util.response;
+package io.github.lionheartlattice.configuration.exception;
 
 import lombok.Getter;
 

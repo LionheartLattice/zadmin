@@ -1,4 +1,4 @@
-package io.github.lionheartlattice.util.response;
+package io.github.lionheartlattice.configuration.exception;
 
 import cn.hutool.core.exceptions.ExceptionUtil;
 import io.github.lionheartlattice.entity.parent.ApiResult;

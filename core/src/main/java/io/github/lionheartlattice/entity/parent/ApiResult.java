@@ -1,7 +1,7 @@
 package io.github.lionheartlattice.entity.parent;
 
 import io.github.lionheartlattice.util.NullUtil;
-import io.github.lionheartlattice.util.response.ErrorEnum;
+import io.github.lionheartlattice.configuration.exception.ErrorEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
