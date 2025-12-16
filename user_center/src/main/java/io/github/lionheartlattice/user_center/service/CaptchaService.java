@@ -40,6 +40,9 @@ public class CaptchaService {
     @Value("${app.captcha.tolerance:10}")
     private int tolerance;
 
+    @Value("${app.captcha.watermark-text:}")
+    private String watermarkText;
+
     /**
      * 创建认证挑战（包含滑块验证码和临时密钥）
      *
@@ -64,7 +67,8 @@ public class CaptchaService {
             URL url = URI.create(imageUrl)
                          .toURL();
             try (InputStream in = url.openStream()) {
-                captchaImage = CaptchaImageUtil.generate(in);
+                // 生成验证码（传入水印文字）
+                captchaImage = CaptchaImageUtil.generate(in, watermarkText);
             }
         } catch (Exception e) {
             log.error("生成验证码失败", e);

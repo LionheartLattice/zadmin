@@ -25,21 +25,32 @@ public class CaptchaImageUtil {
     private static final int SMALL_CIRCLE = 10;
     private static final int SMALL_CIRCLE_R_1 = 2;
 
-    @Data
-    @Accessors(chain = true)
-    public static class CaptchaImage {
-        private String backgroundImage;
-        private String sliderImage;
-        private int x;
-        private int y;
+
+    /**
+     * 生成滑块验证码（不带水印）
+     */
+    public static CaptchaImage generate(InputStream imageStream) throws IOException {
+        return generate(imageStream, null);
     }
 
-    public static CaptchaImage generate(InputStream imageStream) throws IOException {
+    /**
+     * 生成滑块验证码（支持水印文字）
+     *
+     * @param imageStream 图片输入流
+     * @param watermarkText 水印文字（为null或空字符串则不添加水印）
+     * @return 验证码图片
+     */
+    public static CaptchaImage generate(InputStream imageStream, String watermarkText) throws IOException {
         BufferedImage originalImage = ImageIO.read(imageStream);
 
         // Resize image to 310px width, maintaining aspect ratio
         int targetWidth = 310;
         BufferedImage bigImage = resizeImage(originalImage, targetWidth);
+
+        // 添加水印
+        if (watermarkText != null && !watermarkText.trim().isEmpty()) {
+            addWatermark(bigImage, watermarkText);
+        }
 
         int width = bigImage.getWidth();
         int height = bigImage.getHeight();
@@ -304,6 +315,56 @@ public class CaptchaImageUtil {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         ImageIO.write(image, format, os);
         return "data:image/" + format + ";base64," + Base64.getEncoder().encodeToString(os.toByteArray());
+    }
+
+    /**
+     * 添加水印到图片右下角
+     *
+     * @param image 目标图片
+     * @param text 水印文字
+     */
+    private static void addWatermark(BufferedImage image, String text) {
+        Graphics2D g2d = image.createGraphics();
+        try {
+            // 设置渲染质量（抗锯齿）
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+            // 设置字体（Arial, 加粗, 18号）
+            Font font = new Font("Arial", Font.BOLD, 18);
+            g2d.setFont(font);
+
+            // 设置颜色和透明度（白色, 80%透明度）
+            g2d.setColor(Color.WHITE);
+            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.8f));
+
+            // 计算水印位置（右下角）
+            FontMetrics fontMetrics = g2d.getFontMetrics();
+            int textWidth = fontMetrics.stringWidth(text);
+            int x = image.getWidth() - textWidth - 10;
+            int y = image.getHeight() - fontMetrics.getHeight() / 2;
+
+            // 绘制水印
+            g2d.drawString(text, x, y);
+        } finally {
+            g2d.dispose();
+        }
+    }
+
+    /**
+     * 验证码图片结果
+     */
+    @Data
+    @Accessors(chain = true)
+    public static class CaptchaImage {
+        /** 背景图片(Base64) */
+        private String backgroundImage;
+        /** 滑块图片(Base64) */
+        private String sliderImage;
+        /** X坐标 */
+        private int x;
+        /** Y坐标 */
+        private int y;
     }
 }
 
