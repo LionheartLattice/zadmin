@@ -29,7 +29,6 @@ public class TenantDTO {
     @JsonView(Views.Update.class)
     @Schema(description = "租户ID")
     @Column(value = "id")
-    @NotNull(groups = Update.class)
     private BigDecimal id;
 
     /**
@@ -72,16 +71,5 @@ public class TenantDTO {
     @Schema(description = "备注")
     private String remark;
 
-    /**
-     * 验证分组：创建
-     */
-    public interface Create {
-    }
-
-    /**
-     * 验证分组：更新
-     */
-    public interface Update {
-    }
 }
 

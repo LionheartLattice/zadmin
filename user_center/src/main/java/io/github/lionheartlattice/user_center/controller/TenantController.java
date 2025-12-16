@@ -13,6 +13,7 @@ import io.github.lionheartlattice.util.response.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -29,11 +30,9 @@ import java.util.List;
 public class TenantController {
     private final TenantService tenantService;
 
-    @Operation(summary = "新增租户", description = "创建新租户")
+    @Operation(summary = "新增租户")
     @PostMapping("/create")
-//    @PreAuthorize("hasAuthority('z_tenant:create')") // 权限校验
-    public ApiResult<Boolean> create(
-            @Validated(TenantDTO.Create.class) @JsonView(Views.Create.class) @RequestBody TenantDTO dto) {
+    public ApiResult<Boolean> create(@Validated @JsonView(Views.Create.class) @RequestBody TenantDTO dto) {
         return ApiResult.success(tenantService.create(dto));
     }
 
@@ -41,15 +40,13 @@ public class TenantController {
     @PostMapping("/getbyid")
     @JsonView(Views.Update.class)
 //    @PreAuthorize("hasAuthority('z_tenant:getbyid')") // 权限校验
-    public ApiResult<TenantDTO> getById(@RequestParam BigDecimal id) {
+    public ApiResult<TenantDTO> getById(@RequestBody @NotNull BigDecimal id) {
         return ApiResult.success(tenantService.getById(id));
     }
 
-    @Operation(summary = "编辑租户", description = "修改租户信息")
+    @Operation(summary = "编辑租户")
     @PostMapping("/update")
-//    @PreAuthorize("hasAuthority('z_tenant:update')") // 权限校验
-    public ApiResult<Boolean> update(
-            @Validated(TenantDTO.Update.class) @JsonView(Views.Update.class) @RequestBody TenantDTO dto) {
+    public ApiResult<Boolean> update(@Validated @JsonView(Views.Update.class) @RequestBody TenantDTO dto) {
         return ApiResult.success(tenantService.update(dto));
     }
 
@@ -63,7 +60,7 @@ public class TenantController {
     @Operation(summary = "批量删除租户", description = "根据租户 ID 列表批量删除租户")
     @PostMapping("delete")
 //    @PreAuthorize("hasAuthority('z_tenant:delete')") // 权限校验
-    public ApiResult<Boolean> delete(@RequestBody List<BigDecimal> ids) {
+    public ApiResult<Boolean> delete(@RequestBody @NotNull List<BigDecimal> ids) {
         return ApiResult.success(tenantService.delete(ids));
     }
 
