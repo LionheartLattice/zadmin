@@ -331,12 +331,12 @@ public class CaptchaImageUtil {
             g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
             // 设置字体（Arial, 加粗, 18号）
-            Font font = new Font("Arial", Font.BOLD, 18);
+            Font font = new Font("waterFont", Font.BOLD, 30);
             g2d.setFont(font);
 
             // 设置颜色和透明度（白色, 80%透明度）
             g2d.setColor(Color.WHITE);
-            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.8f));
+            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
 
             // 计算水印位置（右下角）
             FontMetrics fontMetrics = g2d.getFontMetrics();
