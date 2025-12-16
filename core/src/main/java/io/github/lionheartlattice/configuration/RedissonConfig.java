@@ -100,12 +100,12 @@ public class RedissonConfig {
             kryo.register(LinkedHashMap.class);
 
             // 注册项目实体类
-            kryo.register(UserWithMenu.class);
-            kryo.register(User.class);
-            kryo.register(Role.class);
-            kryo.register(Menu.class);
-            kryo.register(Dept.class);
-            kryo.register(Tenant.class);
+//            kryo.register(UserWithMenu.class);
+//            kryo.register(User.class);
+//            kryo.register(Role.class);
+//            kryo.register(Menu.class);
+//            kryo.register(Dept.class);
+//            kryo.register(Tenant.class);
 
             // 注册数组类型
             kryo.register(Object[].class);
