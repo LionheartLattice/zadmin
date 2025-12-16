@@ -13,7 +13,6 @@ import io.github.lionheartlattice.entity.user_center.po.User;
 import io.github.lionheartlattice.entity.user_center.po.proxy.RoleProxy;
 import io.github.lionheartlattice.entity.user_center.po.proxy.UserProxy;
 import io.github.lionheartlattice.entity.user_center.vo.ChallengeInfo;
-import io.github.lionheartlattice.entity.user_center.vo.LoginResultVO;
 import io.github.lionheartlattice.entity.user_center.vo.UserWithMenu;
 import io.github.lionheartlattice.util.CaptchaImageUtil;
 import io.github.lionheartlattice.util.CopyUtil;
@@ -121,7 +120,7 @@ public class LoginService {
         return userWithMenu.setMenuList(treeMenus);
     }
 
-    public LoginResultVO login(LoginDTO dto) {
+    public UserWithMenu login(LoginDTO dto) {
         // 0. 校验验证码
         String captchaKey = "captcha:" + dto.getRequestId();
         Object storedXObj = redissonClient.getBucket(captchaKey).get();
@@ -183,15 +182,7 @@ public class LoginService {
         // 4. 生成 Token 并构建返回结果
         String token = createToken(draft2.getValue1());
         UserWithMenu userWithMenu = detailWithInclude(draft2.getValue1());
-
-        return new LoginResultVO()
-                .setAccessToken(token)
-                .setUserInfo(userWithMenu)
-                .setName(userWithMenu.getNickname())
-                .setAvatar(userWithMenu.getLogo())
-                .setIntroduction("Welcome")
-                .setRoles(new ArrayList<>())
-                .setPermissions(new ArrayList<>());
+        return userWithMenu.setAccessToken(token);
     }
 
     /**

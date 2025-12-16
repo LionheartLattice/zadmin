@@ -27,19 +27,19 @@ public class UserWithMenu {
     /**
      * 用户ID
      */
-    @Schema(description = "用户ID", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "用户ID")
     private BigDecimal id;
 
     /**
      * 用户名
      */
-    @Schema(description = "用户名", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "用户名")
     private String username;
 
     /**
      * 密码
      */
-    @Schema(description = "密码", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "密码")
     private String pwd;
 
     /**
@@ -116,6 +116,8 @@ public class UserWithMenu {
     private BigDecimal tenantId;
 
 
+    @Schema(description = "访问令牌")
+    private String accessToken;
 
     private List<Dept> deptList;
 
