@@ -1,6 +1,7 @@
 package io.github.lionheartlattice.util.response;
 
 import cn.hutool.core.exceptions.ExceptionUtil;
+import io.github.lionheartlattice.entity.parent.ApiResult;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;

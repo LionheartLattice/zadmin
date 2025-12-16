@@ -8,7 +8,7 @@ import io.github.lionheartlattice.entity.user_center.po.Dept;
 import io.github.lionheartlattice.user_center.service.DeptService;
 import io.github.lionheartlattice.util.ExcelExportUtil;
 import io.github.lionheartlattice.util.ExcelImportUtil;
-import io.github.lionheartlattice.util.response.ApiResult;
+import io.github.lionheartlattice.entity.parent.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;

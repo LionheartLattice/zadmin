@@ -1,4 +1,4 @@
-package io.github.lionheartlattice.entity.user_center.dto;
+package io.github.lionheartlattice.entity.parent;
 
 /**
  * Jackson 视图接口，用于控制 DTO 字段的序列化和反序列化

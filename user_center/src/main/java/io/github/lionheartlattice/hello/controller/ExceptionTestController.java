@@ -1,6 +1,6 @@
 package io.github.lionheartlattice.hello.controller;
 
-import io.github.lionheartlattice.util.response.ApiResult;
+import io.github.lionheartlattice.entity.parent.ApiResult;
 import io.github.lionheartlattice.util.response.ErrorEnum;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

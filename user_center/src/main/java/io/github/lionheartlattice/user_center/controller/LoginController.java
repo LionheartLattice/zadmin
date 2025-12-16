@@ -3,7 +3,7 @@ package io.github.lionheartlattice.user_center.controller;
 import io.github.lionheartlattice.entity.user_center.dto.LoginDTO;
 import io.github.lionheartlattice.entity.user_center.vo.UserWithMenu;
 import io.github.lionheartlattice.user_center.service.LoginService;
-import io.github.lionheartlattice.util.response.ApiResult;
+import io.github.lionheartlattice.entity.parent.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
