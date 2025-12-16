@@ -3,6 +3,7 @@ package io.github.lionheartlattice.entity.user_center.vo;
 import com.easy.query.core.annotation.ColumnIgnore;
 import com.easy.query.core.annotation.LogicDelete;
 import com.easy.query.core.basic.extension.logicdel.LogicDeleteStrategyEnum;
+import io.github.lionheartlattice.entity.parent.ParentCloneable;
 import io.github.lionheartlattice.entity.user_center.po.Dept;
 import io.github.lionheartlattice.entity.user_center.po.Menu;
 import io.github.lionheartlattice.entity.user_center.po.Role;
@@ -23,7 +24,7 @@ import java.util.List;
  */
 
 @Data
-public class UserWithMenu {
+public class UserWithMenu extends ParentCloneable<UserWithMenu> {
 
     /**
      * 用户ID

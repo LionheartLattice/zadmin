@@ -16,8 +16,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -33,40 +37,50 @@ public class SecurityConfig {
     @Value("${app.auth.token-key-prefix:token:}")
     private String tokenKeyPrefix;
 
-    /**
-     * 放行白名单
-     * 使用 @Value 注入数组，配置文件中需使用逗号分隔，例如：url1,url2,url3
-     * 这里提供了默认值，包含登录接口和 Swagger 文档相关路径
-     */
-    @Value("${app.auth.ignored-urls:/z_login/login,/doc.html,/swagger-ui/**,/swagger-ui.html,/v3/api-docs/**,/v3/api-docs.json,/webjars/**,/favicon.ico}")
+    @Value("${app.auth.ignored-urls:/z_login/login,/doc.html,/swagger-ui/**,/swagger-ui.html,/v3/api-docs/**,/v3/api-docs.json,/webjars/**,/favicon.ico,/captcha/**}")
     private String[] ignoredUrls;
+
+    /**
+     * CORS 配置源
+     */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOriginPatterns(List.of("*"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+        config.setMaxAge(3600L);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         TokenAuthenticationFilter tokenFilter = new TokenAuthenticationFilter(loginService, tokenKeyPrefix);
 
-        http.csrf(AbstractHttpConfigurer::disable)
-            .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .exceptionHandling(ex -> ex.authenticationEntryPoint((req, resp, e) -> {
-                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
-                resp.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                resp.getWriter()
-                    .write("{\"success\":false,\"message\":\"未登录或token无效\"}");
-            }));
+        http
+                // 启用 CORS(关键配置)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(ex -> ex.authenticationEntryPoint((req, resp, e) -> {
+                    resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
+                    resp.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                    resp.getWriter()
+                        .write("{\"success\":false,\"message\":\"未登录或token无效\"}");
+                }));
 
-        // 根据配置决定是否启用安全校验
         if (authEnabled) {
-            http.authorizeHttpRequests(auth -> auth
-                        // 动态配置放行地址
-                        .requestMatchers(ignoredUrls)
-                        .permitAll()
-                        // 其他所有接口需要认证
-                        .anyRequest()
-                        .authenticated())
+            http.authorizeHttpRequests(auth -> auth.requestMatchers(ignoredUrls)
+                                                   .permitAll()
+                                                   .anyRequest()
+                                                   .authenticated())
                 .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
         } else {
-            // 开发环境:全部放开
             http.authorizeHttpRequests(auth -> auth.anyRequest()
                                                    .permitAll());
         }
@@ -74,13 +88,10 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /**
-     * 注册一个空的 UserDetailsService Bean，防止 Spring Security 自动生成默认用户密码
-     */
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> {
-            throw new UsernameNotFoundException("此应用使用Token认证，不使用默认UserDetailsService");
+            throw new UsernameNotFoundException("此应用使用Token认证,不使用默认UserDetailsService");
         };
     }
 }

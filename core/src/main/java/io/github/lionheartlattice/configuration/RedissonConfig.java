@@ -1,10 +1,18 @@
 package io.github.lionheartlattice.configuration;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
+import io.github.lionheartlattice.entity.user_center.po.*;
+import io.github.lionheartlattice.entity.user_center.vo.UserWithMenu;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
 import lombok.extern.slf4j.Slf4j;
+import org.objenesis.strategy.SerializingInstantiatorStrategy;
+import org.objenesis.strategy.StdInstantiatorStrategy;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.client.codec.BaseCodec;
@@ -16,18 +24,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
-import tools.jackson.databind.json.JsonMapper;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
 
 /**
- * Redisson 手动配置
- * <p>
- * 1. 适配 Jackson 3.x (tools.jackson.*)
- * 2. 注入 Spring 管理的 JsonMapper，复用全局配置（如时间模块、序列化策略）
+ * Redisson 配置
+ * 自定义 Kryo 序列化器,注册项目中的实体类
  */
 @Slf4j
 @Configuration
@@ -38,13 +44,11 @@ public class RedissonConfig {
                                          @Value("${spring.data.redis.port:6379}") int port,
                                          @Value("${spring.data.redis.database:0}") int database,
                                          @Value("${spring.data.redis.password:}") String password,
-                                         @Value("${spring.data.redis.timeout:5s}") Duration timeout,
-                                         JsonMapper jsonMapper) { // 核心修改：直接注入 Spring 容器中的 JsonMapper
+                                         @Value("${spring.data.redis.timeout:5s}") Duration timeout) {
         Config config = new Config();
 
-        // 使用注入的 JsonMapper 初始化自定义 Codec
-        // 这样无需手动处理 findAndRegisterModules，也能保证与 Spring MVC 的序列化行为一致
-        config.setCodec(new Jackson3Codec(jsonMapper));
+        // 使用自定义的 Kryo 编解码器
+        config.setCodec(new CustomKryoCodec());
 
         SingleServerConfig single = config.useSingleServer()
                                           .setAddress("redis://" + host + ":" + port)
@@ -58,44 +62,78 @@ public class RedissonConfig {
         single.setTimeout(timeoutMs);
         single.setConnectTimeout(timeoutMs);
 
-        log.info("RedissonClient initialized. redis://{}:{}, db={}", host, port, database);
+        log.info("RedissonClient initialized with CustomKryoCodec. redis://{}:{}, db={}", host, port, database);
         return Redisson.create(config);
     }
 
     /**
-     * 自定义 Redisson Codec 以支持 Jackson 3 (JsonMapper)
-     * 修复了变量初始化顺序问题
+     * 自定义 Kryo Codec,注册所有需要序列化的类
      */
-    public static class Jackson3Codec extends BaseCodec {
-        private final JsonMapper mapper;
-        private final Encoder encoder;
-        private final Decoder<Object> decoder;
+    public static class CustomKryoCodec extends BaseCodec {
 
-        public Jackson3Codec(JsonMapper mapper) {
-            this.mapper = mapper;
+        private final ThreadLocal<Kryo> kryoThreadLocal = ThreadLocal.withInitial(() -> {
+            Kryo kryo = new Kryo();
 
-            // 将 Encoder/Decoder 的初始化移入构造函数
-            // 确保此时 this.mapper 已经被赋值，避免 NullPointerException 或未初始化错误
-            this.encoder = in -> {
-                ByteBuf out = ByteBufAllocator.DEFAULT.buffer();
-                try {
-                    ByteBufOutputStream os = new ByteBufOutputStream(out);
-                    this.mapper.writeValue((OutputStream) os, in);
-                    return out;
-                } catch (Exception e) {
-                    out.release();
-                    throw new IOException(e);
-                }
-            };
+            // 设置为 false 避免循环引用问题
+            kryo.setReferences(true);
 
-            this.decoder = (buf, state) -> {
-                try {
-                    return this.mapper.readValue((InputStream) new ByteBufInputStream(buf), Object.class);
-                } catch (Exception e) {
-                    throw new IOException(e);
-                }
-            };
-        }
+            // 设置类注册行为(允许未注册的类)
+            kryo.setRegistrationRequired(false);
+
+            // 使用兼容的字段序列化器
+            kryo.setDefaultSerializer(CompatibleFieldSerializer.class);
+
+            // 设置实例化策略 - 修改这里
+            kryo.setInstantiatorStrategy(new SerializingInstantiatorStrategy());
+
+            // 注册 Java 基础类型
+            kryo.register(BigDecimal.class);
+            kryo.register(LocalDate.class);
+            kryo.register(LocalDateTime.class);
+            kryo.register(Date.class);
+
+            // 注册集合类
+            kryo.register(ArrayList.class);
+            kryo.register(LinkedList.class);
+            kryo.register(HashSet.class);
+            kryo.register(HashMap.class);
+            kryo.register(LinkedHashMap.class);
+
+            // 注册项目实体类
+            kryo.register(UserWithMenu.class);
+            kryo.register(User.class);
+            kryo.register(Role.class);
+            kryo.register(Menu.class);
+            kryo.register(Dept.class);
+            kryo.register(Tenant.class);
+
+            // 注册数组类型
+            kryo.register(Object[].class);
+            kryo.register(BigDecimal[].class);
+
+            log.debug("Kryo instance initialized with custom class registrations");
+            return kryo;
+        });
+
+        private final Decoder<Object> decoder = (buf, state) -> {
+            Kryo kryo = kryoThreadLocal.get();
+            try (Input input = new Input(new ByteBufInputStream(buf))) {
+                return kryo.readClassAndObject(input);
+            }
+        };
+
+        private final Encoder encoder = in -> {
+            Kryo kryo = kryoThreadLocal.get();
+            ByteBuf out = ByteBufAllocator.DEFAULT.buffer();
+            try (Output output = new Output(new ByteBufOutputStream(out))) {
+                kryo.writeClassAndObject(output, in);
+                output.flush();
+                return out;
+            } catch (Exception e) {
+                out.release();
+                throw e;
+            }
+        };
 
         @Override
         public Decoder<Object> getValueDecoder() {
@@ -107,24 +145,8 @@ public class RedissonConfig {
             return encoder;
         }
 
-        @Override
-        public Decoder<Object> getMapValueDecoder() {
-            return decoder;
-        }
-
-        @Override
-        public Encoder getMapValueEncoder() {
-            return encoder;
-        }
-
-        @Override
-        public Decoder<Object> getMapKeyDecoder() {
-            return decoder;
-        }
-
-        @Override
-        public Encoder getMapKeyEncoder() {
-            return encoder;
+        public void cleanup() {
+            kryoThreadLocal.remove();
         }
     }
 }

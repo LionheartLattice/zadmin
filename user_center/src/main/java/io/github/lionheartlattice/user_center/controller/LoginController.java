@@ -26,7 +26,7 @@ public class LoginController {
     }
 
     @Operation(summary = "用户登出", description = "删除 token，使用户下线")
-    @PostMapping("/logout")
+    @GetMapping("/logout")
     public ApiResult<Boolean> logout() {
         String token = SecurityContextHolder.getContext()
                                             .getAuthentication()
