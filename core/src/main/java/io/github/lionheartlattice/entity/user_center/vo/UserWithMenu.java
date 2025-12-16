@@ -1,5 +1,6 @@
 package io.github.lionheartlattice.entity.user_center.vo;
 
+import com.easy.query.core.annotation.ColumnIgnore;
 import com.easy.query.core.annotation.LogicDelete;
 import com.easy.query.core.basic.extension.logicdel.LogicDeleteStrategyEnum;
 import io.github.lionheartlattice.entity.user_center.po.Dept;
@@ -117,6 +118,7 @@ public class UserWithMenu {
 
 
     @Schema(description = "访问令牌")
+    @ColumnIgnore
     private String accessToken;
 
     private List<Dept> deptList;
