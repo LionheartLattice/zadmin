@@ -1,9 +1,10 @@
 package io.github.lionheartlattice.user_center.controller;
 
 import com.easy.query.core.api.pagination.EasyPageResult;
+import com.fasterxml.jackson.annotation.JsonView;
 import io.github.lionheartlattice.entity.parent.PageDTO;
-import io.github.lionheartlattice.entity.user_center.dto.TenantCreateDTO;
-import io.github.lionheartlattice.entity.user_center.dto.TenantUpdateDTO;
+import io.github.lionheartlattice.entity.user_center.dto.TenantDTO;
+import io.github.lionheartlattice.entity.user_center.dto.Views;
 import io.github.lionheartlattice.entity.user_center.po.Tenant;
 import io.github.lionheartlattice.user_center.service.TenantService;
 import io.github.lionheartlattice.util.ExcelExportUtil;
@@ -13,12 +14,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.List;
+
 //目前先不管权限校验，先把系统搭建快速验证
 @Tag(name = "租户管理", description = "租户信息的增删改查、Excel 导入导出等操作")
 @RestController
@@ -30,21 +32,24 @@ public class TenantController {
     @Operation(summary = "新增租户", description = "创建新租户")
     @PostMapping("/create")
 //    @PreAuthorize("hasAuthority('z_tenant:create')") // 权限校验
-    public ApiResult<Boolean> create(@RequestBody TenantCreateDTO dto) {
+    public ApiResult<Boolean> create(
+            @Validated(TenantDTO.Create.class) @JsonView(Views.Create.class) @RequestBody TenantDTO dto) {
         return ApiResult.success(tenantService.create(dto));
     }
 
     @Operation(summary = "获取租户详情", description = "根据租户 ID 获取租户的详细信息")
     @PostMapping("/getbyid")
+    @JsonView(Views.Update.class)
 //    @PreAuthorize("hasAuthority('z_tenant:getbyid')") // 权限校验
-    public ApiResult<TenantUpdateDTO> getById(@RequestParam BigDecimal id) {
+    public ApiResult<TenantDTO> getById(@RequestParam BigDecimal id) {
         return ApiResult.success(tenantService.getById(id));
     }
 
     @Operation(summary = "编辑租户", description = "修改租户信息")
     @PostMapping("/update")
 //    @PreAuthorize("hasAuthority('z_tenant:update')") // 权限校验
-    public ApiResult<Boolean> update(@RequestBody TenantUpdateDTO dto) {
+    public ApiResult<Boolean> update(
+            @Validated(TenantDTO.Update.class) @JsonView(Views.Update.class) @RequestBody TenantDTO dto) {
         return ApiResult.success(tenantService.update(dto));
     }
 
@@ -66,7 +71,7 @@ public class TenantController {
     @PostMapping("upload")
 //    @PreAuthorize("hasAuthority('z_tenant:upload')") // 权限校验
     public ApiResult<Boolean> upload(@RequestParam(value = "file") MultipartFile file) {
-        List<TenantCreateDTO> dtos = ExcelImportUtil.importExcel(file, TenantCreateDTO.class);
+        List<TenantDTO> dtos = ExcelImportUtil.importExcel(file, TenantDTO.class);
         return ApiResult.success(tenantService.saveBatch(dtos));
     }
 
@@ -75,7 +80,7 @@ public class TenantController {
 //    @PreAuthorize("hasAuthority('z_tenant:export')") // 权限校验
     public void downLoad(@RequestBody PageDTO dto, HttpServletResponse response) {
         if (dto.isDownloadEmptyExcel()) {
-            ExcelExportUtil.downloadEmpty(response, TenantCreateDTO.class);
+            ExcelExportUtil.downloadEmpty(response, TenantDTO.class);
         } else {
             ExcelExportUtil.export(response, tenantService.page(dto)
                                                           .getData());

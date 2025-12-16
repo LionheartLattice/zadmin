@@ -5,8 +5,7 @@ import com.easy.query.core.api.pagination.EasyPageResult;
 import com.easy.query.core.enums.SQLExecuteStrategyEnum;
 import com.easy.query.core.expression.builder.core.NotNullOrEmptyValueFilter;
 import io.github.lionheartlattice.entity.parent.PageDTO;
-import io.github.lionheartlattice.entity.user_center.dto.TenantCreateDTO;
-import io.github.lionheartlattice.entity.user_center.dto.TenantUpdateDTO;
+import io.github.lionheartlattice.entity.user_center.dto.TenantDTO;
 import io.github.lionheartlattice.entity.user_center.po.Tenant;
 import io.github.lionheartlattice.util.CopyUtil;
 import io.github.lionheartlattice.util.response.ErrorEnum;
@@ -26,14 +25,14 @@ import static io.github.lionheartlattice.util.NullUtil.isNotNull;
 public class TenantService {
     private final TransactionTemplate transactionTemplate;
 
-    public Boolean create(TenantCreateDTO dto) {
+    public Boolean create(TenantDTO dto) {
         long rows = new Tenant().copyFrom(dto)
                                 .insertable()
                                 .executeRows();
         return isNotNull(rows);
     }
 
-    public Boolean update(TenantUpdateDTO dto) {
+    public Boolean update(TenantDTO dto) {
         long rows = new Tenant().copyFrom(dto)
                                 .updatable()
                                 .setSQLStrategy(SQLExecuteStrategyEnum.ONLY_NOT_NULL_COLUMNS)
@@ -41,10 +40,10 @@ public class TenantService {
         return isNotNull(rows);
     }
 
-    public TenantUpdateDTO getById(BigDecimal id) {
+    public TenantDTO getById(BigDecimal id) {
         return new Tenant().queryable()
                            .whereById(id)
-                           .select(t -> new ClassProxy<>(TenantUpdateDTO.class).selectAll(t))
+                           .select(t -> new ClassProxy<>(TenantDTO.class).selectAll(t))
                            .singleNotNull();
     }
 
@@ -91,7 +90,7 @@ public class TenantService {
         return isNotNull(rows);
     }
 
-    public Boolean saveBatch(List<TenantCreateDTO> dtos) {
+    public Boolean saveBatch(List<TenantDTO> dtos) {
         List<Tenant> tenants = CopyUtil.copyList(dtos, Tenant.class);
         Long row = transactionTemplate.execute(status -> new Tenant().insertable(tenants)
                                                                      .batch(true)
