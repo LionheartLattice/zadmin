@@ -5,6 +5,7 @@ import io.github.lionheartlattice.entity.parent.PageDTO;
 import io.github.lionheartlattice.entity.user_center.dto.UserCreatDTO;
 import io.github.lionheartlattice.entity.user_center.dto.UserUpdateDTO;
 import io.github.lionheartlattice.entity.user_center.po.User;
+import io.github.lionheartlattice.entity.user_center.vo.UserWithMenu;
 import io.github.lionheartlattice.user_center.service.UserService;
 import io.github.lionheartlattice.util.ExcelExportUtil;
 import io.github.lionheartlattice.util.ExcelImportUtil;
@@ -13,6 +14,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -79,5 +81,14 @@ public class UserController {
     @PostMapping("encoderPwd")
     public ApiResult<Boolean> encoderPwd(@RequestParam Long id) {
         return ApiResult.success(userService.encoderPwd(id));
+    }
+
+    @Operation(summary = "获取当前登录用户", description = "从 Security Context 获取当前认证用户的完整信息（包含角色、部门、菜单）")
+    @GetMapping("/current-user")
+    public ApiResult<UserWithMenu> getCurrentUser() {
+        UserWithMenu user = (UserWithMenu) SecurityContextHolder.getContext()
+                                                                .getAuthentication()
+                                                                .getPrincipal();
+        return ApiResult.success(user);
     }
 }

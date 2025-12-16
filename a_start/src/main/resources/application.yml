@@ -101,10 +101,16 @@ app:
     worker-id: 1
   request-cache:
     max-size: 100MB
+  # 验证码配置
+  captcha:
+    # 验证码过期时间（分钟）
+    expire-minutes: 5
+    # 滑块位置容错值（像素）
+    tolerance: 10
   auth:
     enabled: false  # 是否启用安全校验,开发环境可设置为false
     token-ttl-seconds: 604800
     token-key-prefix: "token:"
     aes-key: "LionHeartLattice" # AES加密密钥，16位字符
-    ignored-urls: /z_login/login,/doc.html,/swagger-ui/**,/swagger-ui.html,/v3/api-docs/**,/v3/api-docs.json,/webjars/**,/favicon.ico,/z_login/challenge,/captcha/status
+    ignored-urls: /z_login/login,/doc.html,/swagger-ui/**,/swagger-ui.html,/v3/api-docs/**,/v3/api-docs.json,/webjars/**,/favicon.ico,/captcha/**
     vite_app_client-id: vite_zadmin1_3247561ad97c11f0804400163e0228ba #允许登录的前端，登录接口必须传入此参数

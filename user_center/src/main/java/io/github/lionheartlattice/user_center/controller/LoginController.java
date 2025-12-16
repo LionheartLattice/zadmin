@@ -1,7 +1,6 @@
 package io.github.lionheartlattice.user_center.controller;
 
 import io.github.lionheartlattice.entity.user_center.dto.LoginDTO;
-import io.github.lionheartlattice.entity.user_center.vo.ChallengeInfo;
 import io.github.lionheartlattice.entity.user_center.vo.UserWithMenu;
 import io.github.lionheartlattice.user_center.service.LoginService;
 import io.github.lionheartlattice.util.response.ApiResult;
@@ -19,11 +18,6 @@ public class LoginController {
 
     private final LoginService loginService;
 
-    @Operation(summary = "获取认证挑战参数", description = "获取一次性requestId和临时AES密钥，用于前端加密密码")
-    @PostMapping("/challenge")
-    public ApiResult<ChallengeInfo> getChallenge(@RequestBody String clientId) {
-        return ApiResult.success(loginService.createChallenge(clientId));
-    }
 
     @Operation(summary = "用户登录", description = "使用用户名和密码登录，返回 token 和用户信息")
     @PostMapping("/login")
@@ -41,12 +35,5 @@ public class LoginController {
         return ApiResult.success(loginService.logout(token));
     }
 
-    @Operation(summary = "获取当前登录用户", description = "从 Security Context 获取当前认证用户的完整信息（包含角色、部门、菜单）")
-    @GetMapping("/current-user")
-    public ApiResult<UserWithMenu> getCurrentUser() {
-        UserWithMenu user = (UserWithMenu) SecurityContextHolder.getContext()
-                                                                .getAuthentication()
-                                                                .getPrincipal();
-        return ApiResult.success(user);
-    }
+
 }
