@@ -107,7 +107,7 @@ create table public.z_menu
 (
     id           numeric(28)                                not null
         primary key,
-    pid          bigint                                     not null,
+    pid          numeric(28)                                not null,
     path         varchar(255) default ''::character varying not null,
     name         varchar(64)  default ''::character varying not null,
     title        varchar(64)                                not null,
@@ -184,7 +184,7 @@ create table public.z_dept
     id              numeric(28)                not null
         primary key,
     name            varchar(64)                not null,
-    pid             bigint                     not null,
+    pid             numeric(28)                not null,
     default_role_id numeric(28),
     deep            integer,
     sort            integer,
@@ -337,9 +337,9 @@ comment on column public.z_tenant.id is '租户ID';
 
 comment on column public.z_tenant.name is '租户名称';
 
-comment on column public.z_tenant.contact_person is '联系人';
+comment on column public.z_tenant.manager_user_id is '管理员';
 
-comment on column public.z_tenant.contact_phone is '联系电话';
+comment on column public.z_tenant.manager_user_phone is '管理员电话';
 
 comment on column public.z_tenant.is_lock is '锁定';
 
@@ -394,12 +394,4 @@ alter table public.z_file
 
 create index z_file_usage_index
     on public.z_file (usage);
-
-
-
-
-
-
-
-
 
