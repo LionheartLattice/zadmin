@@ -35,16 +35,17 @@ public class TenantUpdateDTO {
     private String name;
 
     /**
-     * 联系人ID (管理员)
+     * 联系人ID (管理员)contact_name  varchar(32)  default ''::character varying not null,
+     *     contact_phone varchar(20)  default ''::character varying not null,
      */
     @Schema(description = "联系人ID", requiredMode = Schema.RequiredMode.REQUIRED)
-    private String managerUserId;
+    private String contacrName;
 
     /**
      * ��系电话
      */
     @Schema(description = "联系电话", requiredMode = Schema.RequiredMode.REQUIRED)
-    private String managerUserPhone;
+    private String contactPhone;
 
     /**
      * 是否锁定

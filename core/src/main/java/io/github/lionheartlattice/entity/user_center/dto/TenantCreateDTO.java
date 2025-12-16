@@ -30,14 +30,14 @@ public class TenantCreateDTO {
      */
     @NotNull
     @Schema(description = "联系人ID", requiredMode = Schema.RequiredMode.REQUIRED)
-    private String managerUserId;
+    private String contactName;
 
     /**
      * 联系电话
      */
     @NotNull
     @Schema(description = "联系电话", requiredMode = Schema.RequiredMode.REQUIRED)
-    private String managerUserPhone;
+    private String contactPhone;
 
     /**
      * 是否锁定

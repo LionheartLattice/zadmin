@@ -42,13 +42,13 @@ public class Tenant extends ParentClientEntity<Tenant, TenantProxy> implements P
      * 联系人ID (管理员)
      */
     @Schema(description = "联系人ID", requiredMode = Schema.RequiredMode.REQUIRED)
-    private String managerUserId;
+    private String contactName;
 
     /**
      * 联系电话
      */
     @Schema(description = "联系电话", requiredMode = Schema.RequiredMode.REQUIRED)
-    private String managerUserPhone;
+    private String contactPhone;
 
     /**
      * 是否锁定
