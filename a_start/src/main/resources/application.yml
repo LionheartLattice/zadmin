@@ -114,3 +114,9 @@ app:
     aes-key: "LionHeartLattice" # AES加密密钥，16位字符
     ignored-urls: /z_login/login,/doc.html,/swagger-ui/**,/swagger-ui.html,/v3/api-docs/**,/v3/api-docs.json,/webjars/**,/favicon.ico,/captcha/**
     vite_app_client-id: vite_zadmin1_3247561ad97c11f0804400163e0228ba #允许登录的前端，登录接口必须传入此参数
+  cors:
+    allowed-origins: http://localhost:9848,http://localhost:9000,http://127.0.0.1:9000,http://127.0.0.1:9848,http://100.95.188.10:9000,http://100.95.188.10:9848
+    allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+    allowed-headers: "*"
+    allow-credentials: true
+    max-age: 3600
