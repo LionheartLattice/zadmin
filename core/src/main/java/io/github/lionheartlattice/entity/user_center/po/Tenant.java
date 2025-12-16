@@ -92,4 +92,10 @@ public class Tenant extends ParentClientEntity<Tenant, TenantProxy> implements P
      */
     @Schema(description = "更新人ID")
     private BigDecimal updateId;
+
+    /**
+     * 超级管理员ID
+     */
+    @Schema(description = "超级管理员ID")
+    private BigDecimal superUserId;
 }
