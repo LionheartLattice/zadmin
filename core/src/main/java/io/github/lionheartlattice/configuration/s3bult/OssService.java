@@ -1,6 +1,5 @@
 package io.github.lionheartlattice.configuration.s3bult;
 
-import cn.hutool.core.io.FileUtil;
 import io.github.lionheartlattice.entity.parent.OssPutRet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +34,6 @@ public class OssService {
     public OssPutRet upload(MultipartFile file, String key) {
         try {
             String originalFilename = file.getOriginalFilename();
-            String suffix = FileUtil.getSuffix(originalFilename);
             String contentType = file.getContentType();
             long size = file.getSize();
 
@@ -49,13 +47,14 @@ public class OssService {
             // 2. 使用 ContentProvider 方式上传
             // 解决 "Content input stream does not support mark/reset" 问题
             // 允许 SDK 在签名或重试时重新获取流，而不是依赖流的 reset 功能
+            String finalContentType = contentType != null ? contentType : "application/octet-stream";
             RequestBody requestBody = RequestBody.fromContentProvider(() -> {
                 try {
                     return file.getInputStream();
                 } catch (IOException e) {
                     throw new RuntimeException("无法获取文件流", e);
                 }
-            }, size, contentType);
+            }, size, finalContentType);
 
             s3Client.putObject(putObjectRequest, requestBody);
 
@@ -63,10 +62,10 @@ public class OssService {
 
             // 3. 返回详细结果
             return new OssPutRet().setOriginalName(originalFilename)
-                                  .setExtension(suffix)
                                   .setFileSize(size)
                                   .setContentType(contentType)
-                                  .setUrl(getPublicUrl(key));
+                                  .setUrl(getPublicUrl(key))
+                                  .setKey(key);
 
         } catch (Exception e) {
             log.error("S3上传失败", e);

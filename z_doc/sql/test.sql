@@ -453,3 +453,41 @@ VALUES
 -- 8. 更新用户表的租户ID
 UPDATE z_user SET tenant_id = 2025121300000000000001000000
 WHERE id IN (2025121314461087000001000000, 2025121317433889000001000000, 2025121317211139900001000000, 2025121317265330200001000000);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- 删除旧表
+DROP TABLE IF EXISTS public.z_file;
+
+-- 创建新表
+CREATE TABLE public.z_file
+(
+    id            VARCHAR(512)                               NOT NULL PRIMARY KEY,
+    original_name VARCHAR(512) DEFAULT ''::CHARACTER VARYING NOT NULL,
+    file_size     BIGINT       DEFAULT 0                     NOT NULL,
+    content_type  VARCHAR(128) DEFAULT ''::CHARACTER VARYING NOT NULL,
+    create_id     NUMERIC(28)  DEFAULT 0,
+    usage         VARCHAR(255) DEFAULT ''::CHARACTER VARYING NOT NULL
+);
+
+COMMENT ON TABLE public.z_file IS '文件存储表';
+COMMENT ON COLUMN public.z_file.id IS '文件路径KEY(格式: yyyyMM/雪花ID(去除yyyyMM).后缀)';
+COMMENT ON COLUMN public.z_file.original_name IS '原始文件名';
+COMMENT ON COLUMN public.z_file.file_size IS '文件大小(字节)';
+COMMENT ON COLUMN public.z_file.content_type IS 'MIME类型';
+COMMENT ON COLUMN public.z_file.create_id IS '创建人ID';
+COMMENT ON COLUMN public.z_file.usage IS '用途';
+
+CREATE INDEX z_file_usage_index ON public.z_file (usage);
+CREATE INDEX z_file_content_type_index ON public.z_file (content_type);

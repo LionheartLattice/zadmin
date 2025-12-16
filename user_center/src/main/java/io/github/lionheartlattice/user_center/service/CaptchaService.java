@@ -1,9 +1,9 @@
 package io.github.lionheartlattice.user_center.service;
 
 import cn.hutool.core.util.IdUtil;
-import com.easy.query.core.proxy.core.draft.Draft2;
+import com.easy.query.core.proxy.core.draft.Draft1;
 import com.easy.query.core.proxy.sql.Select;
-import io.github.lionheartlattice.configuration.s3bult.ZFileService;
+import io.github.lionheartlattice.configuration.s3bult.OssService;
 import io.github.lionheartlattice.entity.parent.ZFile;
 import io.github.lionheartlattice.entity.user_center.vo.ChallengeInfo;
 import io.github.lionheartlattice.util.AESUtil;
@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URL;
 import java.time.Duration;
@@ -33,7 +32,7 @@ import java.time.Duration;
 public class CaptchaService {
 
     private final RedissonClient redissonClient;
-    private final ZFileService zFileService;
+    private final OssService ossService;
 
     @Value("${app.captcha.expire-minutes:5}")
     private int expireMinutes;
@@ -62,7 +61,8 @@ public class CaptchaService {
 
         CaptchaImageUtil.CaptchaImage captchaImage;
         try {
-            URL url = URI.create(imageUrl).toURL();
+            URL url = URI.create(imageUrl)
+                         .toURL();
             try (InputStream in = url.openStream()) {
                 captchaImage = CaptchaImageUtil.generate(in);
             }
@@ -82,12 +82,11 @@ public class CaptchaService {
                       .set(captchaImage.getX(), Duration.ofMinutes(expireMinutes));
 
         // 5. 构建返回对象
-        return new ChallengeInfo()
-                .setRequestId(requestId)
-                .setSecretKey(secretKey)
-                .setBackgroundImage(removeBase64Prefix(captchaImage.getBackgroundImage()))
-                .setSliderImage(removeBase64Prefix(captchaImage.getSliderImage()))
-                .setY(captchaImage.getY());
+        return new ChallengeInfo().setRequestId(requestId)
+                                  .setSecretKey(secretKey)
+                                  .setBackgroundImage(removeBase64Prefix(captchaImage.getBackgroundImage()))
+                                  .setSliderImage(removeBase64Prefix(captchaImage.getSliderImage()))
+                                  .setY(captchaImage.getY());
     }
 
     /**
@@ -99,7 +98,8 @@ public class CaptchaService {
      */
     public void verifyCaptcha(String requestId, Integer moveX) {
         String captchaKey = "captcha:" + requestId;
-        Object storedXObj = redissonClient.getBucket(captchaKey).get();
+        Object storedXObj = redissonClient.getBucket(captchaKey)
+                                          .get();
 
         if (storedXObj == null) {
             throw new RuntimeException("验证码已过期或无效");
@@ -111,12 +111,14 @@ public class CaptchaService {
         if (moveX == null || Math.abs(storedX - moveX) > tolerance) {
             log.error("验证码验证失败: storedX={}, moveX={}", storedX, moveX);
             // 删除验证码，防止重复尝试
-            redissonClient.getBucket(captchaKey).delete();
+            redissonClient.getBucket(captchaKey)
+                          .delete();
             throw new RuntimeException("验证码验证失败");
         }
 
         // 验证通过后删除验证码（一次性使用）
-        redissonClient.getBucket(captchaKey).delete();
+        redissonClient.getBucket(captchaKey)
+                      .delete();
         log.info("验证码校验成功，requestId: {}", requestId);
     }
 
@@ -128,7 +130,8 @@ public class CaptchaService {
      */
     public String getSecretKey(String requestId) {
         String challengeKey = "challenge:" + requestId;
-        Object secretKeyObj = redissonClient.getBucket(challengeKey).get();
+        Object secretKeyObj = redissonClient.getBucket(challengeKey)
+                                            .get();
 
         if (secretKeyObj == null) {
             throw new RuntimeException("登录请求已过期，请刷新重试");
@@ -160,16 +163,16 @@ public class CaptchaService {
      * @return 背景图 URL
      */
     private String getBackgroundForCaptcha() {
-        Draft2<BigDecimal, String> idAndExtension = new ZFile().queryable()
-                                                               .where(z -> z.usage()
-                                                                            .eq("backgroundForCaptcha"))
-                                                               .orderBy(z -> z.expression()
-                                                                              .rawSQLStatement("RANDOM()")
-                                                                              .asc())
-                                                               .select(z -> Select.DRAFT.of(z.id(), z.extension()))
-                                                               .firstNotNull();
+        Draft1<String> picKey = new ZFile().queryable()
+                                           .where(z -> z.usage()
+                                                        .eq("backgroundForCaptcha"))
+                                           .orderBy(z -> z.expression()
+                                                          .rawSQLStatement("RANDOM()")
+                                                          .asc())
+                                           .select(z -> Select.DRAFT.of(z.id()))
+                                           .firstNotNull();
 
-        return zFileService.getUrlByIdAndExtension(idAndExtension.getValue1(), idAndExtension.getValue2());
+        return ossService.getPublicUrl(picKey.getValue1());
     }
 
     /**

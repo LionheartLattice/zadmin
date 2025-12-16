@@ -8,7 +8,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.math.BigDecimal;
 
 /**
  * 文件管理控制器
@@ -40,23 +39,23 @@ public class ZFileController {
     /**
      * 获取文件URL
      *
-     * @param id 文件ID
+     * @param fileKey 文件KEY
      * @return 文件访问链接
      */
-    @GetMapping("/url/{id}")
-    @Operation(summary = "获取文件URL", description = "根据ID查询数据库并返回文件访问链接")
-    public String getUrl(@Parameter(description = "文件ID", required = true) @PathVariable BigDecimal id) {
-        return zFileService.getUrlById(id);
+    @GetMapping("/url/{fileKey}")
+    @Operation(summary = "获取文件URL", description = "根据文件KEY返回文件访问链接")
+    public String getUrl(@Parameter(description = "文件KEY", required = true) @PathVariable String fileKey) {
+        return zFileService.getUrlByKey(fileKey);
     }
 
     /**
      * 删除文件
      *
-     * @param id 文件ID
+     * @param fileKey 文件KEY
      */
-    @DeleteMapping("/{id}")
-    @Operation(summary = "删除文件", description = "根据ID删除数据库记录及OSS中的物理文件")
-    public void delete(@Parameter(description = "文件ID", required = true) @PathVariable BigDecimal id) {
-        zFileService.delete(id);
+    @DeleteMapping("/{fileKey}")
+    @Operation(summary = "删除文件", description = "根据文件KEY删除数据库记录及OSS中的物理文件")
+    public void delete(@Parameter(description = "文件KEY", required = true) @PathVariable String fileKey) {
+        zFileService.delete(fileKey);
     }
 }

@@ -1,10 +1,7 @@
 package io.github.lionheartlattice.configuration.s3bult;
 
 import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.util.StrUtil;
 import com.easy.query.api.proxy.client.EasyEntityQuery;
-import com.easy.query.core.proxy.core.draft.Draft1;
-import com.easy.query.core.proxy.sql.Select;
 import io.github.lionheartlattice.configuration.easyquery.SnowflakePrimaryKeyGenerator;
 import io.github.lionheartlattice.entity.parent.OssPutRet;
 import io.github.lionheartlattice.entity.parent.ZFile;
@@ -30,24 +27,21 @@ public class ZFileService {
 
     @Transactional(rollbackFor = Exception.class)
     public ZFile upload(MultipartFile file, String usage) {
-        // 1. 预先生成雪花算法 ID
-        BigDecimal id = (BigDecimal) snowflakePrimaryKeyGenerator.getPrimaryKey();
+        // 1. 生成雪花算法 ID
+        BigDecimal snowflakeId = (BigDecimal) snowflakePrimaryKeyGenerator.getPrimaryKey();
 
-        // 2. 构造文件名 (ID.后缀)
+        // 2. 构造文件名 (格式: yyyyMM/雪花ID(去除yyyyMM).后缀)
         String originalFilename = file.getOriginalFilename();
         String suffix = FileUtil.getSuffix(originalFilename);
-
-        // 动态构建 OSS Key (包含按月分文件夹逻辑)
-        String fileKey = getFileKey(id, suffix);
+        String fileKey = buildFileKey(snowflakeId, suffix);
 
         // 3. 上传到 OSS
         OssPutRet putRet = ossService.upload(file, fileKey);
 
-        // 4. 构建实体并保存到数据库 (不存储 fileKey)
-        ZFile zFile = new ZFile().setId(id) // 手动设置ID
+        // 4. 构建实体并保存到数据库 (主键直接存储 fileKey)
+        ZFile zFile = new ZFile().setId(fileKey)
                                  .setUsage(usage)
                                  .setOriginalName(putRet.getOriginalName())
-                                 .setExtension(putRet.getExtension())
                                  .setFileSize(putRet.getFileSize())
                                  .setContentType(putRet.getContentType());
 
@@ -61,108 +55,52 @@ public class ZFileService {
     /**
      * 上传文件并返回访问链接
      *
-     * @param file 文件
+     * @param file  文件
+     * @param usage 用途
      * @return 文件访问链接
      */
     @Transactional(rollbackFor = Exception.class)
     public String uploadReturnUrl(MultipartFile file, String usage) {
         ZFile zFile = upload(file, usage);
-        // 动态还原 Key 以获取 URL
-        String fileKey = getFileKey(zFile.getId(), zFile.getExtension());
-        return ossService.getPublicUrl(fileKey);
+        return ossService.getPublicUrl(zFile.getId());
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void delete(BigDecimal id) {
-        // 1. 查询文件信息
-        ZFile zFile = easyEntityQuery.queryable(ZFile.class)
-                                     .where(f -> f.id()
-                                                  .eq(id))
-                                     .firstOrNull();
-
-        if (zFile == null) {
-            return;
-        }
-
-        // 2. 删除数据库记录
+    public void delete(String fileKey) {
+        // 1. 删除数据库记录
         easyEntityQuery.deletable(ZFile.class)
                        .where(f -> f.id()
-                                    .eq(id))
+                                    .eq(fileKey))
                        .executeRows();
 
-        // 3. 删除 OSS 文件 (动态还原 Key)
-        String fileKey = getFileKey(zFile.getId(), zFile.getExtension());
+        // 2. 删除 OSS 文件
         ossService.delete(fileKey);
     }
 
     /**
-     * 获取随机图片文件的访问链接
+     * 根据文件KEY获取访问链接
      *
-     * @return 图片URL
-     */
-    public String getRandomImageUrl() {
-        long count = easyEntityQuery.queryable(ZFile.class)
-                .where(f -> f.contentType().likeMatchLeft("image/"))
-                .count();
-
-        if (count == 0) {
-            return null;
-        }
-
-        long offset = (long) (Math.random() * count);
-
-        ZFile zFile = easyEntityQuery.queryable(ZFile.class)
-                .where(f -> f.contentType().likeMatchLeft("image/"))
-                .limit(offset, 1)
-                .firstOrNull();
-
-        if (zFile == null) {
-            return null;
-        }
-
-        String fileKey = getFileKey(zFile.getId(), zFile.getExtension());
-        return ossService.getPublicUrl(fileKey);
-    }
-
-    /**
-     * 根据 ID 和后缀拼接 OSS Key
-     * 策略: 提取 ID 前6位(yyyyMM)作为文件夹，实现按月分片存储
-     * 格式: yyyyMM/ID.后缀
-     */
-    private String getFileKey(BigDecimal id, String extension) {
-        String idStr = id.toPlainString();
-        // 雪花算法ID结构: yyyyMMddHHmmssSSS... (前17位为时间戳)
-        // 截取前6位 (yyyyMM) 作为目录，例如: 202505/2025052914302512300001000001.png
-        String monthFolder = idStr.substring(0, 6);
-
-        if (StrUtil.isBlank(extension)) {
-            return monthFolder + "/" + idStr;
-        }
-        return monthFolder + "/" + idStr + "." + extension;
-    }
-
-    /**
-     * 根据ID获取文件访问链接
-     * 需查询数据库获取文件后缀名，确保Key正确
-     *
-     * @param id 文件ID
+     * @param fileKey 文件KEY (主键)
      * @return 文件访问URL
      */
-    public String getUrlById(BigDecimal id) {
-        // 1. 查询数据库获取文件信息(主要是后缀名)
-        Draft1<String> draft1 = easyEntityQuery.queryable(ZFile.class)
-                                               .whereById(id)
-                                               .select(z -> Select.DRAFT.of(z.extension()))
-                                               .singleNotNull();
-        // 2. 动态构建 OSS Key
-        String fileKey = getFileKey(id, draft1.getValue1());
-
-        // 3. 生成访问链接
+    public String getUrlByKey(String fileKey) {
         return ossService.getPublicUrl(fileKey);
     }
 
-    public String getUrlByIdAndExtension(BigDecimal id, String extension) {
-        String fileKey = getFileKey(id, extension);
-        return ossService.getPublicUrl(fileKey);
+    /**
+     * 根据雪花ID和后缀构建文件KEY
+     * 策略: 提取 ID 前6位(yyyyMM)作为文件夹,文件名为去除前6位后的ID
+     * 格式: yyyyMM/雪花ID(去除yyyyMM).后缀
+     */
+    private String buildFileKey(BigDecimal snowflakeId, String extension) {
+        String idStr = snowflakeId.toPlainString();
+        // 雪花算法ID结构: yyyyMMddHHmmssSSS... (前6位为 yyyyMM)
+        String monthFolder = idStr.substring(0, 6);
+        String fileNamePart = idStr.substring(6); // 去除前6位的 yyyyMM
+
+        if (extension == null || extension.isBlank()) {
+            return monthFolder + "/" + fileNamePart;
+        }
+        return monthFolder + "/" + fileNamePart + "." + extension;
     }
 }
