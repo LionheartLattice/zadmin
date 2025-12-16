@@ -38,9 +38,9 @@ public class TenantController {
 
     @Operation(summary = "获取租户详情", description = "根据租户 ID 获取租户的详细信息")
     @PostMapping("/getbyid")
-    @JsonView(Views.Update.class)
+//    @JsonView(Views.Update.class)
 //    @PreAuthorize("hasAuthority('z_tenant:getbyid')") // 权限校验
-    public ApiResult<TenantDTO> getById(@RequestBody @NotNull BigDecimal id) {
+    public ApiResult<TenantDTO> getById(@RequestParam @NotNull BigDecimal id) {
         return ApiResult.success(tenantService.getById(id));
     }
 
@@ -67,7 +67,7 @@ public class TenantController {
     @Operation(summary = "Excel 导入租户", description = "上传 Excel 文件批量导入租户数据")
     @PostMapping("upload")
 //    @PreAuthorize("hasAuthority('z_tenant:upload')") // 权限校验
-    public ApiResult<Boolean> upload(@RequestParam(value = "file") MultipartFile file) {
+    public ApiResult<Boolean> upload(@RequestParam(value = "file") @NotNull MultipartFile file) {
         List<TenantDTO> dtos = ExcelImportUtil.importExcel(file, TenantDTO.class);
         return ApiResult.success(tenantService.saveBatch(dtos));
     }
