@@ -28,32 +28,32 @@ public class Tenant extends ParentClientEntity<Tenant, TenantProxy> implements P
     /**
      * 租户ID
      */
-    @Schema(description = "租户ID", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "租户ID")
     @Column(primaryKey = true, value = "id", primaryKeyGenerator = SnowflakePrimaryKeyGenerator.class)
     private BigDecimal id;
 
     /**
      * 租户名称
      */
-    @Schema(description = "租户名称", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "租户名称")
     private String name;
 
     /**
      * 联系人ID (管理员)
      */
-    @Schema(description = "联系人ID", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "联系人ID")
     private String contactName;
 
     /**
      * 联系电话
      */
-    @Schema(description = "联系电话", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "联系电话")
     private String contactPhone;
 
     /**
      * 是否锁定
      */
-    @Schema(description = "是否锁定", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "是否锁定")
     private Boolean isLock;
 
     /**
@@ -71,7 +71,7 @@ public class Tenant extends ParentClientEntity<Tenant, TenantProxy> implements P
     /**
      * 更新时间
      */
-    @Schema(description = "更新时间", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "更新时间")
     private LocalDateTime updateTime;
 
     /**
