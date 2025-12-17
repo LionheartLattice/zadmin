@@ -1,4 +1,4 @@
-package io.github.lionheartlattice.entity.user_center.user.po;
+package io.github.lionheartlattice.entity.user_center.tenant;
 
 import com.easy.query.core.annotation.*;
 import com.easy.query.core.basic.extension.logicdel.LogicDeleteStrategyEnum;

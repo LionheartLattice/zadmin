@@ -7,7 +7,7 @@ import io.github.lionheartlattice.entity.parent.ParentCloneable;
 import io.github.lionheartlattice.entity.user_center.user.po.Dept;
 import io.github.lionheartlattice.entity.user_center.user.po.Menu;
 import io.github.lionheartlattice.entity.user_center.user.po.Role;
-import io.github.lionheartlattice.entity.user_center.user.po.Tenant;
+import io.github.lionheartlattice.entity.user_center.tenant.Tenant;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 

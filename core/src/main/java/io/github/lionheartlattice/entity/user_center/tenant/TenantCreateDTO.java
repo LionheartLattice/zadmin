@@ -1,6 +1,5 @@
-package io.github.lionheartlattice.entity.user_center.user.dto;
+package io.github.lionheartlattice.entity.user_center.tenant;
 
-import io.github.lionheartlattice.entity.user_center.user.po.Tenant;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package io.github.lionheartlattice.entity.user_center.login.vo;
+package io.github.lionheartlattice.entity.user_center.login;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

@@ -1,12 +1,12 @@
-package io.github.lionheartlattice.user.service;
+package io.github.lionheartlattice.tenant.service;
 
 import com.easy.query.api.proxy.base.ClassProxy;
 import com.easy.query.core.api.pagination.EasyPageResult;
 import com.easy.query.core.enums.SQLExecuteStrategyEnum;
 import com.easy.query.core.expression.builder.core.NotNullOrEmptyValueFilter;
 import io.github.lionheartlattice.entity.parent.PageDTO;
-import io.github.lionheartlattice.entity.user_center.user.dto.TenantDTO;
-import io.github.lionheartlattice.entity.user_center.user.po.Tenant;
+import io.github.lionheartlattice.entity.user_center.tenant.TenantDTO;
+import io.github.lionheartlattice.entity.user_center.tenant.Tenant;
 import io.github.lionheartlattice.util.CopyUtil;
 import io.github.lionheartlattice.configuration.exception.ErrorEnum;
 import io.github.lionheartlattice.configuration.exception.ExceptionWithEnum;
