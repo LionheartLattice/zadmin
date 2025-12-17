@@ -1,8 +1,8 @@
 package io.github.lionheartlattice.tenant;
 
-import com.easy.query.core.api.pagination.EasyPageResult;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.github.lionheartlattice.entity.parent.PageDTO;
+import io.github.lionheartlattice.entity.parent.PageResult;
 import io.github.lionheartlattice.entity.user_center.tenant.TenantDTO;
 import io.github.lionheartlattice.entity.parent.Views;
 import io.github.lionheartlattice.entity.user_center.tenant.Tenant;
@@ -52,7 +52,7 @@ public class TenantController {
     @Operation(summary = "分页查询租户", description = "支持多条件搜索、排序、分页查询租户列表")
     @PostMapping("/page")
 //    @PreAuthorize("hasAuthority('z_tenant:page')") // 权限校验
-    public ApiResult<EasyPageResult<Tenant>> page(@RequestBody PageDTO dto) {
+    public ApiResult<PageResult<Tenant>> page(@RequestBody PageDTO dto) {
         return ApiResult.success(tenantService.page(dto));
     }
 
@@ -79,7 +79,7 @@ public class TenantController {
             ExcelExportUtil.downloadEmpty(response, TenantDTO.class);
         } else {
             ExcelExportUtil.export(response, tenantService.page(dto)
-                                                          .getData());
+                    .getRows());
         }
     }
 }

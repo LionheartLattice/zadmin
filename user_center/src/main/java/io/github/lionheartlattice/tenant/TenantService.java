@@ -4,12 +4,13 @@ import com.easy.query.api.proxy.base.ClassProxy;
 import com.easy.query.core.api.pagination.EasyPageResult;
 import com.easy.query.core.enums.SQLExecuteStrategyEnum;
 import com.easy.query.core.expression.builder.core.NotNullOrEmptyValueFilter;
-import io.github.lionheartlattice.entity.parent.PageDTO;
-import io.github.lionheartlattice.entity.user_center.tenant.TenantDTO;
-import io.github.lionheartlattice.entity.user_center.tenant.Tenant;
-import io.github.lionheartlattice.util.CopyUtil;
 import io.github.lionheartlattice.configuration.exception.ErrorEnum;
 import io.github.lionheartlattice.configuration.exception.ExceptionWithEnum;
+import io.github.lionheartlattice.entity.parent.PageDTO;
+import io.github.lionheartlattice.entity.parent.PageResult;
+import io.github.lionheartlattice.entity.user_center.tenant.Tenant;
+import io.github.lionheartlattice.entity.user_center.tenant.TenantDTO;
+import io.github.lionheartlattice.util.CopyUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -47,39 +48,43 @@ public class TenantService {
                            .singleNotNull();
     }
 
-    public EasyPageResult<Tenant> page(PageDTO dto) {
-        return new Tenant().queryable()
-                           .filterConfigure(NotNullOrEmptyValueFilter.DEFAULT_PROPAGATION_SUPPORTS)
-                           .where(isNotNull(dto.getSearches()), t -> {
-                               for (PageDTO.InternalSearch search : dto.getSearches()) {
-                                   switch (search.getQueryType()) {
-                                       case 1 -> t.anyColumn(search.getProperty())
-                                                  .eq(search.getValue());
-                                       case 2 -> t.anyColumn(search.getProperty())
-                                                  .like(search.getValue());
-                                       case 3 -> {
-                                           // 解析日期范围
-                                           LocalDateTime[] dateRange = PageDTO.parseDateRange(search.getValue());
-                                           if (isNotNull(dateRange[0])) {
-                                               t.anyColumn(search.getProperty())
-                                                .ge(dateRange[0]);
-                                           }
-                                           if (isNotNull(dateRange[1])) {
-                                               t.anyColumn(search.getProperty())
-                                                .le(dateRange[1]);
-                                           }
-                                       }
-                                       default -> throw new ExceptionWithEnum(ErrorEnum.VALID_ERROR);
-                                   }
-                               }
-                           })
-                           .orderBy(isNotNull(dto.getOrders()), t -> {
-                               for (PageDTO.InternalOrder order : dto.getOrders()) {
-                                   t.anyColumn(order.getProperty())
-                                    .orderBy(order.isAsc());
-                               }
-                           })
-                           .toPageResult(dto.getPageIndex(), dto.getPageSize());
+    public PageResult<Tenant> page(PageDTO dto) {
+        EasyPageResult<Tenant> page = new Tenant().queryable()
+                                                  .filterConfigure(
+                                                          NotNullOrEmptyValueFilter.DEFAULT_PROPAGATION_SUPPORTS)
+                                                  .where(isNotNull(dto.getSearches()), t -> {
+                                                      for (PageDTO.InternalSearch search : dto.getSearches()) {
+                                                          switch (search.getQueryType()) {
+                                                              case 1 -> t.anyColumn(search.getProperty())
+                                                                         .eq(search.getValue());
+                                                              case 2 -> t.anyColumn(search.getProperty())
+                                                                         .like(search.getValue());
+                                                              case 3 -> {
+                                                                  // 解析日期范围
+                                                                  LocalDateTime[] dateRange =
+                                                                          PageDTO.parseDateRange(search.getValue());
+                                                                  if (isNotNull(dateRange[0])) {
+                                                                      t.anyColumn(search.getProperty())
+                                                                       .ge(dateRange[0]);
+                                                                  }
+                                                                  if (isNotNull(dateRange[1])) {
+                                                                      t.anyColumn(search.getProperty())
+                                                                       .le(dateRange[1]);
+                                                                  }
+                                                              }
+                                                              default -> throw new ExceptionWithEnum(
+                                                                      ErrorEnum.VALID_ERROR);
+                                                          }
+                                                      }
+                                                  })
+                                                  .orderBy(isNotNull(dto.getOrders()), t -> {
+                                                      for (PageDTO.InternalOrder order : dto.getOrders()) {
+                                                          t.anyColumn(order.getProperty())
+                                                           .orderBy(order.isAsc());
+                                                      }
+                                                  })
+                                                  .toPageResult(dto.getPageIndex(), dto.getPageSize());
+        return PageResult.wrap(dto, page);
     }
 
     public Boolean delete(List<BigDecimal> ids) {
