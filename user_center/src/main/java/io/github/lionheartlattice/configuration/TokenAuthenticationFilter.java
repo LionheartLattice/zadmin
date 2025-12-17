@@ -2,7 +2,7 @@ package io.github.lionheartlattice.configuration;
 
 import io.github.lionheartlattice.entity.user_center.po.Menu;
 import io.github.lionheartlattice.entity.user_center.vo.UserWithMenu;
-import io.github.lionheartlattice.user_center.service.LoginService;
+import io.github.lionheartlattice.login.service.LoginService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

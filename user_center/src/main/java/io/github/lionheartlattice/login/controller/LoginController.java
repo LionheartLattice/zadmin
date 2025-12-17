@@ -1,8 +1,8 @@
-package io.github.lionheartlattice.user_center.controller;
+package io.github.lionheartlattice.login.controller;
 
 import io.github.lionheartlattice.entity.user_center.dto.LoginDTO;
 import io.github.lionheartlattice.entity.user_center.vo.UserWithMenu;
-import io.github.lionheartlattice.user_center.service.LoginService;
+import io.github.lionheartlattice.login.service.LoginService;
 import io.github.lionheartlattice.entity.parent.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
