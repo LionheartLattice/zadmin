@@ -35,6 +35,8 @@ public class TenantDTO {
      * 租户名称
      */
     @Schema(description = "租户名称")
+
+
     @NotNull
     private String name;
 
