@@ -82,12 +82,5 @@ public class UserController {
         return ApiResult.success(userService.encoderPwd(id));
     }
 
-    @Operation(summary = "获取当前登录用户", description = "从 Security Context 获取当前认证用户的完整信息（包含角色、部门、菜单）")
-    @GetMapping("/current-user")
-    public ApiResult<UserWithMenu> getCurrentUser() {
-        UserWithMenu user = (UserWithMenu) SecurityContextHolder.getContext()
-                                                                .getAuthentication()
-                                                                .getPrincipal();
-        return ApiResult.success(user);
-    }
+
 }
