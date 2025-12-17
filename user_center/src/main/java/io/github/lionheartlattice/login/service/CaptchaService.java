@@ -88,8 +88,8 @@ public class CaptchaService {
         // 5. 构建返回对象
         return new ChallengeInfo().setRequestId(requestId)
                                   .setSecretKey(secretKey)
-                                  .setBackgroundImage(removeBase64Prefix(captchaImage.getBackgroundImage()))
-                                  .setSliderImage(removeBase64Prefix(captchaImage.getSliderImage()))
+                                  .setBackgroundImage(captchaImage.getBackgroundImage())
+                                  .setSliderImage(captchaImage.getSliderImage())
                                   .setY(captchaImage.getY());
     }
 
@@ -177,16 +177,6 @@ public class CaptchaService {
                                            .firstNotNull();
 
         return ossService.getPublicUrl(picKey.getValue1());
-    }
-
-    /**
-     * 去除 Base64 字符串的前缀 (data:image/xxx;base64,)
-     */
-    private String removeBase64Prefix(String base64) {
-        if (base64 != null && base64.contains(",")) {
-            return base64.substring(base64.indexOf(",") + 1);
-        }
-        return base64;
     }
 }
 

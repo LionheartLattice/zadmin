@@ -311,10 +311,13 @@ public class CaptchaImageUtil {
         return resizedImage;
     }
 
+    /**
+     * 将图片转为 Base64 字符串（不含前缀）
+     */
     private static String toBase64(BufferedImage image, String format) throws IOException {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         ImageIO.write(image, format, os);
-        return "data:image/" + format + ";base64," + Base64.getEncoder().encodeToString(os.toByteArray());
+        return Base64.getEncoder().encodeToString(os.toByteArray());
     }
 
     /**
