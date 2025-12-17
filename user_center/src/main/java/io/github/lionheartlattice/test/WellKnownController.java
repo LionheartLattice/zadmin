@@ -1,4 +1,4 @@
-package io.github.lionheartlattice.hello.controller;
+package io.github.lionheartlattice.test;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;

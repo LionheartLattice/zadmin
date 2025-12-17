@@ -1,7 +1,6 @@
-package io.github.lionheartlattice.login.controller;
+package io.github.lionheartlattice.login;
 
 import io.github.lionheartlattice.entity.user_center.login.ChallengeInfo;
-import io.github.lionheartlattice.login.service.CaptchaService;
 import io.github.lionheartlattice.entity.parent.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

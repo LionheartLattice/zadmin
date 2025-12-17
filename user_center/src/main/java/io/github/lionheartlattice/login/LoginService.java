@@ -1,4 +1,4 @@
-package io.github.lionheartlattice.login.service;
+package io.github.lionheartlattice.login;
 
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.crypto.SecureUtil;

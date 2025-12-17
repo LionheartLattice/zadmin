@@ -1,4 +1,4 @@
-package io.github.lionheartlattice.user.controller;
+package io.github.lionheartlattice.user;
 
 import com.easy.query.core.api.pagination.EasyPageResult;
 import io.github.lionheartlattice.entity.parent.PageDTO;
@@ -6,7 +6,6 @@ import io.github.lionheartlattice.entity.user_center.user.dto.UserCreatDTO;
 import io.github.lionheartlattice.entity.user_center.user.dto.UserUpdateDTO;
 import io.github.lionheartlattice.entity.user_center.user.po.User;
 import io.github.lionheartlattice.entity.user_center.user.vo.UserWithMenu;
-import io.github.lionheartlattice.user.service.UserService;
 import io.github.lionheartlattice.util.ExcelExportUtil;
 import io.github.lionheartlattice.util.ExcelImportUtil;
 import io.github.lionheartlattice.entity.parent.ApiResult;

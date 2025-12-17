@@ -6,6 +6,8 @@ import com.easy.query.core.enums.RelationTypeEnum;
 import com.easy.query.core.proxy.ProxyEntityAvailable;
 import io.github.lionheartlattice.configuration.easyquery.SnowflakePrimaryKeyGenerator;
 import io.github.lionheartlattice.entity.parent.ParentClientEntity;
+import io.github.lionheartlattice.entity.user_center.dept.Dept;
+import io.github.lionheartlattice.entity.user_center.dept.UserDept;
 import io.github.lionheartlattice.entity.user_center.po.proxy.*;
 import io.github.lionheartlattice.entity.user_center.tenant.Tenant;
 import io.swagger.v3.oas.annotations.media.Schema;

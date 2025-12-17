@@ -1,4 +1,4 @@
-package io.github.lionheartlattice.entity.user_center.user.po;
+package io.github.lionheartlattice.entity.user_center.dept;
 
 import com.easy.query.core.annotation.*;
 import com.easy.query.core.proxy.ProxyEntityAvailable;

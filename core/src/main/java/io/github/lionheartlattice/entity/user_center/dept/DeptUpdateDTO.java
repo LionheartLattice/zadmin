@@ -1,10 +1,9 @@
-package io.github.lionheartlattice.entity.user_center.user.dto;
+package io.github.lionheartlattice.entity.user_center.dept;
 
-
-import io.github.lionheartlattice.entity.user_center.user.po.Dept;
+import com.easy.query.core.annotation.Column;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.math.BigDecimal;
 
@@ -17,12 +16,14 @@ import java.math.BigDecimal;
  * @easy-query-dto schema: normal
  */
 @Data
-public class DeptCreateDTO {
-
-
+public class DeptUpdateDTO {
     /**
-     * 部门名称
+     * 用户ID
      */
+    @Schema(description = "唯一标识")
+    @Column(value = "id")
+    private BigDecimal id;
+
     @NotNull
     @Schema(description = "部门名称", requiredMode = Schema.RequiredMode.REQUIRED)
     private String name;
@@ -47,6 +48,5 @@ public class DeptCreateDTO {
      */
     @Schema(description = "备注")
     private String remark;
-
 
 }

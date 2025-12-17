@@ -1,6 +1,6 @@
 package io.github.lionheartlattice.configuration;
 
-import io.github.lionheartlattice.login.service.LoginService;
+import io.github.lionheartlattice.login.LoginService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

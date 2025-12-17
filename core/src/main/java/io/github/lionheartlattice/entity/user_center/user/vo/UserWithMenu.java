@@ -4,7 +4,7 @@ import com.easy.query.core.annotation.ColumnIgnore;
 import com.easy.query.core.annotation.LogicDelete;
 import com.easy.query.core.basic.extension.logicdel.LogicDeleteStrategyEnum;
 import io.github.lionheartlattice.entity.parent.ParentCloneable;
-import io.github.lionheartlattice.entity.user_center.user.po.Dept;
+import io.github.lionheartlattice.entity.user_center.dept.Dept;
 import io.github.lionheartlattice.entity.user_center.user.po.Menu;
 import io.github.lionheartlattice.entity.user_center.user.po.Role;
 import io.github.lionheartlattice.entity.user_center.tenant.Tenant;

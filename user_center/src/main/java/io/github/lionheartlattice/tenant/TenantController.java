@@ -1,4 +1,4 @@
-package io.github.lionheartlattice.tenant.controller;
+package io.github.lionheartlattice.tenant;
 
 import com.easy.query.core.api.pagination.EasyPageResult;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -6,7 +6,6 @@ import io.github.lionheartlattice.entity.parent.PageDTO;
 import io.github.lionheartlattice.entity.user_center.tenant.TenantDTO;
 import io.github.lionheartlattice.entity.parent.Views;
 import io.github.lionheartlattice.entity.user_center.tenant.Tenant;
-import io.github.lionheartlattice.tenant.service.TenantService;
 import io.github.lionheartlattice.util.ExcelExportUtil;
 import io.github.lionheartlattice.util.ExcelImportUtil;
 import io.github.lionheartlattice.entity.parent.ApiResult;

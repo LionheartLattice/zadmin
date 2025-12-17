@@ -1,4 +1,4 @@
-package io.github.lionheartlattice.login.service;
+package io.github.lionheartlattice.login;
 
 import cn.hutool.core.util.IdUtil;
 import com.easy.query.core.proxy.core.draft.Draft1;

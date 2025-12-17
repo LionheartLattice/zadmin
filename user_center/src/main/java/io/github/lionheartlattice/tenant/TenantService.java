@@ -1,4 +1,4 @@
-package io.github.lionheartlattice.tenant.service;
+package io.github.lionheartlattice.tenant;
 
 import com.easy.query.api.proxy.base.ClassProxy;
 import com.easy.query.core.api.pagination.EasyPageResult;
