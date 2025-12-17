@@ -1,4 +1,4 @@
-package io.github.lionheartlattice.entity.user_center.dto;
+package io.github.lionheartlattice.entity.user_center.user.dto;
 
 import lombok.Data;
 

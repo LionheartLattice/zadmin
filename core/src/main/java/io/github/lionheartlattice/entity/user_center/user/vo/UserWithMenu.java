@@ -1,13 +1,13 @@
-package io.github.lionheartlattice.entity.user_center.vo;
+package io.github.lionheartlattice.entity.user_center.user.vo;
 
 import com.easy.query.core.annotation.ColumnIgnore;
 import com.easy.query.core.annotation.LogicDelete;
 import com.easy.query.core.basic.extension.logicdel.LogicDeleteStrategyEnum;
 import io.github.lionheartlattice.entity.parent.ParentCloneable;
-import io.github.lionheartlattice.entity.user_center.po.Dept;
-import io.github.lionheartlattice.entity.user_center.po.Menu;
-import io.github.lionheartlattice.entity.user_center.po.Role;
-import io.github.lionheartlattice.entity.user_center.po.Tenant;
+import io.github.lionheartlattice.entity.user_center.user.po.Dept;
+import io.github.lionheartlattice.entity.user_center.user.po.Menu;
+import io.github.lionheartlattice.entity.user_center.user.po.Role;
+import io.github.lionheartlattice.entity.user_center.user.po.Tenant;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 

@@ -1,9 +1,12 @@
-package io.github.lionheartlattice.entity.user_center.po;
+package io.github.lionheartlattice.entity.user_center.user.po;
 
-import com.easy.query.core.annotation.*;
+import com.easy.query.core.annotation.Column;
+import com.easy.query.core.annotation.EasyAssertMessage;
+import com.easy.query.core.annotation.EntityProxy;
+import com.easy.query.core.annotation.Table;
 import com.easy.query.core.proxy.ProxyEntityAvailable;
 import io.github.lionheartlattice.configuration.easyquery.SnowflakePrimaryKeyGenerator;
-import io.github.lionheartlattice.entity.user_center.po.proxy.UserRoleProxy;
+import io.github.lionheartlattice.entity.user_center.po.proxy.RoleMenuProxy;
 import io.github.lionheartlattice.entity.parent.ParentClientEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -11,18 +14,18 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 /**
- * 用户角色关联表 实体类。
+ * 角色菜单关联表 实体类。
  *
  * @author lionheart
  * @since 1.0
  */
 
 @Data
-@Schema(name = "用户角色关联表")
-@Table(value = "z_user_role")
+@Schema(name = "角色菜单关联表")
+@Table(value = "z_role_menu")
 @EntityProxy
-@EasyAssertMessage("未找到对应的用户角色关联表信息")
-public class UserRole extends ParentClientEntity<UserRole, UserRoleProxy> implements ProxyEntityAvailable<UserRole, UserRoleProxy> {
+@EasyAssertMessage("未找到对应的角色菜单关联表信息")
+public class RoleMenu extends ParentClientEntity<RoleMenu, RoleMenuProxy> implements ProxyEntityAvailable<RoleMenu, RoleMenuProxy> {
 
     /**
      * 关联ID
@@ -32,16 +35,16 @@ public class UserRole extends ParentClientEntity<UserRole, UserRoleProxy> implem
     private BigDecimal id;
 
     /**
-     * 用户ID
-     */
-    @Schema(description = "用户ID", requiredMode = Schema.RequiredMode.REQUIRED)
-    private BigDecimal userId;
-
-    /**
      * 角色ID
      */
     @Schema(description = "角色ID", requiredMode = Schema.RequiredMode.REQUIRED)
     private BigDecimal roleId;
+
+    /**
+     * 菜单ID
+     */
+    @Schema(description = "菜单ID", requiredMode = Schema.RequiredMode.REQUIRED)
+    private BigDecimal menuId;
 
     /**
      * 创建人ID

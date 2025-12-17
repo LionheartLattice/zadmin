@@ -5,7 +5,7 @@ import com.easy.query.core.proxy.core.draft.Draft1;
 import com.easy.query.core.proxy.sql.Select;
 import io.github.lionheartlattice.configuration.s3bult.OssService;
 import io.github.lionheartlattice.entity.parent.ZFile;
-import io.github.lionheartlattice.entity.user_center.vo.ChallengeInfo;
+import io.github.lionheartlattice.entity.user_center.login.vo.ChallengeInfo;
 import io.github.lionheartlattice.util.AESUtil;
 import io.github.lionheartlattice.util.CaptchaImageUtil;
 import lombok.RequiredArgsConstructor;

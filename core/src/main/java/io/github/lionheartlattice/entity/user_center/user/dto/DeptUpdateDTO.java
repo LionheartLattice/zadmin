@@ -1,7 +1,7 @@
-package io.github.lionheartlattice.entity.user_center.dto;
+package io.github.lionheartlattice.entity.user_center.user.dto;
 
 import com.easy.query.core.annotation.Column;
-import io.github.lionheartlattice.entity.user_center.po.Dept;
+import io.github.lionheartlattice.entity.user_center.user.po.Dept;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
