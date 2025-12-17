@@ -10,7 +10,7 @@ import io.github.lionheartlattice.entity.parent.PageDTO;
 import io.github.lionheartlattice.entity.user_center.user.dto.UserCreatDTO;
 import io.github.lionheartlattice.entity.user_center.user.dto.UserUpdateDTO;
 import io.github.lionheartlattice.entity.user_center.user.po.User;
-import io.github.lionheartlattice.entity.user_center.po.proxy.UserProxy;
+import io.github.lionheartlattice.entity.user_center.user.po.proxy.UserProxy;
 import io.github.lionheartlattice.util.CopyUtil;
 import io.github.lionheartlattice.configuration.exception.ErrorEnum;
 import io.github.lionheartlattice.configuration.exception.ExceptionWithEnum;

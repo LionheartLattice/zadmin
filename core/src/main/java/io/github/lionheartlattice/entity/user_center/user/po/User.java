@@ -8,8 +8,13 @@ import io.github.lionheartlattice.configuration.easyquery.SnowflakePrimaryKeyGen
 import io.github.lionheartlattice.entity.parent.ParentClientEntity;
 import io.github.lionheartlattice.entity.user_center.dept.Dept;
 import io.github.lionheartlattice.entity.user_center.dept.UserDept;
-import io.github.lionheartlattice.entity.user_center.po.proxy.*;
+import io.github.lionheartlattice.entity.user_center.dept.proxy.DeptProxy;
+import io.github.lionheartlattice.entity.user_center.dept.proxy.UserDeptProxy;
 import io.github.lionheartlattice.entity.user_center.tenant.Tenant;
+import io.github.lionheartlattice.entity.user_center.tenant.proxy.TenantProxy;
+import io.github.lionheartlattice.entity.user_center.user.po.proxy.RoleProxy;
+import io.github.lionheartlattice.entity.user_center.user.po.proxy.UserProxy;
+import io.github.lionheartlattice.entity.user_center.user.po.proxy.UserRoleProxy;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 

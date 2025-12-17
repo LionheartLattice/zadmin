@@ -5,8 +5,8 @@ import com.easy.query.core.basic.extension.logicdel.LogicDeleteStrategyEnum;
 import com.easy.query.core.enums.RelationTypeEnum;
 import com.easy.query.core.proxy.ProxyEntityAvailable;
 import io.github.lionheartlattice.configuration.easyquery.SnowflakePrimaryKeyGenerator;
-import io.github.lionheartlattice.entity.user_center.po.proxy.*;
 import io.github.lionheartlattice.entity.parent.ParentClientEntity;
+import io.github.lionheartlattice.entity.user_center.user.po.proxy.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -93,12 +93,14 @@ public class Role extends ParentClientEntity<Role, RoleProxy> implements ProxyEn
     /**
      *
      **/
-    @Navigate(value = RelationTypeEnum.ManyToMany, selfProperty = {RoleProxy.Fields.id}, selfMappingProperty = {UserRoleProxy.Fields.roleId}, mappingClass = UserRole.class, targetProperty = {UserProxy.Fields.id}, targetMappingProperty = {UserRoleProxy.Fields.userId})
+    @Navigate(value = RelationTypeEnum.ManyToMany, selfProperty = {RoleProxy.Fields.id}, selfMappingProperty = {
+            UserRoleProxy.Fields.roleId}, mappingClass = UserRole.class, targetProperty = {UserProxy.Fields.id}, targetMappingProperty = {UserRoleProxy.Fields.userId})
     private List<User> userList;
 
     /**
      *
      **/
-    @Navigate(value = RelationTypeEnum.ManyToMany, selfProperty = {RoleProxy.Fields.id}, selfMappingProperty = {RoleMenuProxy.Fields.roleId}, mappingClass = RoleMenu.class, targetProperty = {MenuProxy.Fields.id}, targetMappingProperty = {RoleMenuProxy.Fields.menuId})
+    @Navigate(value = RelationTypeEnum.ManyToMany, selfProperty = {RoleProxy.Fields.id}, selfMappingProperty = {
+            RoleMenuProxy.Fields.roleId}, mappingClass = RoleMenu.class, targetProperty = {MenuProxy.Fields.id}, targetMappingProperty = {RoleMenuProxy.Fields.menuId})
     private List<Menu> menuList;
 }
